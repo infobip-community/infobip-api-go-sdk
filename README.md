@@ -1,2 +1,2 @@
-# infobip-api-go-client
-Infobip Go API Client
+# infobip-go-client
+Infobip API Go Client
