@@ -1,6 +1,7 @@
 package infobip
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -8,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -74,7 +76,6 @@ func TestReqValidInput(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.method, func(t *testing.T) {
-
 			serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, tc.path, r.URL.Path[1:])
 				assert.Equal(t, tc.method, r.Method)
@@ -100,13 +101,31 @@ func TestReqValidInput(t *testing.T) {
 			tc.handler.httpClient = tc.httpClient
 			tc.handler.apiKey = apiKey
 
-			resp, body, err := tc.handler.request(tc.method, tc.path, tc.body, tc.queryParams)
+			resp, body, err := tc.handler.request(context.Background(), tc.method, tc.path, tc.body, tc.queryParams)
 
 			assert.Nil(t, err)
 			assert.NotNil(t, resp)
 			assert.Equal(t, []byte(tc.servResp), body)
 		})
 	}
+}
+
+func TestReqContext(t *testing.T) {
+	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(1 * time.Second)
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer serv.Close()
+
+	handler := httpHandler{httpClient: http.Client{}, baseURL: serv.URL}
+	ctx, cancel := context.WithCancel(context.Background())
+	go func() {
+		cancel()
+	}()
+	resp, _, err := handler.request(ctx, http.MethodGet, "some/path", nil, nil)
+
+	assert.NotNil(t, err)
+	assert.Nil(t, resp)
 }
 
 func TestReqInvalidMethod(t *testing.T) {
@@ -116,7 +135,7 @@ func TestReqInvalidMethod(t *testing.T) {
 	defer serv.Close()
 
 	handler := httpHandler{httpClient: http.Client{}, baseURL: serv.URL}
-	resp, _, err := handler.request("ČĆŽŽ", "some/path", nil, nil)
+	resp, _, err := handler.request(context.Background(), "ČĆŽŽ", "some/path", nil, nil)
 
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), "invalid method")
@@ -130,7 +149,7 @@ func TestReqInvalidResBody(t *testing.T) {
 	defer serv.Close()
 
 	handler := httpHandler{httpClient: http.Client{}, baseURL: serv.URL}
-	resp, _, err := handler.request(http.MethodGet, "some/path", nil, nil)
+	resp, _, err := handler.request(context.Background(), http.MethodGet, "some/path", nil, nil)
 
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), "unexpected EOF")
@@ -144,7 +163,7 @@ func TestReqInvalidPayload(t *testing.T) {
 	defer serv.Close()
 
 	handler := httpHandler{httpClient: http.Client{}, baseURL: serv.URL}
-	resp, _, err := handler.request(http.MethodPost, "some/path", math.Inf(1), nil)
+	resp, _, err := handler.request(context.Background(), http.MethodPost, "some/path", math.Inf(1), nil)
 
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), "json: unsupported value")
@@ -158,7 +177,7 @@ func TestReqInvalidHost(t *testing.T) {
 	defer serv.Close()
 
 	handler := httpHandler{httpClient: http.Client{}, baseURL: "nonexistent"}
-	resp, _, err := handler.request(http.MethodGet, "some/path", nil, nil)
+	resp, _, err := handler.request(context.Background(), http.MethodGet, "some/path", nil, nil)
 
 	assert.NotNil(t, err)
 	assert.Nil(t, resp)

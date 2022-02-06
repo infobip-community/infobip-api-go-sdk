@@ -32,7 +32,7 @@ func (c *Client) WhatsApp() WhatsApp {
 	return newWhatsApp(c.apiKey, c.baseURL, c.httpClient)
 }
 
-func WithHttpClient(httpClient http.Client) func(*Client) {
+func WithHTTPClient(httpClient http.Client) func(*Client) {
 	return func(c *Client) {
 		c.httpClient = httpClient
 	}
