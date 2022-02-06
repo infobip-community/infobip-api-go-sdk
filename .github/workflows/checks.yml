@@ -1,0 +1,13 @@
+name: Run prechecks
+on: [push]
+jobs:
+  Run-All-Prechecks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - name: Execute checks
+        run: |
+          make docker-all-checks
+      - run: echo "🍏 This job's status is ${{ job.status }}."
