@@ -2,6 +2,7 @@ package infobip
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -24,23 +25,24 @@ type httpHandler struct {
 // The body is immediately parsed and closed and
 // the output is returned to the caller.
 func (h *httpHandler) request(
+	ctx context.Context,
 	method string,
 	resourcePath string,
 	body interface{},
 	params map[string]string,
 ) (resp *http.Response, respBody []byte, err error) {
-
 	var buf io.Reader
 
 	if body != nil {
-		parsedBody, err := json.Marshal(body)
+		var parsedBody []byte
+		parsedBody, err = json.Marshal(body)
 		if err != nil {
 			return nil, nil, err
 		}
 		buf = bytes.NewBuffer(parsedBody)
 	}
 
-	req, err := http.NewRequest(method, fmt.Sprintf("%s/%s", h.baseURL, resourcePath), buf)
+	req, err := http.NewRequestWithContext(ctx, method, fmt.Sprintf("%s/%s", h.baseURL, resourcePath), buf)
 	if err != nil {
 		return nil, nil, err
 	}
