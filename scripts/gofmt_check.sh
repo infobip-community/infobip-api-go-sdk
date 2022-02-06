@@ -1,6 +1,6 @@
 #!/bin/bash
 
-output="$(gofmt -d "$(go list ./... | sed 's/infobip-go-client\///g')")"
+output="$(gofmt -d pkg/)"
 
 if [ "$(echo "${output}" | sed '/^\s*$/d' | wc -l)" -gt 0 ]; then
   echo "gofmt detected unformatted files:"
