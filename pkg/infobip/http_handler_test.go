@@ -14,7 +14,6 @@ import (
 
 func TestReqValidInput(t *testing.T) {
 	type test struct {
-		scenario    string
 		handler     httpHandler
 		method      string
 		path        string
