@@ -83,7 +83,7 @@ func TestReqValidInput(t *testing.T) {
 				var err error
 				if tc.body != nil {
 					expectedBody, err = json.Marshal(tc.body)
-					assert.Nil(t, err)
+					assert.NotNil(t, err)
 				}
 				parsedBody, err := ioutil.ReadAll(r.Body)
 				assert.Nil(t, err)
