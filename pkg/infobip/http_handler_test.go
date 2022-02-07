@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"infobip-go-client/pkg/infobip/models"
 	"io/ioutil"
 	"math"
 	"net/http"
@@ -32,7 +33,7 @@ func TestReqValidInput(t *testing.T) {
 	path := "some/path"
 	queryParams := map[string]string{"key": "value", "key2": "value2"}
 	servResp := `{"data": "test"}`
-	apiKey := "jlf3cdef5b20acc82019482a2ce463cc-9b3d6g39-8af8-4e9b-9206-e76340dc43e5"
+	apiKey := "secret"
 
 	tests := []test{
 		{
@@ -158,7 +159,6 @@ func TestReqInvalidResBody(t *testing.T) {
 
 func TestReqInvalidPayload(t *testing.T) {
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusCreated)
 	}))
 	defer serv.Close()
 
@@ -172,7 +172,7 @@ func TestReqInvalidPayload(t *testing.T) {
 
 func TestReqInvalidHost(t *testing.T) {
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Length", "1")
+		w.WriteHeader(http.StatusCreated)
 	}))
 	defer serv.Close()
 
@@ -183,13 +183,33 @@ func TestReqInvalidHost(t *testing.T) {
 	assert.Nil(t, resp)
 }
 
+func TestPostInvalidHost(t *testing.T) {
+	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Length", "1")
+	}))
+	defer serv.Close()
+
+	handler := httpHandler{httpClient: http.Client{}, baseURL: "nonexistent"}
+	msg := models.TextMessageRequest{
+		From:    "+16175551213",
+		To:      "+16175551212",
+		Content: models.Content{Text: "hello world"},
+	}
+	respResource := models.TextMessageResponse{}
+	respDetails, err := handler.postRequest(context.Background(), &msg, &respResource, "some/path")
+
+	assert.NotNil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.Equal(t, models.TextMessageResponse{}, models.TextMessageResponse{})
+}
+
 func TestGenerateHeaders(t *testing.T) {
 	type test struct {
 		method              string
 		expectedContentType string
 	}
 
-	apiKey := "jlf3cdef5b20acc82019482a2ce463cc-9b3d6g39-8af8-4e9b-9206-e76340dc43e5"
+	apiKey := "secret"
 	handler := httpHandler{apiKey: apiKey}
 	tests := []test{{method: "GET"}, {method: "POST", expectedContentType: "application/json"}}
 	for _, tc := range tests {

@@ -11,7 +11,7 @@ type TextMessageRequest struct {
 	MessageID    string  `json:"messageId,omitempty" validate:"lte=50"`
 	Content      Content `json:"content" validate:"required"`
 	CallbackData string  `json:"callbackData,omitempty" validate:"lte=4000"`
-	NotifyURL    string  `json:"notifyUrl,omitempty" validate:"url,lte=2048"`
+	NotifyURL    string  `json:"notifyUrl,omitempty" validate:"omitempty,url,lte=2048"`
 }
 
 type Content struct {
@@ -41,7 +41,7 @@ type TextMessageResponse struct {
 }
 
 type Status struct {
-	GroupID     string `json:"groupId"`
+	GroupID     int32  `json:"groupId"`
 	GroupName   string `json:"groupName"`
 	ID          int32  `json:"id"`
 	Name        string `json:"name"`

@@ -8,7 +8,39 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTextMessageRequestConstraints(t *testing.T) {
+func TestValidTextMessage(t *testing.T) {
+	tests := []struct {
+		name     string
+		instance TextMessageRequest
+	}{
+		{name: "minimum input",
+			instance: TextMessageRequest{
+				From:    "+16175551213",
+				To:      "+16175551212",
+				Content: Content{Text: "hello world"},
+			}},
+		{
+			name: "complete input",
+			instance: TextMessageRequest{
+				From:         "+16175551213",
+				To:           "+16175551212",
+				MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
+				Content:      Content{Text: "hello world, here's the link: https://www.google.com", PreviewURL: true},
+				CallbackData: "some data",
+				NotifyURL:    "https://www.google.com",
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.instance.Validate()
+			assert.Nil(t, err)
+		})
+	}
+}
+
+func TestTextMessageConstraints(t *testing.T) {
 	tests := []struct {
 		name     string
 		instance TextMessageRequest
