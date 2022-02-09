@@ -1,12 +1,40 @@
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
+# github.com/go-playground/locales v0.14.0
+## explicit; go 1.13
+github.com/go-playground/locales
+github.com/go-playground/locales/currency
+# github.com/go-playground/universal-translator v0.18.0
+## explicit; go 1.13
+github.com/go-playground/universal-translator
+# github.com/go-playground/validator/v10 v10.10.0
+## explicit; go 1.13
+github.com/go-playground/validator/v10
+# github.com/leodido/go-urn v1.2.1
+## explicit; go 1.13
+github.com/leodido/go-urn
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
 github.com/pmezard/go-difflib/difflib
 # github.com/stretchr/testify v1.7.0
 ## explicit; go 1.13
 github.com/stretchr/testify/assert
-# gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
+# golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
+## explicit; go 1.17
+golang.org/x/crypto/sha3
+# golang.org/x/sys v0.0.0-20210806184541-e5e7981a1069
+## explicit; go 1.17
+golang.org/x/sys/cpu
+# golang.org/x/text v0.3.6
+## explicit; go 1.11
+golang.org/x/text/internal/language
+golang.org/x/text/internal/language/compact
+golang.org/x/text/internal/tag
+golang.org/x/text/language
+# gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 ## explicit
 gopkg.in/yaml.v3
+# mvdan.cc/xurls/v2 v2.3.0
+## explicit; go 1.15
+mvdan.cc/xurls/v2

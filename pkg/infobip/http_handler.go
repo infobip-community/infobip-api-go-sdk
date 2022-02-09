@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"infobip-go-client/pkg/infobip/models"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -52,7 +53,7 @@ func (h *httpHandler) request(
 
 	resp, err = h.httpClient.Do(req)
 	if err != nil {
-		return resp, nil, err
+		return nil, nil, err
 	}
 	defer resp.Body.Close()
 
@@ -64,11 +65,39 @@ func (h *httpHandler) request(
 	return resp, parsedBody, err
 }
 
-// generateHeaders returns a http.Header object depending on the passed method.
-// The headers follow the specification in the API docs.
-// Common headers that http.Client automatically generates, e.g. "Host", are omitted.
+func (h *httpHandler) postRequest(
+	ctx context.Context,
+	postResource models.Validatable,
+	respResource interface{},
+	reqPath string,
+) (respDetails models.ResponseDetails, err error) {
+	err = postResource.Validate()
+	if err != nil {
+		return respDetails, err
+	}
+	resp, parsedBody, err := h.request( //nolint: bodyclose // closed in the method below
+		ctx,
+		http.MethodPost,
+		reqPath,
+		postResource,
+		nil,
+	)
+	if err != nil {
+		_ = json.Unmarshal(parsedBody, &respDetails.ErrorResponse)
+		return respDetails, err
+	}
+	respDetails.HtppResponse = *resp
 
-// https://api-docs.form3.tech/api.html#introduction-and-api-conventions-headers
+	if statusCodeIs2xx(resp.StatusCode) {
+		err = json.Unmarshal(parsedBody, &respResource)
+	} else {
+		_ = json.Unmarshal(parsedBody, &respDetails.ErrorResponse)
+	}
+	return respDetails, err
+}
+
+// generateHeaders returns a http.Header object depending on the passed method.
+// Common headers that http.Client automatically generates, e.g. "Host", are omitted.
 func (h *httpHandler) generateHeaders(method string) http.Header {
 	header := http.Header{}
 
@@ -90,4 +119,8 @@ func generateQueryParams(params map[string]string) string {
 	}
 
 	return q.Encode()
+}
+
+func statusCodeIs2xx(code int) bool {
+	return code >= http.StatusOK && code <= http.StatusMultipleChoices
 }
