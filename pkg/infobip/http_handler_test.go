@@ -80,7 +80,7 @@ func TestReqValidInput(t *testing.T) {
 			serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, tc.path, r.URL.Path[1:])
 				assert.Equal(t, tc.method, r.Method)
-				assert.Equal(t, apiKey, r.Header.Get("Authorization"))
+				assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 				expectedBody := []byte{}
 				var err error
 				if tc.body != nil {
@@ -216,7 +216,7 @@ func TestGenerateHeaders(t *testing.T) {
 		t.Run(tc.method, func(t *testing.T) {
 			headers := handler.generateHeaders(tc.method)
 			assert.NotNil(t, headers)
-			assert.Equal(t, apiKey, headers.Get("Authorization"))
+			assert.Equal(t, fmt.Sprintf("App %s", apiKey), headers.Get("Authorization"))
 			assert.Equal(t, tc.expectedContentType, headers.Get("Content-Type"))
 		})
 	}

@@ -101,7 +101,7 @@ func (h *httpHandler) postRequest(
 func (h *httpHandler) generateHeaders(method string) http.Header {
 	header := http.Header{}
 
-	header.Add("Authorization", h.apiKey)
+	header.Add("Authorization", fmt.Sprintf("App %s", h.apiKey))
 
 	if method == http.MethodPost {
 		header.Add("Content-Type", "application/json")
