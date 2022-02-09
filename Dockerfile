@@ -5,4 +5,4 @@ RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/i
 WORKDIR /app
 COPY . .
 
-CMD ["go", "test", "./..."]
+CMD ["bash", "./scripts/run_tests.sh"]
