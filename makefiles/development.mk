@@ -18,7 +18,7 @@ lint:
 .PHONY: test
 test: ##@development Runs tests.
 test:
-	go test ./...
+	./scripts/run_tests.sh
 
 .PHONY: all-checks
 all-checks: ##@development Runs all checks and tests, as ran by the CI.

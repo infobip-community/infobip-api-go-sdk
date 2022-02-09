@@ -3,6 +3,7 @@ package infobip
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"infobip-go-client/pkg/infobip/models"
 	"io/ioutil"
 	"net/http"
@@ -44,7 +45,7 @@ func TestValidReq(t *testing.T) {
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.True(t, strings.HasSuffix(r.URL.Path, sendMessagePath))
-		assert.Equal(t, apiKey, r.Header.Get("Authorization"))
+		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 

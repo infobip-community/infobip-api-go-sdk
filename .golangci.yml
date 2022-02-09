@@ -157,9 +157,6 @@ linters-settings:
             reason: "see recommendation from dev-infra team: https://confluence.gtforge.com/x/gQI6Aw"
       versions: [] # default []
       local_replace_directives: true # default false
-  gosec:
-    excludes:
-      - G101 # avoid triggering it in tests
   lll:
     line-length: 120 # default 120
   makezero:
