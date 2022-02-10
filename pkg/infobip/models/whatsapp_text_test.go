@@ -16,8 +16,8 @@ func TestValidTextMessage(t *testing.T) {
 		{name: "minimum input",
 			instance: TextMessage{
 				MessageCommon: MessageCommon{
-					From: "+16175551213",
-					To:   "+16175551212",
+					From: "16175551213",
+					To:   "16175551212",
 				},
 				Content: TextContent{Text: "hello world"},
 			}},
@@ -25,8 +25,8 @@ func TestValidTextMessage(t *testing.T) {
 			name: "complete input",
 			instance: TextMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
@@ -57,7 +57,7 @@ func TestTextMessageConstraints(t *testing.T) {
 			instance: TextMessage{
 				MessageCommon: MessageCommon{
 					From:         "",
-					To:           "+16175551213",
+					To:           "16175551213",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
@@ -69,7 +69,7 @@ func TestTextMessageConstraints(t *testing.T) {
 			name: "missing To field",
 			instance: TextMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
+					From:         "16175551213",
 					To:           "",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
@@ -82,8 +82,8 @@ func TestTextMessageConstraints(t *testing.T) {
 			name: "missing Content field",
 			instance: TextMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
@@ -94,8 +94,8 @@ func TestTextMessageConstraints(t *testing.T) {
 			name: "missing Content text",
 			instance: TextMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
@@ -107,8 +107,8 @@ func TestTextMessageConstraints(t *testing.T) {
 			name: "From too long",
 			instance: TextMessage{
 				MessageCommon: MessageCommon{
-					From:         "+161755512133333333333333",
-					To:           "+16175551212",
+					From:         "1617555121333333333333333",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
@@ -120,8 +120,8 @@ func TestTextMessageConstraints(t *testing.T) {
 			name: "To too long",
 			instance: TextMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551212",
-					To:           "+161755512133333333333333",
+					From:         "16175551212",
+					To:           "1617555121333333333333333",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
@@ -133,8 +133,8 @@ func TestTextMessageConstraints(t *testing.T) {
 			name: "MessageID too long",
 			instance: TextMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    strings.Repeat("a", 51),
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
@@ -146,8 +146,8 @@ func TestTextMessageConstraints(t *testing.T) {
 			name: "CallbackData too long",
 			instance: TextMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: strings.Repeat("a", 4001),
 					NotifyURL:    "https://www.google.com",
@@ -159,8 +159,8 @@ func TestTextMessageConstraints(t *testing.T) {
 			name: "Content text too long",
 			instance: TextMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
@@ -172,8 +172,8 @@ func TestTextMessageConstraints(t *testing.T) {
 			name: "NotifyURL text too long",
 			instance: TextMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    fmt.Sprintf("https://www.google%s.com", strings.Repeat("a", 4097)),
@@ -185,8 +185,8 @@ func TestTextMessageConstraints(t *testing.T) {
 			name: "NotifyURL not an url",
 			instance: TextMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "if only this was an url...",
@@ -198,8 +198,8 @@ func TestTextMessageConstraints(t *testing.T) {
 			name: "PreviewURL is true but text doesn't contain an url",
 			instance: TextMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",

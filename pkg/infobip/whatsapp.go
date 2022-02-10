@@ -9,7 +9,8 @@ import (
 // WhatsApp provides methods to interact with the Infobip WhatsApp API.
 // WhatsApp API docs: https://www.infobip.com/docs/api#channels/whatsapp
 type WhatsApp interface {
-	SendTextMessage(context.Context, models.TextMessage) (models.TextMessageResponse, models.ResponseDetails, error)
+	SendTextMessage(context.Context, models.TextMessage) (models.MessageResponse, models.ResponseDetails, error)
+	SendDocumentMessage(context.Context, models.DocumentMessage) (models.MessageResponse, models.ResponseDetails, error)
 }
 
 type whatsAppChannel struct {
@@ -23,10 +24,20 @@ func newWhatsApp(apiKey string, baseURL string, httpClient http.Client) *whatsAp
 }
 
 const sendMessagePath = "whatsapp/1/message/text"
+const sendDocumentPath = "whatsapp/1/message/document"
 
-func (wap *whatsAppChannel) SendTextMessage(ctx context.Context,
-	message models.TextMessage,
-) (msgResp models.TextMessageResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &message, &msgResp, sendMessagePath)
+func (wap *whatsAppChannel) SendTextMessage(
+	ctx context.Context,
+	text models.TextMessage,
+) (msgResp models.MessageResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = wap.reqHandler.postRequest(ctx, &text, &msgResp, sendMessagePath)
+	return msgResp, respDetails, err
+}
+
+func (wap *whatsAppChannel) SendDocumentMessage(
+	ctx context.Context,
+	document models.DocumentMessage,
+) (msgResp models.MessageResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = wap.reqHandler.postRequest(ctx, &document, &msgResp, sendDocumentPath)
 	return msgResp, respDetails, err
 }

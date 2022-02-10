@@ -16,8 +16,8 @@ func TestValidDocumentMessage(t *testing.T) {
 		{name: "minimum input",
 			instance: DocumentMessage{
 				MessageCommon: MessageCommon{
-					From: "+16175551213",
-					To:   "+16175551212",
+					From: "16175551213",
+					To:   "16175551212",
 				},
 				Content: DocumentContent{MediaURL: "https://www.mypath.com/whatsappdoc.txt"},
 			}},
@@ -25,8 +25,8 @@ func TestValidDocumentMessage(t *testing.T) {
 			name: "complete input",
 			instance: DocumentMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
@@ -58,7 +58,7 @@ func TestDocumentMessageConstraints(t *testing.T) {
 			instance: DocumentMessage{
 				MessageCommon: MessageCommon{
 					From:         "",
-					To:           "+16175551213",
+					To:           "16175551213",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
@@ -70,7 +70,7 @@ func TestDocumentMessageConstraints(t *testing.T) {
 			name: "missing To field",
 			instance: DocumentMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
+					From:         "16175551213",
 					To:           "",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
@@ -83,8 +83,8 @@ func TestDocumentMessageConstraints(t *testing.T) {
 			name: "missing Content field",
 			instance: DocumentMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
@@ -95,8 +95,8 @@ func TestDocumentMessageConstraints(t *testing.T) {
 			name: "From too long",
 			instance: DocumentMessage{
 				MessageCommon: MessageCommon{
-					From:         "+161755512133333333333333",
-					To:           "+16175551212",
+					From:         "1617555121333333333333333",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
@@ -108,8 +108,8 @@ func TestDocumentMessageConstraints(t *testing.T) {
 			name: "To too long",
 			instance: DocumentMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551212",
-					To:           "+161755512133333333333333",
+					From:         "16175551212",
+					To:           "1617555121333333333333333",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
@@ -121,8 +121,8 @@ func TestDocumentMessageConstraints(t *testing.T) {
 			name: "MessageID too long",
 			instance: DocumentMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    strings.Repeat("a", 51),
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
@@ -134,8 +134,8 @@ func TestDocumentMessageConstraints(t *testing.T) {
 			name: "CallbackData too long",
 			instance: DocumentMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: strings.Repeat("a", 4001),
 					NotifyURL:    "https://www.google.com",
@@ -147,8 +147,8 @@ func TestDocumentMessageConstraints(t *testing.T) {
 			name: "NotifyURL too long",
 			instance: DocumentMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    fmt.Sprintf("https://www.google%s.com", strings.Repeat("a", 4097)),
@@ -160,8 +160,8 @@ func TestDocumentMessageConstraints(t *testing.T) {
 			name: "NotifyURL not an url",
 			instance: DocumentMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "if only this was an url...",
@@ -173,8 +173,8 @@ func TestDocumentMessageConstraints(t *testing.T) {
 			name: "missing Content MediaURL",
 			instance: DocumentMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
@@ -186,8 +186,8 @@ func TestDocumentMessageConstraints(t *testing.T) {
 			name: "Content MediaURL too long",
 			instance: DocumentMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
@@ -199,8 +199,8 @@ func TestDocumentMessageConstraints(t *testing.T) {
 			name: "Content invalid MediaURL",
 			instance: DocumentMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
@@ -212,8 +212,8 @@ func TestDocumentMessageConstraints(t *testing.T) {
 			name: "Content Caption too long",
 			instance: DocumentMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
@@ -228,8 +228,8 @@ func TestDocumentMessageConstraints(t *testing.T) {
 			name: "Content Filename too long",
 			instance: DocumentMessage{
 				MessageCommon: MessageCommon{
-					From:         "+16175551213",
-					To:           "+16175551212",
+					From:         "16175551213",
+					To:           "16175551212",
 					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",

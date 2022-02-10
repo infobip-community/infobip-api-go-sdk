@@ -37,7 +37,7 @@ func PreviewURLValidation(sl validator.StructLevel) {
 	}
 }
 
-type TextMessageResponse struct {
+type MessageResponse struct {
 	To           string `json:"to"`
 	MessageCount int32  `json:"messageCount"`
 	MessageID    string `json:"messageId"`

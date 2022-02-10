@@ -198,12 +198,12 @@ func TestPostInvalidHost(t *testing.T) {
 		},
 		Content: models.TextContent{Text: "hello world"},
 	}
-	respResource := models.TextMessageResponse{}
+	respResource := models.MessageResponse{}
 	respDetails, err := handler.postRequest(context.Background(), &msg, &respResource, "some/path")
 
 	require.NotNil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.Equal(t, models.TextMessageResponse{}, models.TextMessageResponse{})
+	assert.Equal(t, models.MessageResponse{}, models.MessageResponse{})
 }
 
 func TestGenerateHeaders(t *testing.T) {
