@@ -14,6 +14,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestValidReq(t *testing.T) {
@@ -41,7 +42,7 @@ func TestValidReq(t *testing.T) {
 	}`)
 	var expectedResp models.TextMessageResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.True(t, strings.HasSuffix(r.URL.Path, sendMessagePath))
@@ -69,10 +70,10 @@ func TestValidReq(t *testing.T) {
 
 	messageResponse, respDetails, err := whatsApp.SendTextMessage(context.Background(), msg)
 
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	assert.NotEqual(t, models.TextMessageResponse{}, messageResponse)
 	assert.Equal(t, expectedResp, messageResponse)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HtppResponse.StatusCode)
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
@@ -94,7 +95,7 @@ func TestInputValidationErr(t *testing.T) {
 		NotifyURL:    "not a valid url",
 	}
 	messageResponse, respDetails, err := whatsApp.SendTextMessage(context.Background(), msg)
-	assert.NotNil(t, err)
+	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
 	assert.Equal(t, models.TextMessageResponse{}, messageResponse)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
@@ -160,7 +161,7 @@ func TestServer4xxErrors(t *testing.T) {
 		t.Run(strconv.Itoa(tc.statusCode), func(t *testing.T) {
 			var expectedResp models.ErrorDetails
 			err := json.Unmarshal(tc.rawJSONResp, &expectedResp)
-			assert.Nil(t, err)
+			require.Nil(t, err)
 
 			serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tc.statusCode)
@@ -179,7 +180,7 @@ func TestServer4xxErrors(t *testing.T) {
 			messageResponse, respDetails, err := whatsApp.SendTextMessage(context.Background(), msg)
 			serv.Close()
 
-			assert.Nil(t, err)
+			require.Nil(t, err)
 			assert.NotNil(t, respDetails.HtppResponse)
 			assert.NotNil(t, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)

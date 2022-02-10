@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestReqValidInput(t *testing.T) {
@@ -85,15 +86,15 @@ func TestReqValidInput(t *testing.T) {
 				var err error
 				if tc.body != nil {
 					expectedBody, err = json.Marshal(tc.body)
-					assert.Nil(t, err)
+					require.Nil(t, err)
 				}
 				parsedBody, err := ioutil.ReadAll(r.Body)
-				assert.Nil(t, err)
+				require.Nil(t, err)
 				assert.Equal(t, expectedBody, parsedBody)
 
 				w.WriteHeader(http.StatusOK)
 				_, err = w.Write([]byte(tc.servResp))
-				assert.Nil(t, err)
+				require.Nil(t, err)
 			}))
 			defer serv.Close()
 
@@ -104,7 +105,7 @@ func TestReqValidInput(t *testing.T) {
 
 			resp, body, err := tc.handler.request(context.Background(), tc.method, tc.path, tc.body, tc.queryParams)
 
-			assert.Nil(t, err)
+			require.Nil(t, err)
 			assert.NotNil(t, resp)
 			assert.Equal(t, []byte(tc.servResp), body)
 		})
@@ -125,7 +126,7 @@ func TestReqContext(t *testing.T) {
 	}()
 	resp, _, err := handler.request(ctx, http.MethodGet, "some/path", nil, nil)
 
-	assert.NotNil(t, err)
+	require.NotNil(t, err)
 	assert.Nil(t, resp)
 }
 
@@ -138,7 +139,7 @@ func TestReqInvalidMethod(t *testing.T) {
 	handler := httpHandler{httpClient: http.Client{}, baseURL: serv.URL}
 	resp, _, err := handler.request(context.Background(), "ČĆŽŽ", "some/path", nil, nil)
 
-	assert.NotNil(t, err)
+	require.NotNil(t, err)
 	assert.Contains(t, err.Error(), "invalid method")
 	assert.Nil(t, resp)
 }
@@ -152,7 +153,7 @@ func TestReqInvalidResBody(t *testing.T) {
 	handler := httpHandler{httpClient: http.Client{}, baseURL: serv.URL}
 	resp, _, err := handler.request(context.Background(), http.MethodGet, "some/path", nil, nil)
 
-	assert.NotNil(t, err)
+	require.NotNil(t, err)
 	assert.Contains(t, err.Error(), "unexpected EOF")
 	assert.NotNil(t, resp)
 }
@@ -165,7 +166,7 @@ func TestReqInvalidPayload(t *testing.T) {
 	handler := httpHandler{httpClient: http.Client{}, baseURL: serv.URL}
 	resp, _, err := handler.request(context.Background(), http.MethodPost, "some/path", math.Inf(1), nil)
 
-	assert.NotNil(t, err)
+	require.NotNil(t, err)
 	assert.Contains(t, err.Error(), "json: unsupported value")
 	assert.Nil(t, resp)
 }
@@ -179,7 +180,7 @@ func TestReqInvalidHost(t *testing.T) {
 	handler := httpHandler{httpClient: http.Client{}, baseURL: "nonexistent"}
 	resp, _, err := handler.request(context.Background(), http.MethodGet, "some/path", nil, nil)
 
-	assert.NotNil(t, err)
+	require.NotNil(t, err)
 	assert.Nil(t, resp)
 }
 
@@ -198,7 +199,7 @@ func TestPostInvalidHost(t *testing.T) {
 	respResource := models.TextMessageResponse{}
 	respDetails, err := handler.postRequest(context.Background(), &msg, &respResource, "some/path")
 
-	assert.NotNil(t, err)
+	require.NotNil(t, err)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, models.TextMessageResponse{}, models.TextMessageResponse{})
 }

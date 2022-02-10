@@ -5,6 +5,7 @@ package infobip
 
 import (
 	"net/http"
+	"net/url"
 )
 
 // Client is an aggregation of channels which are used
@@ -18,14 +19,28 @@ type Client struct {
 // NewClient returns a client object using the provided
 // http.Client object and host. If a client is not provided,
 // a default one is created.
-func NewClient(baseURL string, apiKey string, options ...func(*Client)) Client {
+func NewClient(baseURL string, apiKey string, options ...func(*Client)) (Client, error) {
+	baseURL, err := validateURL(baseURL)
+	if err != nil {
+		return Client{}, err
+	}
 	c := Client{baseURL: baseURL, apiKey: apiKey, httpClient: http.Client{}}
 
 	for _, opt := range options {
 		opt(&c)
 	}
 
-	return c
+	return c, nil
+}
+
+func validateURL(baseURL string) (string, error) {
+	_, err := url.ParseRequestURI(baseURL)
+	if err != nil {
+		baseURL = "https://" + baseURL
+		_, err = url.ParseRequestURI(baseURL)
+	}
+
+	return baseURL, err
 }
 
 func (c *Client) WhatsApp() WhatsApp {
