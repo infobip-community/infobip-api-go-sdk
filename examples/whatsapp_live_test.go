@@ -23,7 +23,7 @@ func TestSendMessageExample(t *testing.T) {
 		Content: models.Content{Text: "This message was sent from the Infobip API using the Go API client."},
 	}
 	msgResp, respDetails, err := whatsApp.SendTextMessage(context.Background(), message)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	assert.NotEqual(t, models.TextMessageResponse{}, msgResp)
 	fmt.Printf("%+v", msgResp)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
