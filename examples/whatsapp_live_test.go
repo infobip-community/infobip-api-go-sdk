@@ -3,6 +3,7 @@ package examples
 import (
 	"context"
 	"fmt"
+	"github.com/stretchr/testify/require"
 	"infobip-go-client/pkg/infobip"
 	"infobip-go-client/pkg/infobip/models"
 	"testing"
@@ -15,14 +16,18 @@ import (
 func TestSendMessageExample(t *testing.T) {
 	apiKey := "secret"
 	baseURL := "https://myinfobipurl.com"
-	client := infobip.NewClient(baseURL, apiKey)
+	client, err := infobip.NewClient(baseURL, apiKey)
 	whatsApp := client.WhatsApp()
-	message := models.TextMessageRequest{
-		From:    "111111111111",
-		To:      "222222222222",
-		Content: models.Content{Text: "This message was sent from the Infobip API using the Go API client."},
+	message := models.TextMessage{
+		MessageCommon: models.MessageCommon{
+			From: "111111111111",
+			To:   "222222222222",
+		},
+		Content: models.TextContent{Text: "This message was sent from the Infobip API using the Go API client."},
 	}
+
 	msgResp, respDetails, err := whatsApp.SendTextMessage(context.Background(), message)
+
 	require.Nil(t, err)
 	assert.NotEqual(t, models.TextMessageResponse{}, msgResp)
 	fmt.Printf("%+v", msgResp)

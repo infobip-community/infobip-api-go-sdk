@@ -191,10 +191,12 @@ func TestPostInvalidHost(t *testing.T) {
 	defer serv.Close()
 
 	handler := httpHandler{httpClient: http.Client{}, baseURL: "nonexistent"}
-	msg := models.TextMessageRequest{
-		From:    "+16175551213",
-		To:      "+16175551212",
-		Content: models.Content{Text: "hello world"},
+	msg := models.TextMessage{
+		MessageCommon: models.MessageCommon{
+			From: "+16175551213",
+			To:   "+16175551212",
+		},
+		Content: models.TextContent{Text: "hello world"},
 	}
 	respResource := models.TextMessageResponse{}
 	respDetails, err := handler.postRequest(context.Background(), &msg, &respResource, "some/path")

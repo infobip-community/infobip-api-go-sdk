@@ -9,7 +9,7 @@ import (
 // WhatsApp provides methods to interact with the Infobip WhatsApp API.
 // WhatsApp API docs: https://www.infobip.com/docs/api#channels/whatsapp
 type WhatsApp interface {
-	SendTextMessage(context.Context, models.TextMessageRequest) (models.TextMessageResponse, models.ResponseDetails, error)
+	SendTextMessage(context.Context, models.TextMessage) (models.TextMessageResponse, models.ResponseDetails, error)
 }
 
 type whatsAppChannel struct {
@@ -25,7 +25,7 @@ func newWhatsApp(apiKey string, baseURL string, httpClient http.Client) *whatsAp
 const sendMessagePath = "whatsapp/1/message/text"
 
 func (wap *whatsAppChannel) SendTextMessage(ctx context.Context,
-	message models.TextMessageRequest,
+	message models.TextMessage,
 ) (msgResp models.TextMessageResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.reqHandler.postRequest(ctx, &message, &msgResp, sendMessagePath)
 	return msgResp, respDetails, err

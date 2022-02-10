@@ -19,15 +19,17 @@ import (
 
 func TestValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.TextMessageRequest{
-		From:         "+16175551213",
-		To:           "+16175551212",
-		MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-		Content:      models.Content{Text: "hello world"},
-		CallbackData: "some data",
-		NotifyURL:    "https://www.google.com",
-	}
+	msg := models.TextMessage{
+		MessageCommon: models.MessageCommon{
+			From:         "+16175551213",
+			To:           "+16175551212",
+			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
+			CallbackData: "some data",
+			NotifyURL:    "https://www.google.com",
+		},
 
+		Content: models.TextContent{Text: "hello world"},
+	}
 	rawJSONResp := []byte(`{
 		"to": "441134960001",
 		"messageCount": 1,
@@ -50,7 +52,7 @@ func TestValidReq(t *testing.T) {
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.TextMessageRequest
+		var receivedMsg models.TextMessage
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -61,13 +63,11 @@ func TestValidReq(t *testing.T) {
 	defer serv.Close()
 
 	host := serv.URL
-
 	whatsApp := whatsAppChannel{reqHandler: httpHandler{
 		httpClient: http.Client{},
 		baseURL:    host,
 		apiKey:     apiKey,
 	}}
-
 	messageResponse, respDetails, err := whatsApp.SendTextMessage(context.Background(), msg)
 
 	require.Nil(t, err)
@@ -86,14 +86,17 @@ func TestInputValidationErr(t *testing.T) {
 		baseURL:    "https://something.api.infobip.com",
 		apiKey:     apiKey,
 	}}
-	msg := models.TextMessageRequest{
-		From:         "+16175551213",
-		To:           "+16175551212",
-		MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-		Content:      models.Content{Text: "hello world"},
-		CallbackData: "some data",
-		NotifyURL:    "not a valid url",
+	msg := models.TextMessage{
+		MessageCommon: models.MessageCommon{
+			From:         "+16175551213",
+			To:           "+16175551212",
+			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
+			CallbackData: "some data",
+			NotifyURL:    "not a valid url",
+		},
+		Content: models.TextContent{Text: "hello world"},
 	}
+
 	messageResponse, respDetails, err := whatsApp.SendTextMessage(context.Background(), msg)
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
@@ -110,15 +113,14 @@ func TestServer4xxErrors(t *testing.T) {
 			rawJSONResp: []byte(`{
 				"requestError": {
 					"serviceException": {
-							"messageId": "BAD_REQUEST",
-							"text": "Bad request",
-							"validationErrors": {
-								"content.text":
-									[
-										"size must be between 1 and 4096",
-										"must not be blank"
-									]
-							}
+						"messageId": "BAD_REQUEST",
+						"text": "Bad request",
+						"validationErrors": {
+							"content.text": [
+								"size must be between 1 and 4096",
+								"must not be blank"
+							]
+						}
 					}
 				}
 			}`),
@@ -148,13 +150,15 @@ func TestServer4xxErrors(t *testing.T) {
 		},
 	}
 	apiKey := "secret"
-	msg := models.TextMessageRequest{
-		From:         "+16175551213",
-		To:           "+16175551212",
-		MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-		Content:      models.Content{Text: "hello world"},
-		CallbackData: "some data",
-		NotifyURL:    "https://www.google.com",
+	msg := models.TextMessage{
+		MessageCommon: models.MessageCommon{
+			From:         "+16175551213",
+			To:           "+16175551212",
+			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
+			CallbackData: "some data",
+			NotifyURL:    "https://www.google.com",
+		},
+		Content: models.TextContent{Text: "hello world"},
 	}
 
 	for _, tc := range tests {
@@ -162,7 +166,6 @@ func TestServer4xxErrors(t *testing.T) {
 			var expectedResp models.ErrorDetails
 			err := json.Unmarshal(tc.rawJSONResp, &expectedResp)
 			require.Nil(t, err)
-
 			serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tc.statusCode)
 				_, servErr := w.Write(tc.rawJSONResp)
@@ -170,13 +173,11 @@ func TestServer4xxErrors(t *testing.T) {
 			}))
 
 			host := serv.URL
-
 			whatsApp := whatsAppChannel{reqHandler: httpHandler{
 				httpClient: http.Client{},
 				baseURL:    host,
 				apiKey:     apiKey,
 			}}
-
 			messageResponse, respDetails, err := whatsApp.SendTextMessage(context.Background(), msg)
 			serv.Close()
 
