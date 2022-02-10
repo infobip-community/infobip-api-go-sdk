@@ -8,22 +8,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidDocumentMessage(t *testing.T) {
+func TestValidImageMessage(t *testing.T) {
 	tests := []struct {
 		name     string
-		instance DocumentMessage
+		instance ImageMessage
 	}{
 		{name: "minimum input",
-			instance: DocumentMessage{
+			instance: ImageMessage{
 				MessageCommon: MessageCommon{
 					From: "16175551213",
 					To:   "16175551212",
 				},
-				Content: DocumentContent{MediaURL: "https://www.mypath.com/whatsappdoc.txt"},
+				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsappdoc.txt"},
 			}},
 		{
 			name: "complete input",
-			instance: DocumentMessage{
+			instance: ImageMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -31,10 +31,9 @@ func TestValidDocumentMessage(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: DocumentContent{
+				Content: ImageContent{
 					MediaURL: "https://www.mypath.com/my_doc.txt",
 					Caption:  "hello world",
-					Filename: "my_doc.txt",
 				},
 			},
 		},
@@ -48,14 +47,14 @@ func TestValidDocumentMessage(t *testing.T) {
 	}
 }
 
-func TestDocumentMessageConstraints(t *testing.T) {
+func TestImageMessageConstraints(t *testing.T) {
 	tests := []struct {
 		name     string
-		instance DocumentMessage
+		instance ImageMessage
 	}{
 		{
 			name: "missing From field",
-			instance: DocumentMessage{
+			instance: ImageMessage{
 				MessageCommon: MessageCommon{
 					From:         "",
 					To:           "16175551213",
@@ -63,12 +62,12 @@ func TestDocumentMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: DocumentContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
+				Content: ImageContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
 			},
 		},
 		{
 			name: "missing To field",
-			instance: DocumentMessage{
+			instance: ImageMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "",
@@ -76,12 +75,12 @@ func TestDocumentMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: DocumentContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
+				Content: ImageContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
 			},
 		},
 		{
 			name: "missing Content field",
-			instance: DocumentMessage{
+			instance: ImageMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -93,7 +92,7 @@ func TestDocumentMessageConstraints(t *testing.T) {
 		},
 		{
 			name: "From too long",
-			instance: DocumentMessage{
+			instance: ImageMessage{
 				MessageCommon: MessageCommon{
 					From:         "1617555121333333333333333",
 					To:           "16175551212",
@@ -101,12 +100,12 @@ func TestDocumentMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: DocumentContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
+				Content: ImageContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
 			},
 		},
 		{
 			name: "To too long",
-			instance: DocumentMessage{
+			instance: ImageMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551212",
 					To:           "1617555121333333333333333",
@@ -114,12 +113,12 @@ func TestDocumentMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: DocumentContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
+				Content: ImageContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
 			},
 		},
 		{
 			name: "MessageID too long",
-			instance: DocumentMessage{
+			instance: ImageMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -127,12 +126,12 @@ func TestDocumentMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: DocumentContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
+				Content: ImageContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
 			},
 		},
 		{
 			name: "CallbackData too long",
-			instance: DocumentMessage{
+			instance: ImageMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -140,12 +139,12 @@ func TestDocumentMessageConstraints(t *testing.T) {
 					CallbackData: strings.Repeat("a", 4001),
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: DocumentContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
+				Content: ImageContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
 			},
 		},
 		{
 			name: "NotifyURL too long",
-			instance: DocumentMessage{
+			instance: ImageMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -153,12 +152,12 @@ func TestDocumentMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    fmt.Sprintf("https://www.google%s.com", strings.Repeat("a", 4097)),
 				},
-				Content: DocumentContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
+				Content: ImageContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
 			},
 		},
 		{
 			name: "NotifyURL not an url",
-			instance: DocumentMessage{
+			instance: ImageMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -166,12 +165,12 @@ func TestDocumentMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "if only this was an url...",
 				},
-				Content: DocumentContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
+				Content: ImageContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
 			},
 		},
 		{
 			name: "missing Content MediaURL",
-			instance: DocumentMessage{
+			instance: ImageMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -179,12 +178,12 @@ func TestDocumentMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: DocumentContent{Filename: "asd"},
+				Content: ImageContent{Caption: "asd"},
 			},
 		},
 		{
 			name: "Content MediaURL too long",
-			instance: DocumentMessage{
+			instance: ImageMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -192,12 +191,12 @@ func TestDocumentMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: DocumentContent{MediaURL: fmt.Sprintf("https://www.g%sgle.com", strings.Repeat("o", 2040))},
+				Content: ImageContent{MediaURL: fmt.Sprintf("https://www.g%sgle.com", strings.Repeat("o", 2040))},
 			},
 		},
 		{
 			name: "Content invalid MediaURL",
-			instance: DocumentMessage{
+			instance: ImageMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -205,12 +204,12 @@ func TestDocumentMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: DocumentContent{MediaURL: "asd"},
+				Content: ImageContent{MediaURL: "asd"},
 			},
 		},
 		{
 			name: "Content Caption too long",
-			instance: DocumentMessage{
+			instance: ImageMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -218,25 +217,9 @@ func TestDocumentMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: DocumentContent{
+				Content: ImageContent{
 					MediaURL: "https://www.mypath.com/my_doc.txt",
 					Caption:  strings.Repeat("a", 3001),
-				},
-			},
-		},
-		{
-			name: "Content Filename too long",
-			instance: DocumentMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: DocumentContent{
-					MediaURL: "https://www.mypath.com/my_doc.txt",
-					Filename: strings.Repeat("a", 241),
 				},
 			},
 		},

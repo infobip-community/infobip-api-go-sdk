@@ -27,6 +27,7 @@ func TestSendTextExample(t *testing.T) {
 	}
 
 	msgResp, respDetails, err := whatsApp.SendTextMessage(context.Background(), message)
+	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.MessageResponse{}, msgResp)
@@ -48,7 +49,28 @@ func TestSendDocumentExample(t *testing.T) {
 	}
 
 	msgResp, respDetails, err := whatsApp.SendDocumentMessage(context.Background(), message)
-	fmt.Printf("%+v", msgResp)
+	fmt.Printf("%+v\n", msgResp)
+
+	require.Nil(t, err)
+	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+}
+
+func TestSendImageExample(t *testing.T) {
+	apiKey := "000e521395dfdf03fa1adf995f1ebf67-ccb2ed01-f60b-4f9f-96c3-f3df15a52906"
+	baseURL := "k31ke1.api.infobip.com"
+	client, err := infobip.NewClient(baseURL, apiKey)
+	whatsApp := client.WhatsApp()
+	message := models.ImageMessage{
+		MessageCommon: models.MessageCommon{
+			From: "447860099299",
+			To:   "385976342761",
+		},
+		Content: models.ImageContent{MediaURL: "https://thumbs.dreamstime.com/z/example-red-tag-example-red-square-price-tag-117502755.jpg"},
+	}
+
+	msgResp, respDetails, err := whatsApp.SendImageMessage(context.Background(), message)
+	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
