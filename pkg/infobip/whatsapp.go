@@ -14,6 +14,7 @@ type WhatsApp interface {
 	SendImageMessage(context.Context, models.ImageMessage) (models.MessageResponse, models.ResponseDetails, error)
 	SendAudioMessage(context.Context, models.AudioMessage) (models.MessageResponse, models.ResponseDetails, error)
 	SendVideoMessage(context.Context, models.VideoMessage) (models.MessageResponse, models.ResponseDetails, error)
+	SendStickerMessage(context.Context, models.StickerMessage) (models.MessageResponse, models.ResponseDetails, error)
 }
 
 type whatsAppChannel struct {
@@ -31,6 +32,7 @@ const sendDocumentPath = "whatsapp/1/message/document"
 const sendImagePath = "whatsapp/1/message/image"
 const sendAudioPath = "whatsapp/1/message/audio"
 const sendVideoPath = "whatsapp/1/message/video"
+const sendStickerPath = "whatsapp/1/message/sticker"
 
 func (wap *whatsAppChannel) SendTextMessage(
 	ctx context.Context,
@@ -69,5 +71,13 @@ func (wap *whatsAppChannel) SendVideoMessage(
 	document models.VideoMessage,
 ) (msgResp models.MessageResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.reqHandler.postRequest(ctx, &document, &msgResp, sendVideoPath)
+	return msgResp, respDetails, err
+}
+
+func (wap *whatsAppChannel) SendStickerMessage(
+	ctx context.Context,
+	document models.StickerMessage,
+) (msgResp models.MessageResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = wap.reqHandler.postRequest(ctx, &document, &msgResp, sendStickerPath)
 	return msgResp, respDetails, err
 }
