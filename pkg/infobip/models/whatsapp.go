@@ -60,11 +60,26 @@ type DocumentMessage struct {
 
 type DocumentContent struct {
 	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
-	Caption  string `json:"caption,omitempty" validate:"lte=240"`
+	Caption  string `json:"caption,omitempty" validate:"lte=3000"`
 	Filename string `json:"filename,omitempty" validate:"lte=240"`
 }
 
 func (t *DocumentMessage) Validate() error {
+	validate = validator.New()
+	return validate.Struct(t)
+}
+
+type ImageMessage struct {
+	MessageCommon
+	Content ImageContent `json:"content" validate:"required"`
+}
+
+type ImageContent struct {
+	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
+	Caption  string `json:"caption,omitempty" validate:"lte=3000"`
+}
+
+func (t *ImageMessage) Validate() error {
 	validate = validator.New()
 	return validate.Struct(t)
 }
