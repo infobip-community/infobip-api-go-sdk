@@ -97,3 +97,24 @@ func TestAudioExample(t *testing.T) {
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
 	assert.NotEqual(t, models.MessageResponse{}, msgResp)
 }
+
+func TestVideoExample(t *testing.T) {
+	apiKey := "secret"
+	baseURL := "https://myinfobipurl.com"
+	client, err := infobip.NewClient(baseURL, apiKey)
+	whatsApp := client.WhatsApp()
+	message := models.VideoMessage{
+		MessageCommon: models.MessageCommon{
+			From: "111111111111",
+			To:   "222222222222",
+		},
+		Content: models.VideoContent{MediaURL: "https://download.samplelib.com/mp4/sample-5s.mp4"},
+	}
+
+	msgResp, respDetails, err := whatsApp.SendVideoMessage(context.Background(), message)
+	fmt.Printf("%+v\n", msgResp)
+
+	require.Nil(t, err)
+	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+}
