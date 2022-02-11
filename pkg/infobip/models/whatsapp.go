@@ -83,3 +83,17 @@ func (t *ImageMessage) Validate() error {
 	validate = validator.New()
 	return validate.Struct(t)
 }
+
+type AudioMessage struct {
+	MessageCommon
+	Content AudioContent `json:"content" validate:"required"`
+}
+
+type AudioContent struct {
+	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
+}
+
+func (t *AudioMessage) Validate() error {
+	validate = validator.New()
+	return validate.Struct(t)
+}

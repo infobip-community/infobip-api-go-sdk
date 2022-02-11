@@ -19,7 +19,7 @@ func TestValidDocumentMessage(t *testing.T) {
 					From: "16175551213",
 					To:   "16175551212",
 				},
-				Content: DocumentContent{MediaURL: "https://www.mypath.com/whatsappdoc.txt"},
+				Content: DocumentContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
 			}},
 		{
 			name: "complete input",
