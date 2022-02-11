@@ -8,22 +8,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidImageMessage(t *testing.T) {
+func TestValidAudioMessage(t *testing.T) {
 	tests := []struct {
 		name     string
-		instance ImageMessage
+		instance AudioMessage
 	}{
 		{name: "minimum input",
-			instance: ImageMessage{
+			instance: AudioMessage{
 				MessageCommon: MessageCommon{
 					From: "16175551213",
 					To:   "16175551212",
 				},
-				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsappimage.jpg"},
+				Content: AudioContent{MediaURL: "https://www.mypath.com/audio.mp3"},
 			}},
 		{
 			name: "complete input",
-			instance: ImageMessage{
+			instance: AudioMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -31,9 +31,8 @@ func TestValidImageMessage(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: ImageContent{
-					MediaURL: "https://www.mypath.com/whatsapp.jpg",
-					Caption:  "hello world",
+				Content: AudioContent{
+					MediaURL: "https://www.mypath.com/audio.mp3",
 				},
 			},
 		},
@@ -47,14 +46,14 @@ func TestValidImageMessage(t *testing.T) {
 	}
 }
 
-func TestImageMessageConstraints(t *testing.T) {
+func TestAudioMessageConstraints(t *testing.T) {
 	tests := []struct {
 		name     string
-		instance ImageMessage
+		instance AudioMessage
 	}{
 		{
 			name: "missing From field",
-			instance: ImageMessage{
+			instance: AudioMessage{
 				MessageCommon: MessageCommon{
 					From:         "",
 					To:           "16175551213",
@@ -62,12 +61,12 @@ func TestImageMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsapp.jpg"},
+				Content: AudioContent{MediaURL: "https://www.mypath.com/audio.mp3"},
 			},
 		},
 		{
 			name: "missing To field",
-			instance: ImageMessage{
+			instance: AudioMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "",
@@ -75,12 +74,12 @@ func TestImageMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsapp.jpg"},
+				Content: AudioContent{MediaURL: "https://www.mypath.com/audio.mp3"},
 			},
 		},
 		{
 			name: "missing Content field",
-			instance: ImageMessage{
+			instance: AudioMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -92,7 +91,7 @@ func TestImageMessageConstraints(t *testing.T) {
 		},
 		{
 			name: "From too long",
-			instance: ImageMessage{
+			instance: AudioMessage{
 				MessageCommon: MessageCommon{
 					From:         "1617555121333333333333333",
 					To:           "16175551212",
@@ -100,12 +99,12 @@ func TestImageMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsapp.jpg"},
+				Content: AudioContent{MediaURL: "https://www.mypath.com/audio.mp3"},
 			},
 		},
 		{
 			name: "To too long",
-			instance: ImageMessage{
+			instance: AudioMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551212",
 					To:           "1617555121333333333333333",
@@ -113,12 +112,12 @@ func TestImageMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsapp.jpg"},
+				Content: AudioContent{MediaURL: "https://www.mypath.com/audio.mp3"},
 			},
 		},
 		{
 			name: "MessageID too long",
-			instance: ImageMessage{
+			instance: AudioMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -126,12 +125,12 @@ func TestImageMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsapp.jpg"},
+				Content: AudioContent{MediaURL: "https://www.mypath.com/audio.mp3"},
 			},
 		},
 		{
 			name: "CallbackData too long",
-			instance: ImageMessage{
+			instance: AudioMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -139,12 +138,12 @@ func TestImageMessageConstraints(t *testing.T) {
 					CallbackData: strings.Repeat("a", 4001),
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsapp.jpg"},
+				Content: AudioContent{MediaURL: "https://www.mypath.com/audio.mp3"},
 			},
 		},
 		{
 			name: "NotifyURL too long",
-			instance: ImageMessage{
+			instance: AudioMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -152,12 +151,12 @@ func TestImageMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    fmt.Sprintf("https://www.google%s.com", strings.Repeat("a", 4097)),
 				},
-				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsapp.jpg"},
+				Content: AudioContent{MediaURL: "https://www.mypath.com/audio.mp3"},
 			},
 		},
 		{
 			name: "NotifyURL not an url",
-			instance: ImageMessage{
+			instance: AudioMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -165,12 +164,12 @@ func TestImageMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "if only this was an url...",
 				},
-				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsapp.jpg"},
+				Content: AudioContent{MediaURL: "https://www.mypath.com/audio.mp3"},
 			},
 		},
 		{
 			name: "missing Content MediaURL",
-			instance: ImageMessage{
+			instance: AudioMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -178,12 +177,12 @@ func TestImageMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: ImageContent{Caption: "asd"},
+				Content: AudioContent{},
 			},
 		},
 		{
 			name: "Content MediaURL too long",
-			instance: ImageMessage{
+			instance: AudioMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -191,12 +190,12 @@ func TestImageMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: ImageContent{MediaURL: fmt.Sprintf("https://www.g%sgle.com", strings.Repeat("o", 2040))},
+				Content: AudioContent{MediaURL: fmt.Sprintf("https://www.g%sgle.com", strings.Repeat("o", 2040))},
 			},
 		},
 		{
 			name: "Content invalid MediaURL",
-			instance: ImageMessage{
+			instance: AudioMessage{
 				MessageCommon: MessageCommon{
 					From:         "16175551213",
 					To:           "16175551212",
@@ -204,23 +203,7 @@ func TestImageMessageConstraints(t *testing.T) {
 					CallbackData: "some data",
 					NotifyURL:    "https://www.google.com",
 				},
-				Content: ImageContent{MediaURL: "asd"},
-			},
-		},
-		{
-			name: "Content Caption too long",
-			instance: ImageMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ImageContent{
-					MediaURL: "https://www.mypath.com/whatsapp.jpg",
-					Caption:  strings.Repeat("a", 3001),
-				},
+				Content: AudioContent{MediaURL: "asd"},
 			},
 		},
 	}

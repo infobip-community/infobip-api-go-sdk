@@ -57,19 +57,40 @@ func TestSendDocumentExample(t *testing.T) {
 }
 
 func TestSendImageExample(t *testing.T) {
-	apiKey := "000e521395dfdf03fa1adf995f1ebf67-ccb2ed01-f60b-4f9f-96c3-f3df15a52906"
-	baseURL := "k31ke1.api.infobip.com"
+	apiKey := "secret"
+	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	whatsApp := client.WhatsApp()
 	message := models.ImageMessage{
 		MessageCommon: models.MessageCommon{
-			From: "447860099299",
-			To:   "385976342761",
+			From: "111111111111",
+			To:   "222222222222",
 		},
 		Content: models.ImageContent{MediaURL: "https://thumbs.dreamstime.com/z/example-red-tag-example-red-square-price-tag-117502755.jpg"},
 	}
 
 	msgResp, respDetails, err := whatsApp.SendImageMessage(context.Background(), message)
+	fmt.Printf("%+v\n", msgResp)
+
+	require.Nil(t, err)
+	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+}
+
+func TestAudioExample(t *testing.T) {
+	apiKey := "secret"
+	baseURL := "https://myinfobipurl.com"
+	client, err := infobip.NewClient(baseURL, apiKey)
+	whatsApp := client.WhatsApp()
+	message := models.AudioMessage{
+		MessageCommon: models.MessageCommon{
+			From: "111111111111",
+			To:   "222222222222",
+		},
+		Content: models.AudioContent{MediaURL: "https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.aac"},
+	}
+
+	msgResp, respDetails, err := whatsApp.SendAudioMessage(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)

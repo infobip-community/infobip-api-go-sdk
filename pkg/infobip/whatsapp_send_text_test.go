@@ -79,7 +79,7 @@ func TestTextValidReq(t *testing.T) {
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidText(t *testing.T) {
+func TestInvalidTextMsg(t *testing.T) {
 	apiKey := "secret"
 	whatsApp := whatsAppChannel{reqHandler: httpHandler{
 		httpClient: http.Client{},
