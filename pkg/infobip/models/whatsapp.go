@@ -112,3 +112,17 @@ func (t *VideoMessage) Validate() error {
 	validate = validator.New()
 	return validate.Struct(t)
 }
+
+type StickerMessage struct {
+	MessageCommon
+	Content StickerContent `json:"content" validate:"required"`
+}
+
+type StickerContent struct {
+	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
+}
+
+func (t *StickerMessage) Validate() error {
+	validate = validator.New()
+	return validate.Struct(t)
+}

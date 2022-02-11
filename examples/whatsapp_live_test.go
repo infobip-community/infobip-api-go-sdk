@@ -118,3 +118,24 @@ func TestVideoExample(t *testing.T) {
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
 	assert.NotEqual(t, models.MessageResponse{}, msgResp)
 }
+
+func TestStickerExample(t *testing.T) {
+	apiKey := "secret"
+	baseURL := "https://myinfobipurl.com"
+	client, err := infobip.NewClient(baseURL, apiKey)
+	whatsApp := client.WhatsApp()
+	message := models.StickerMessage{
+		MessageCommon: models.MessageCommon{
+			From: "111111111111",
+			To:   "222222222222",
+		},
+		Content: models.StickerContent{MediaURL: "https://myurl.com/sticker.webp"},
+	}
+
+	msgResp, respDetails, err := whatsApp.SendStickerMessage(context.Background(), message)
+	fmt.Printf("%+v\n", msgResp)
+
+	require.Nil(t, err)
+	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+}
