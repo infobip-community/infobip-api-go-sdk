@@ -14,7 +14,7 @@ type Validatable interface {
 
 type ResponseDetails struct {
 	ErrorResponse ErrorDetails
-	HtppResponse  http.Response
+	HTTPResponse  http.Response
 }
 
 type ErrorDetails struct {

@@ -75,11 +75,11 @@ func TestStickerValidReq(t *testing.T) {
 	assert.Equal(t, expectedResp, messageResponse)
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.Equal(t, http.StatusOK, respDetails.HtppResponse.StatusCode)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidstickerMsg(t *testing.T) {
+func TestInvalidStickerMsg(t *testing.T) {
 	apiKey := "secret"
 	whatsApp := whatsAppChannel{reqHandler: httpHandler{
 		httpClient: http.Client{},
@@ -183,10 +183,10 @@ func TestSticker4xxErrors(t *testing.T) {
 			serv.Close()
 
 			require.Nil(t, err)
-			assert.NotNil(t, respDetails.HtppResponse)
-			assert.NotNil(t, respDetails.ErrorResponse)
+			assert.NotEqual(t, http.Response{}, respDetails.HTTPResponse)
+			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
-			assert.Equal(t, tc.statusCode, respDetails.HtppResponse.StatusCode)
+			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
 			assert.Equal(t, models.MessageResponse{}, messageResponse)
 		})
 	}
