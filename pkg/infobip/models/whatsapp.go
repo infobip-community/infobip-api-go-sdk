@@ -126,3 +126,20 @@ func (t *StickerMessage) Validate() error {
 	validate = validator.New()
 	return validate.Struct(t)
 }
+
+type LocationMessage struct {
+	MessageCommon
+	Content LocationContent `json:"content" validate:"required"`
+}
+
+type LocationContent struct {
+	Latitude  *float32 `json:"latitude" validate:"required,latitude"`
+	Longitude *float32 `json:"longitude" validate:"required,longitude"`
+	Name      string   `json:"name" validate:"lte=1000"`
+	Address   string   `json:"address" validate:"lte=1000"`
+}
+
+func (t *LocationMessage) Validate() error {
+	validate = validator.New()
+	return validate.Struct(t)
+}

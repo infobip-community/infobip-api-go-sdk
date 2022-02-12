@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"infobip-go-client/pkg/infobip/models"
+	"infobip-go-client/pkg/infobip/utils"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -17,9 +18,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestAudioValidReq(t *testing.T) {
+func TestLocationValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.AudioMessage{
+	msg := models.LocationMessage{
 		MessageCommon: models.MessageCommon{
 			From:         "16175551213",
 			To:           "16175551212",
@@ -28,7 +29,10 @@ func TestAudioValidReq(t *testing.T) {
 			NotifyURL:    "https://www.google.com",
 		},
 
-		Content: models.AudioContent{MediaURL: "https://www.mypath.com/whatsappaudio.mp3"},
+		Content: models.LocationContent{
+			Latitude:  utils.Float32Ptr(44.9526862),
+			Longitude: utils.Float32Ptr(13.8545217),
+		},
 	}
 	rawJSONResp := []byte(`{
 		"to": "441134960001",
@@ -47,12 +51,12 @@ func TestAudioValidReq(t *testing.T) {
 	require.Nil(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendAudioPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendLocationPath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.AudioMessage
+		var receivedMsg models.LocationMessage
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -68,7 +72,7 @@ func TestAudioValidReq(t *testing.T) {
 		baseURL:    host,
 		apiKey:     apiKey,
 	}}
-	messageResponse, respDetails, err := whatsApp.SendAudioMessage(context.Background(), msg)
+	messageResponse, respDetails, err := whatsApp.SendLocationMessage(context.Background(), msg)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.MessageResponse{}, messageResponse)
@@ -79,14 +83,14 @@ func TestAudioValidReq(t *testing.T) {
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidAudioMsg(t *testing.T) {
+func TestInvalidLocationMsg(t *testing.T) {
 	apiKey := "secret"
 	whatsApp := whatsAppChannel{reqHandler: httpHandler{
 		httpClient: http.Client{},
 		baseURL:    "https://something.api.infobip.com",
 		apiKey:     apiKey,
 	}}
-	msg := models.AudioMessage{
+	msg := models.LocationMessage{
 		MessageCommon: models.MessageCommon{
 			From:         "16175551213",
 			To:           "16175551212",
@@ -94,17 +98,17 @@ func TestInvalidAudioMsg(t *testing.T) {
 			CallbackData: "some data",
 			NotifyURL:    "https://www.google.com",
 		},
-		Content: models.AudioContent{MediaURL: "hello world"},
+		Content: models.LocationContent{Latitude: utils.Float32Ptr(10)},
 	}
 
-	messageResponse, respDetails, err := whatsApp.SendAudioMessage(context.Background(), msg)
+	messageResponse, respDetails, err := whatsApp.SendLocationMessage(context.Background(), msg)
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
 	assert.Equal(t, models.MessageResponse{}, messageResponse)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestAudio4xxErrors(t *testing.T) {
+func TestLocation4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -116,10 +120,11 @@ func TestAudio4xxErrors(t *testing.T) {
 						"messageId": "BAD_REQUEST",
 						"text": "Bad request",
 						"validationErrors": {
-							"content.mediaUrl": [
-								"size must be between 1 and 2048",
-								"is not a valid url",
-								"must not be blank"
+							"content.latitude": [
+								"must be greater than or equal to -90"
+							],
+							"content.longitude": [
+								"must be less than or equal to 180"
 							]
 						}
 					}
@@ -151,7 +156,7 @@ func TestAudio4xxErrors(t *testing.T) {
 		},
 	}
 	apiKey := "secret"
-	msg := models.AudioMessage{
+	msg := models.LocationMessage{
 		MessageCommon: models.MessageCommon{
 			From:         "16175551213",
 			To:           "16175551212",
@@ -159,7 +164,7 @@ func TestAudio4xxErrors(t *testing.T) {
 			CallbackData: "some data",
 			NotifyURL:    "https://www.google.com",
 		},
-		Content: models.AudioContent{MediaURL: "https://www.mypath.com/whatsappaudio.mp3"},
+		Content: models.LocationContent{Latitude: utils.Float32Ptr(10), Longitude: utils.Float32Ptr(10)},
 	}
 
 	for _, tc := range tests {
@@ -179,7 +184,7 @@ func TestAudio4xxErrors(t *testing.T) {
 				baseURL:    host,
 				apiKey:     apiKey,
 			}}
-			messageResponse, respDetails, err := whatsApp.SendAudioMessage(context.Background(), msg)
+			messageResponse, respDetails, err := whatsApp.SendLocationMessage(context.Background(), msg)
 			serv.Close()
 
 			require.Nil(t, err)

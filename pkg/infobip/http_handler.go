@@ -86,7 +86,7 @@ func (h *httpHandler) postRequest(
 		_ = json.Unmarshal(parsedBody, &respDetails.ErrorResponse)
 		return respDetails, err
 	}
-	respDetails.HtppResponse = *resp
+	respDetails.HTTPResponse = *resp
 
 	if statusCodeIs2xx(resp.StatusCode) {
 		err = json.Unmarshal(parsedBody, &respResource)

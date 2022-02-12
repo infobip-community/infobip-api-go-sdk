@@ -3,12 +3,13 @@ package examples
 import (
 	"context"
 	"fmt"
-	"github.com/stretchr/testify/require"
 	"infobip-go-client/pkg/infobip"
 	"infobip-go-client/pkg/infobip/models"
+	"infobip-go-client/pkg/infobip/utils"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // The following examples can also be used to test the client against a real environment.
@@ -17,6 +18,7 @@ func TestSendTextExample(t *testing.T) {
 	apiKey := "secret"
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
 	message := models.TextMessage{
 		MessageCommon: models.MessageCommon{
@@ -39,6 +41,7 @@ func TestSendDocumentExample(t *testing.T) {
 	apiKey := "secret"
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
 	message := models.DocumentMessage{
 		MessageCommon: models.MessageCommon{
@@ -60,13 +63,16 @@ func TestSendImageExample(t *testing.T) {
 	apiKey := "secret"
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
 	message := models.ImageMessage{
 		MessageCommon: models.MessageCommon{
 			From: "111111111111",
 			To:   "222222222222",
 		},
-		Content: models.ImageContent{MediaURL: "https://thumbs.dreamstime.com/z/example-red-tag-example-red-square-price-tag-117502755.jpg"},
+		Content: models.ImageContent{
+			MediaURL: "https://thumbs.dreamstime.com/z/example-red-tag-example-red-square-price-tag-117502755.jpg",
+		},
 	}
 
 	msgResp, respDetails, err := whatsApp.SendImageMessage(context.Background(), message)
@@ -81,6 +87,7 @@ func TestAudioExample(t *testing.T) {
 	apiKey := "secret"
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
 	message := models.AudioMessage{
 		MessageCommon: models.MessageCommon{
@@ -102,6 +109,7 @@ func TestVideoExample(t *testing.T) {
 	apiKey := "secret"
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
 	message := models.VideoMessage{
 		MessageCommon: models.MessageCommon{
@@ -123,6 +131,7 @@ func TestStickerExample(t *testing.T) {
 	apiKey := "secret"
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
 	message := models.StickerMessage{
 		MessageCommon: models.MessageCommon{
@@ -133,6 +142,33 @@ func TestStickerExample(t *testing.T) {
 	}
 
 	msgResp, respDetails, err := whatsApp.SendStickerMessage(context.Background(), message)
+	fmt.Printf("%+v\n", msgResp)
+
+	require.Nil(t, err)
+	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+}
+
+func TestLocationExample(t *testing.T) {
+	apiKey := "secret"
+	baseURL := "https://myinfobipurl.com"
+	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
+	whatsApp := client.WhatsApp()
+	message := models.LocationMessage{
+		MessageCommon: models.MessageCommon{
+			From: "111111111111",
+			To:   "222222222222",
+		},
+		Content: models.LocationContent{
+			Address:   "Some Address",
+			Name:      "Something",
+			Latitude:  utils.Float32Ptr(73.5164),
+			Longitude: utils.Float32Ptr(56.2502),
+		},
+	}
+
+	msgResp, respDetails, err := whatsApp.SendLocationMessage(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
