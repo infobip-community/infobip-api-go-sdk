@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/go-playground/validator/v10"
 	"mvdan.cc/xurls/v2"
 )
@@ -142,4 +144,81 @@ type LocationContent struct {
 func (t *LocationMessage) Validate() error {
 	validate = validator.New()
 	return validate.Struct(t)
+}
+
+type ContactMessage struct {
+	MessageCommon
+	Content ContactContent `json:"content" validate:"required"`
+}
+
+type ContactContent struct {
+	Contacts []Contact `json:"contacts" validate:"required,dive"`
+}
+
+type Contact struct {
+	Addresses []ContactAddress `json:"addresses,omitempty" validate:"omitempty,dive"`
+	Birthday  string           `json:"birthday,omitempty"`
+	Emails    []ContactEmail   `json:"emails,omitempty" validate:"omitempty,dive"`
+	Name      ContactName      `json:"name" validate:"required"`
+	Org       ContactOrg       `json:"org,omitempty"`
+	Phones    []ContactPhone   `json:"phones,omitempty" validate:"omitempty,dive"`
+	Urls      []ContactURL     `json:"urls,omitempty" validate:"omitempty,dive"`
+}
+
+func (t *ContactMessage) Validate() error {
+	validate = validator.New()
+	validate.RegisterStructValidation(BirthdayValidation, Contact{})
+	return validate.Struct(t)
+}
+
+func BirthdayValidation(sl validator.StructLevel) {
+	contact, _ := sl.Current().Interface().(Contact)
+	if contact.Birthday == "" {
+		return
+	}
+	_, err := time.Parse("2006-01-02", contact.Birthday)
+	if err != nil {
+		sl.ReportError(contact.Birthday, "birthday", "Contact", "invalidbirthdayformat", "")
+	}
+}
+
+type ContactAddress struct {
+	Street      string `json:"street,omitempty"`
+	City        string `json:"city,omitempty"`
+	State       string `json:"state,omitempty"`
+	Zip         string `json:"zip,omitempty"`
+	Country     string `json:"country,omitempty"`
+	CountryCode string `json:"countryCode,omitempty"`
+	Type        string `json:"type,omitempty" validate:"omitempty,oneof=HOME WORK"`
+}
+
+type ContactEmail struct {
+	Email string `json:"email,omitempty" validate:"omitempty,email"`
+	Type  string `json:"type,omitempty" validate:"omitempty,oneof=HOME WORK"`
+}
+
+type ContactName struct {
+	FirstName     string `json:"firstName" validate:"required"`
+	LastName      string `json:"lastName,omitempty"`
+	MiddleName    string `json:"middleName,omitempty"`
+	NameSuffix    string `json:"nameSuffix,omitempty"`
+	NamePrefix    string `json:"namePrefix,omitempty"`
+	FormattedName string `json:"formattedName" validate:"required"`
+}
+
+type ContactOrg struct {
+	Company    string `json:"company,omitempty"`
+	Department string `json:"department,omitempty"`
+	Title      string `json:"title,omitempty"`
+}
+
+type ContactPhone struct {
+	Phone string `json:"phone,omitempty"`
+	Type  string `json:"type,omitempty" validate:"omitempty,oneof=CELL MAIN IPHONE HOME WORK"`
+	WaID  string `json:"waId,omitempty"`
+}
+
+type ContactURL struct {
+	URL  string `json:"url,omitempty" validate:"omitempty,url"`
+	Type string `json:"type,omitempty" validate:"omitempty,oneof=HOME WORK"`
 }
