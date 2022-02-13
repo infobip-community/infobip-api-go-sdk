@@ -20,15 +20,8 @@ import (
 func TestStickerValidReq(t *testing.T) {
 	apiKey := "secret"
 	msg := models.StickerMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-
-		Content: models.StickerContent{MediaURL: "https://www.mypath.com/whatsappsticker.webp"},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.StickerContent{MediaURL: "https://www.mypath.com/whatsappsticker.webp"},
 	}
 	rawJSONResp := []byte(`{
 		"to": "441134960001",
@@ -87,14 +80,8 @@ func TestInvalidStickerMsg(t *testing.T) {
 		apiKey:     apiKey,
 	}}
 	msg := models.StickerMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-		Content: models.StickerContent{MediaURL: "hello world"},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.StickerContent{MediaURL: "hello world"},
 	}
 
 	messageResponse, respDetails, err := whatsApp.SendStickerMessage(context.Background(), msg)
@@ -152,14 +139,8 @@ func TestSticker4xxErrors(t *testing.T) {
 	}
 	apiKey := "secret"
 	msg := models.StickerMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-		Content: models.StickerContent{MediaURL: "https://www.mypath.com/whatsappsticker.webp"},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.StickerContent{MediaURL: "https://www.mypath.com/whatsappsticker.webp"},
 	}
 
 	for _, tc := range tests {

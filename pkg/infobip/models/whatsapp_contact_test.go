@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -28,13 +26,7 @@ func TestValidContactMessage(t *testing.T) {
 		{
 			name: "complete input",
 			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
+				MessageCommon: GenerateTestMessageCommon(),
 				Content: ContactContent{
 					Contacts: []Contact{
 						{
@@ -93,308 +85,100 @@ func TestValidContactMessage(t *testing.T) {
 }
 
 func TestContactMessageConstraints(t *testing.T) {
+	msgCommon := GenerateTestMessageCommon()
 	tests := []struct {
-		name     string
-		instance ContactMessage
+		name    string
+		content ContactContent
 	}{
 		{
-			name: "missing From field",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "",
-					To:           "16175551213",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ContactContent{
-					Contacts: []Contact{{Name: ContactName{FirstName: "John", FormattedName: "Mr. John Smith"}}},
-				},
-			},
-		},
-		{
-			name: "missing To field",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ContactContent{
-					Contacts: []Contact{{Name: ContactName{FirstName: "John", FormattedName: "Mr. John Smith"}}},
-				},
-			},
-		},
-		{
-			name: "missing Content field",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-			},
-		},
-		{
-			name: "From too long",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "1617555121333333333333333",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ContactContent{
-					Contacts: []Contact{{Name: ContactName{FirstName: "John", FormattedName: "Mr. John Smith"}}},
-				},
-			},
-		},
-		{
-			name: "To too long",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551212",
-					To:           "1617555121333333333333333",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ContactContent{
-					Contacts: []Contact{{Name: ContactName{FirstName: "John", FormattedName: "Mr. John Smith"}}},
-				},
-			},
-		},
-		{
-			name: "MessageID too long",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    strings.Repeat("a", 51),
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ContactContent{
-					Contacts: []Contact{{Name: ContactName{FirstName: "John", FormattedName: "Mr. John Smith"}}},
-				},
-			},
-		},
-		{
-			name: "CallbackData too long",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: strings.Repeat("a", 4001),
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ContactContent{
-					Contacts: []Contact{{Name: ContactName{FirstName: "John", FormattedName: "Mr. John Smith"}}},
-				},
-			},
-		},
-		{
-			name: "NotifyURL too long",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    fmt.Sprintf("https://www.google%s.com", strings.Repeat("a", 4097)),
-				},
-				Content: ContactContent{
-					Contacts: []Contact{{Name: ContactName{FirstName: "John", FormattedName: "Mr. John Smith"}}},
-				},
-			},
-		},
-		{
-			name: "NotifyURL not an url",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "if only this was an url...",
-				},
-				Content: ContactContent{
-					Contacts: []Contact{{Name: ContactName{FirstName: "John", FormattedName: "Mr. John Smith"}}},
-				},
-			},
+			name:    "empty Content field",
+			content: ContactContent{},
 		},
 		{
 			name: "missing Content FirstName",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ContactContent{
-					Contacts: []Contact{{Name: ContactName{FormattedName: "Mr. John Smith"}}},
-				},
+			content: ContactContent{
+				Contacts: []Contact{{Name: ContactName{FormattedName: "Mr. John Smith"}}},
 			},
 		},
 		{
 			name: "missing Content FormattedName",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ContactContent{
-					Contacts: []Contact{{Name: ContactName{FirstName: "John"}}},
-				},
+			content: ContactContent{
+				Contacts: []Contact{{Name: ContactName{FirstName: "John"}}},
 			},
 		},
 		{
 			name: "invalid Content Address Type",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ContactContent{
-					Contacts: []Contact{
-						{
-							Addresses: []ContactAddress{{Type: "Invalid"}},
-							Name:      ContactName{FirstName: "John", FormattedName: "Mr. John Smith"},
-						},
+			content: ContactContent{
+				Contacts: []Contact{
+					{
+						Addresses: []ContactAddress{{Type: "Invalid"}},
+						Name:      ContactName{FirstName: "John", FormattedName: "Mr. John Smith"},
 					},
 				},
 			},
 		},
 		{
 			name: "invalid Content Birthday",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ContactContent{
-					Contacts: []Contact{
-						{
-							Birthday: "2020-22-12",
-							Name:     ContactName{FirstName: "John", FormattedName: "Mr. John Smith"},
-						},
+			content: ContactContent{
+				Contacts: []Contact{
+					{
+						Birthday: "2020-22-12",
+						Name:     ContactName{FirstName: "John", FormattedName: "Mr. John Smith"},
 					},
 				},
 			},
 		},
 		{
 			name: "invalid Content Email",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ContactContent{
-					Contacts: []Contact{
-						{
-							Emails: []ContactEmail{{Email: "invalid"}},
-							Name:   ContactName{FirstName: "John", FormattedName: "Mr. John Smith"},
-						},
+			content: ContactContent{
+				Contacts: []Contact{
+					{
+						Emails: []ContactEmail{{Email: "invalid"}},
+						Name:   ContactName{FirstName: "John", FormattedName: "Mr. John Smith"},
 					},
 				},
 			},
 		},
 		{
 			name: "invalid Content Email type",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ContactContent{
-					Contacts: []Contact{
-						{
-							Emails: []ContactEmail{{Email: "email@domain.com", Type: "invalid"}},
-							Name:   ContactName{FirstName: "John", FormattedName: "Mr. John Smith"},
-						},
+			content: ContactContent{
+				Contacts: []Contact{
+					{
+						Emails: []ContactEmail{{Email: "email@domain.com", Type: "invalid"}},
+						Name:   ContactName{FirstName: "John", FormattedName: "Mr. John Smith"},
 					},
 				},
 			},
 		},
 		{
 			name: "invalid Content Phone Type",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ContactContent{
-					Contacts: []Contact{
-						{
-							Name:   ContactName{FirstName: "John", FormattedName: "Mr. John Smith"},
-							Phones: []ContactPhone{{Type: "invalid"}},
-						},
+			content: ContactContent{
+				Contacts: []Contact{
+					{
+						Name:   ContactName{FirstName: "John", FormattedName: "Mr. John Smith"},
+						Phones: []ContactPhone{{Type: "invalid"}},
 					},
 				},
 			},
 		},
 		{
 			name: "invalid Content URL Type",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ContactContent{
-					Contacts: []Contact{
-						{
-							Name: ContactName{FirstName: "John", FormattedName: "Mr. John Smith"},
-							Urls: []ContactURL{{Type: "Invalid"}},
-						},
+			content: ContactContent{
+				Contacts: []Contact{
+					{
+						Name: ContactName{FirstName: "John", FormattedName: "Mr. John Smith"},
+						Urls: []ContactURL{{Type: "Invalid"}},
 					},
 				},
 			},
 		},
 		{
 			name: "invalid Content URL",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ContactContent{
-					Contacts: []Contact{
-						{
-							Name: ContactName{FirstName: "John", FormattedName: "Mr. John Smith"},
-							Urls: []ContactURL{{URL: "asd"}},
-						},
+			content: ContactContent{
+				Contacts: []Contact{
+					{
+						Name: ContactName{FirstName: "John", FormattedName: "Mr. John Smith"},
+						Urls: []ContactURL{{URL: "asd"}},
 					},
 				},
 			},
@@ -403,7 +187,11 @@ func TestContactMessageConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			err := tc.instance.Validate()
+			msg := ContactMessage{
+				MessageCommon: msgCommon,
+				Content:       tc.content,
+			}
+			err := msg.Validate()
 			require.NotNil(t, err)
 		})
 	}

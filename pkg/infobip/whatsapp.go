@@ -17,6 +17,8 @@ type WhatsApp interface {
 	SendStickerMessage(context.Context, models.StickerMessage) (models.MessageResponse, models.ResponseDetails, error)
 	SendLocationMessage(context.Context, models.LocationMessage) (models.MessageResponse, models.ResponseDetails, error)
 	SendContactMessage(context.Context, models.ContactMessage) (models.MessageResponse, models.ResponseDetails, error)
+	SendInteractiveButtonsMessage(context.Context, models.InteractiveButtonsMessage,
+	) (models.MessageResponse, models.ResponseDetails, error)
 }
 
 type whatsAppChannel struct {
@@ -37,6 +39,7 @@ const sendVideoPath = "whatsapp/1/message/video"
 const sendStickerPath = "whatsapp/1/message/sticker"
 const sendLocationPath = "whatsapp/1/message/location"
 const sendContactPath = "whatsapp/1/message/contact"
+const sendInteractiveButtonsPath = "whatsapp/1/message/interactive/buttons"
 
 func (wap *whatsAppChannel) SendTextMessage(
 	ctx context.Context,
@@ -56,48 +59,56 @@ func (wap *whatsAppChannel) SendDocumentMessage(
 
 func (wap *whatsAppChannel) SendImageMessage(
 	ctx context.Context,
-	document models.ImageMessage,
+	image models.ImageMessage,
 ) (msgResp models.MessageResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &document, &msgResp, sendImagePath)
+	respDetails, err = wap.reqHandler.postRequest(ctx, &image, &msgResp, sendImagePath)
 	return msgResp, respDetails, err
 }
 
 func (wap *whatsAppChannel) SendAudioMessage(
 	ctx context.Context,
-	document models.AudioMessage,
+	audio models.AudioMessage,
 ) (msgResp models.MessageResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &document, &msgResp, sendAudioPath)
+	respDetails, err = wap.reqHandler.postRequest(ctx, &audio, &msgResp, sendAudioPath)
 	return msgResp, respDetails, err
 }
 
 func (wap *whatsAppChannel) SendVideoMessage(
 	ctx context.Context,
-	document models.VideoMessage,
+	video models.VideoMessage,
 ) (msgResp models.MessageResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &document, &msgResp, sendVideoPath)
+	respDetails, err = wap.reqHandler.postRequest(ctx, &video, &msgResp, sendVideoPath)
 	return msgResp, respDetails, err
 }
 
 func (wap *whatsAppChannel) SendStickerMessage(
 	ctx context.Context,
-	document models.StickerMessage,
+	sticker models.StickerMessage,
 ) (msgResp models.MessageResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &document, &msgResp, sendStickerPath)
+	respDetails, err = wap.reqHandler.postRequest(ctx, &sticker, &msgResp, sendStickerPath)
 	return msgResp, respDetails, err
 }
 
 func (wap *whatsAppChannel) SendLocationMessage(
 	ctx context.Context,
-	document models.LocationMessage,
+	location models.LocationMessage,
 ) (msgResp models.MessageResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &document, &msgResp, sendLocationPath)
+	respDetails, err = wap.reqHandler.postRequest(ctx, &location, &msgResp, sendLocationPath)
 	return msgResp, respDetails, err
 }
 
 func (wap *whatsAppChannel) SendContactMessage(
 	ctx context.Context,
-	document models.ContactMessage,
+	contact models.ContactMessage,
 ) (msgResp models.MessageResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &document, &msgResp, sendContactPath)
+	respDetails, err = wap.reqHandler.postRequest(ctx, &contact, &msgResp, sendContactPath)
+	return msgResp, respDetails, err
+}
+
+func (wap *whatsAppChannel) SendInteractiveButtonsMessage(
+	ctx context.Context,
+	buttons models.InteractiveButtonsMessage,
+) (msgResp models.MessageResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = wap.reqHandler.postRequest(ctx, &buttons, &msgResp, sendInteractiveButtonsPath)
 	return msgResp, respDetails, err
 }

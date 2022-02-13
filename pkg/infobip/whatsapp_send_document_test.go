@@ -20,13 +20,7 @@ import (
 func TestDocValidReq(t *testing.T) {
 	apiKey := "secret"
 	msg := models.DocumentMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
+		MessageCommon: models.GenerateTestMessageCommon(),
 
 		Content: models.DocumentContent{MediaURL: "https://www.mypath.com/whatsappdoc.txt"},
 	}
@@ -87,14 +81,8 @@ func TestInvalidDoc(t *testing.T) {
 		apiKey:     apiKey,
 	}}
 	msg := models.DocumentMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-		Content: models.DocumentContent{MediaURL: "hello world"},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.DocumentContent{MediaURL: "hello world"},
 	}
 
 	messageResponse, respDetails, err := whatsApp.SendDocumentMessage(context.Background(), msg)
@@ -152,14 +140,8 @@ func TestDoc4xxErrors(t *testing.T) {
 	}
 	apiKey := "secret"
 	msg := models.DocumentMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-		Content: models.DocumentContent{MediaURL: "https://www.mypath.com/whatsappdoc.txt"},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.DocumentContent{MediaURL: "https://www.mypath.com/whatsappdoc.txt"},
 	}
 
 	for _, tc := range tests {

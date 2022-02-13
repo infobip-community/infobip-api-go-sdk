@@ -222,3 +222,60 @@ type ContactURL struct {
 	URL  string `json:"url,omitempty" validate:"omitempty,url"`
 	Type string `json:"type,omitempty" validate:"omitempty,oneof=HOME WORK"`
 }
+
+type InteractiveButtonsMessage struct {
+	MessageCommon
+	Content InteractiveButtonsContent `json:"content" validate:"required"`
+}
+
+type InteractiveButtonsContent struct {
+	Body   InteractiveButtonsBody    `json:"body" validate:"required"`
+	Action InteractiveButtons        `json:"action" validate:"required"`
+	Header *InteractiveButtonsHeader `json:"header,omitempty" validate:"omitempty"`
+	Footer *InteractiveButtonsFooter `json:"footer,omitempty"`
+}
+
+func (t *InteractiveButtonsMessage) Validate() error {
+	validate = validator.New()
+	validate.RegisterStructValidation(ButtonHeaderValidation, InteractiveButtonsHeader{})
+	return validate.Struct(t)
+}
+
+func ButtonHeaderValidation(sl validator.StructLevel) {
+	header, _ := sl.Current().Interface().(InteractiveButtonsHeader)
+	switch header.Type {
+	case "TEXT":
+		if header.Text == "" {
+			sl.ReportError(header.Text, "text", "Text", "missingtext", "")
+		}
+	case "VIDEO", "IMAGE", "DOCUMENT":
+		if header.MediaURL == "" {
+			sl.ReportError(header.MediaURL, "mediaUrl", "MediaURL", "missingmediaurl", "")
+		}
+	}
+}
+
+type InteractiveButtonsBody struct {
+	Text string `json:"text" validate:"required,lte=1024"`
+}
+
+type InteractiveButtons struct {
+	Buttons []InteractiveButton `json:"buttons" validate:"required,min=1,max=3,dive"`
+}
+
+type InteractiveButton struct {
+	Type  string `json:"type" validate:"required,oneof=REPLY"`
+	ID    string `json:"id" validate:"required,lte=256"`
+	Title string `json:"title" validate:"required,lte=20"`
+}
+
+type InteractiveButtonsHeader struct {
+	Type     string `json:"type" validate:"required,oneof=TEXT VIDEO IMAGE DOCUMENT"`
+	Text     string `json:"text,omitempty" validate:"lte=60"`
+	MediaURL string `json:"mediaUrl,omitempty" validate:"omitempty,url,lte=2048"`
+	Filename string `json:"filename,omitempty" validate:"lte=240"`
+}
+
+type InteractiveButtonsFooter struct {
+	Text string `json:"text" validate:"required,lte=60"`
+}

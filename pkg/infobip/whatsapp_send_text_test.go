@@ -20,15 +20,8 @@ import (
 func TestTextValidReq(t *testing.T) {
 	apiKey := "secret"
 	msg := models.TextMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "+16175551213",
-			To:           "+16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-
-		Content: models.TextContent{Text: "hello world"},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.TextContent{Text: "hello world"},
 	}
 	rawJSONResp := []byte(`{
 		"to": "441134960001",
@@ -87,14 +80,8 @@ func TestInvalidTextMsg(t *testing.T) {
 		apiKey:     apiKey,
 	}}
 	msg := models.TextMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "+16175551213",
-			To:           "+16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "not a valid url",
-		},
-		Content: models.TextContent{Text: "hello world"},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.TextContent{Text: ""},
 	}
 
 	messageResponse, respDetails, err := whatsApp.SendTextMessage(context.Background(), msg)
@@ -151,14 +138,8 @@ func TestText4xxErrors(t *testing.T) {
 	}
 	apiKey := "secret"
 	msg := models.TextMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "+16175551213",
-			To:           "+16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-		Content: models.TextContent{Text: "hello world"},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.TextContent{Text: "hello world"},
 	}
 
 	for _, tc := range tests {

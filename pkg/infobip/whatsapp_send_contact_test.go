@@ -20,13 +20,7 @@ import (
 func TestContactValidReq(t *testing.T) {
 	apiKey := "secret"
 	msg := models.ContactMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
+		MessageCommon: models.GenerateTestMessageCommon(),
 		Content: models.ContactContent{
 			Contacts: []models.Contact{{Name: models.ContactName{FirstName: "John", FormattedName: "Mr. John Smith"}}},
 		},
@@ -88,13 +82,7 @@ func TestInvalidContactMsg(t *testing.T) {
 		apiKey:     apiKey,
 	}}
 	msg := models.ContactMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
+		MessageCommon: models.GenerateTestMessageCommon(),
 		Content: models.ContactContent{
 			Contacts: []models.Contact{{Name: models.ContactName{FormattedName: "Mr. John Smith"}}},
 		},
@@ -153,13 +141,7 @@ func TestContact4xxErrors(t *testing.T) {
 	}
 	apiKey := "secret"
 	msg := models.ContactMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
+		MessageCommon: models.GenerateTestMessageCommon(),
 		Content: models.ContactContent{
 			Contacts: []models.Contact{{Name: models.ContactName{FirstName: "John", FormattedName: "Mr. John Smith"}}},
 		},

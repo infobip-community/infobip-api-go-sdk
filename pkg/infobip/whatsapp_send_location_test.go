@@ -21,14 +21,7 @@ import (
 func TestLocationValidReq(t *testing.T) {
 	apiKey := "secret"
 	msg := models.LocationMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-
+		MessageCommon: models.GenerateTestMessageCommon(),
 		Content: models.LocationContent{
 			Latitude:  utils.Float32Ptr(44.9526862),
 			Longitude: utils.Float32Ptr(13.8545217),
@@ -91,14 +84,8 @@ func TestInvalidLocationMsg(t *testing.T) {
 		apiKey:     apiKey,
 	}}
 	msg := models.LocationMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-		Content: models.LocationContent{Latitude: utils.Float32Ptr(10)},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.LocationContent{Latitude: utils.Float32Ptr(10)},
 	}
 
 	messageResponse, respDetails, err := whatsApp.SendLocationMessage(context.Background(), msg)
@@ -157,14 +144,8 @@ func TestLocation4xxErrors(t *testing.T) {
 	}
 	apiKey := "secret"
 	msg := models.LocationMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-		Content: models.LocationContent{Latitude: utils.Float32Ptr(10), Longitude: utils.Float32Ptr(10)},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.LocationContent{Latitude: utils.Float32Ptr(10), Longitude: utils.Float32Ptr(10)},
 	}
 
 	for _, tc := range tests {

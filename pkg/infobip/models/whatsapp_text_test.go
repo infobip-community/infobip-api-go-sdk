@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
@@ -24,13 +23,7 @@ func TestValidTextMessage(t *testing.T) {
 		{
 			name: "complete input",
 			instance: TextMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
+				MessageCommon: GenerateTestMessageCommon(),
 				Content: TextContent{
 					Text:       "hello world, here's the link: https://www.google.com",
 					PreviewURL: true,
@@ -48,170 +41,36 @@ func TestValidTextMessage(t *testing.T) {
 }
 
 func TestTextMessageConstraints(t *testing.T) {
+	msgCommon := GenerateTestMessageCommon()
 	tests := []struct {
-		name     string
-		instance TextMessage
+		name    string
+		content TextContent
 	}{
 		{
-			name: "missing From field",
-			instance: TextMessage{
-				MessageCommon: MessageCommon{
-					From:         "",
-					To:           "16175551213",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: TextContent{Text: "hello world"},
-			},
+			name:    "missing Content field",
+			content: TextContent{},
 		},
 		{
-			name: "missing To field",
-			instance: TextMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: TextContent{Text: "hello world"},
-			},
+			name:    "missing Content text",
+			content: TextContent{PreviewURL: false},
 		},
 		{
-			name: "missing Content field",
-			instance: TextMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-			},
+			name:    "Content text too long",
+			content: TextContent{Text: strings.Repeat("a", 4097)},
 		},
 		{
-			name: "missing Content text",
-			instance: TextMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: TextContent{PreviewURL: false},
-			},
-		},
-		{
-			name: "From too long",
-			instance: TextMessage{
-				MessageCommon: MessageCommon{
-					From:         "1617555121333333333333333",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: TextContent{Text: "hello world"},
-			},
-		},
-		{
-			name: "To too long",
-			instance: TextMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551212",
-					To:           "1617555121333333333333333",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: TextContent{Text: "hello world"},
-			},
-		},
-		{
-			name: "MessageID too long",
-			instance: TextMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    strings.Repeat("a", 51),
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: TextContent{Text: "hello world"},
-			},
-		},
-		{
-			name: "CallbackData too long",
-			instance: TextMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: strings.Repeat("a", 4001),
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: TextContent{Text: "hello world"},
-			},
-		},
-		{
-			name: "Content text too long",
-			instance: TextMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: TextContent{Text: strings.Repeat("a", 4097)},
-			},
-		},
-		{
-			name: "NotifyURL text too long",
-			instance: TextMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    fmt.Sprintf("https://www.google%s.com", strings.Repeat("a", 4097)),
-				},
-				Content: TextContent{Text: "hello world"},
-			},
-		},
-		{
-			name: "NotifyURL not an url",
-			instance: TextMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "if only this was an url...",
-				},
-				Content: TextContent{Text: "hello world"},
-			},
-		},
-		{
-			name: "PreviewURL is true but text doesn't contain an url",
-			instance: TextMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: TextContent{Text: "hello world", PreviewURL: true},
-			},
+			name:    "PreviewURL is true but text doesn't contain an url",
+			content: TextContent{Text: "hello world", PreviewURL: true},
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			err := tc.instance.Validate()
+			msg := TextMessage{
+				MessageCommon: msgCommon,
+				Content:       tc.content,
+			}
+			err := msg.Validate()
 			require.NotNil(t, err)
 		})
 	}

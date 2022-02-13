@@ -24,13 +24,7 @@ func TestValidAudioMessage(t *testing.T) {
 		{
 			name: "complete input",
 			instance: AudioMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
+				MessageCommon: GenerateTestMessageCommon(),
 				Content: AudioContent{
 					MediaURL: "https://www.mypath.com/audio.mp3",
 				},
@@ -47,170 +41,32 @@ func TestValidAudioMessage(t *testing.T) {
 }
 
 func TestAudioMessageConstraints(t *testing.T) {
+	msgCommon := GenerateTestMessageCommon()
 	tests := []struct {
-		name     string
-		instance AudioMessage
+		name    string
+		content AudioContent
 	}{
 		{
-			name: "missing From field",
-			instance: AudioMessage{
-				MessageCommon: MessageCommon{
-					From:         "",
-					To:           "16175551213",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: AudioContent{MediaURL: "https://www.mypath.com/audio.mp3"},
-			},
+			name:    "missing Content MediaURL",
+			content: AudioContent{},
 		},
 		{
-			name: "missing To field",
-			instance: AudioMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: AudioContent{MediaURL: "https://www.mypath.com/audio.mp3"},
-			},
+			name:    "Content MediaURL too long",
+			content: AudioContent{MediaURL: fmt.Sprintf("https://www.g%sgle.com", strings.Repeat("o", 2040))},
 		},
 		{
-			name: "missing Content field",
-			instance: AudioMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-			},
-		},
-		{
-			name: "From too long",
-			instance: AudioMessage{
-				MessageCommon: MessageCommon{
-					From:         "1617555121333333333333333",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: AudioContent{MediaURL: "https://www.mypath.com/audio.mp3"},
-			},
-		},
-		{
-			name: "To too long",
-			instance: AudioMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551212",
-					To:           "1617555121333333333333333",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: AudioContent{MediaURL: "https://www.mypath.com/audio.mp3"},
-			},
-		},
-		{
-			name: "MessageID too long",
-			instance: AudioMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    strings.Repeat("a", 51),
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: AudioContent{MediaURL: "https://www.mypath.com/audio.mp3"},
-			},
-		},
-		{
-			name: "CallbackData too long",
-			instance: AudioMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: strings.Repeat("a", 4001),
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: AudioContent{MediaURL: "https://www.mypath.com/audio.mp3"},
-			},
-		},
-		{
-			name: "NotifyURL too long",
-			instance: AudioMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    fmt.Sprintf("https://www.google%s.com", strings.Repeat("a", 4097)),
-				},
-				Content: AudioContent{MediaURL: "https://www.mypath.com/audio.mp3"},
-			},
-		},
-		{
-			name: "NotifyURL not an url",
-			instance: AudioMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "if only this was an url...",
-				},
-				Content: AudioContent{MediaURL: "https://www.mypath.com/audio.mp3"},
-			},
-		},
-		{
-			name: "missing Content MediaURL",
-			instance: AudioMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: AudioContent{},
-			},
-		},
-		{
-			name: "Content MediaURL too long",
-			instance: AudioMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: AudioContent{MediaURL: fmt.Sprintf("https://www.g%sgle.com", strings.Repeat("o", 2040))},
-			},
-		},
-		{
-			name: "Content invalid MediaURL",
-			instance: AudioMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: AudioContent{MediaURL: "asd"},
-			},
+			name:    "Content invalid MediaURL",
+			content: AudioContent{MediaURL: "asd"},
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			err := tc.instance.Validate()
+			msg := AudioMessage{
+				MessageCommon: msgCommon,
+				Content:       tc.content,
+			}
+			err := msg.Validate()
 			require.NotNil(t, err)
 		})
 	}
