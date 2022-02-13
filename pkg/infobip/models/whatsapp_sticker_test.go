@@ -13,7 +13,8 @@ func TestValidStickerMessage(t *testing.T) {
 		name     string
 		instance StickerMessage
 	}{
-		{name: "minimum input",
+		{
+			name: "minimum input",
 			instance: StickerMessage{
 				MessageCommon: MessageCommon{
 					From: "16175551213",
@@ -24,13 +25,7 @@ func TestValidStickerMessage(t *testing.T) {
 		{
 			name: "complete input",
 			instance: StickerMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
+				MessageCommon: GenerateTestMessageCommon(),
 				Content: StickerContent{
 					MediaURL: "https://www.mypath.com/audio.mp3",
 				},
@@ -47,170 +42,32 @@ func TestValidStickerMessage(t *testing.T) {
 }
 
 func TestStickerMessageConstraints(t *testing.T) {
+	msgCommon := GenerateTestMessageCommon()
 	tests := []struct {
-		name     string
-		instance StickerMessage
+		name    string
+		content StickerContent
 	}{
 		{
-			name: "missing From field",
-			instance: StickerMessage{
-				MessageCommon: MessageCommon{
-					From:         "",
-					To:           "16175551213",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: StickerContent{MediaURL: "https://www.mypath.com/sticker.webp"},
-			},
+			name:    "missing Content MediaURL",
+			content: StickerContent{},
 		},
 		{
-			name: "missing To field",
-			instance: StickerMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: StickerContent{MediaURL: "https://www.mypath.com/sticker.webp"},
-			},
+			name:    "Content MediaURL too long",
+			content: StickerContent{MediaURL: fmt.Sprintf("https://www.g%sgle.com", strings.Repeat("o", 2040))},
 		},
 		{
-			name: "missing Content field",
-			instance: StickerMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-			},
-		},
-		{
-			name: "From too long",
-			instance: StickerMessage{
-				MessageCommon: MessageCommon{
-					From:         "1617555121333333333333333",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: StickerContent{MediaURL: "https://www.mypath.com/sticker.webp"},
-			},
-		},
-		{
-			name: "To too long",
-			instance: StickerMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551212",
-					To:           "1617555121333333333333333",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: StickerContent{MediaURL: "https://www.mypath.com/sticker.webp"},
-			},
-		},
-		{
-			name: "MessageID too long",
-			instance: StickerMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    strings.Repeat("a", 51),
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: StickerContent{MediaURL: "https://www.mypath.com/sticker.webp"},
-			},
-		},
-		{
-			name: "CallbackData too long",
-			instance: StickerMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: strings.Repeat("a", 4001),
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: StickerContent{MediaURL: "https://www.mypath.com/sticker.webp"},
-			},
-		},
-		{
-			name: "NotifyURL too long",
-			instance: StickerMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    fmt.Sprintf("https://www.google%s.com", strings.Repeat("a", 4097)),
-				},
-				Content: StickerContent{MediaURL: "https://www.mypath.com/sticker.webp"},
-			},
-		},
-		{
-			name: "NotifyURL not an url",
-			instance: StickerMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "if only this was an url...",
-				},
-				Content: StickerContent{MediaURL: "https://www.mypath.com/sticker.webp"},
-			},
-		},
-		{
-			name: "missing Content MediaURL",
-			instance: StickerMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: StickerContent{},
-			},
-		},
-		{
-			name: "Content MediaURL too long",
-			instance: StickerMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: StickerContent{MediaURL: fmt.Sprintf("https://www.g%sgle.com", strings.Repeat("o", 2040))},
-			},
-		},
-		{
-			name: "Content invalid MediaURL",
-			instance: StickerMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: StickerContent{MediaURL: "asd"},
-			},
+			name:    "Content invalid MediaURL",
+			content: StickerContent{MediaURL: "asd"},
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			err := tc.instance.Validate()
+			msg := StickerMessage{
+				MessageCommon: msgCommon,
+				Content:       tc.content,
+			}
+			err := msg.Validate()
 			require.NotNil(t, err)
 		})
 	}

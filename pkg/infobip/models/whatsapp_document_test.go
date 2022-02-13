@@ -24,13 +24,7 @@ func TestValidDocumentMessage(t *testing.T) {
 		{
 			name: "complete input",
 			instance: DocumentMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
+				MessageCommon: GenerateTestMessageCommon(),
 				Content: DocumentContent{
 					MediaURL: "https://www.mypath.com/my_doc.txt",
 					Caption:  "hello world",
@@ -49,202 +43,50 @@ func TestValidDocumentMessage(t *testing.T) {
 }
 
 func TestDocumentMessageConstraints(t *testing.T) {
+	msgCommon := GenerateTestMessageCommon()
 	tests := []struct {
-		name     string
-		instance DocumentMessage
+		name    string
+		content DocumentContent
 	}{
 		{
-			name: "missing From field",
-			instance: DocumentMessage{
-				MessageCommon: MessageCommon{
-					From:         "",
-					To:           "16175551213",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: DocumentContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
-			},
+			name:    "empty Content field",
+			content: DocumentContent{},
 		},
 		{
-			name: "missing To field",
-			instance: DocumentMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: DocumentContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
-			},
+			name:    "missing Content MediaURL",
+			content: DocumentContent{Filename: "asd"},
 		},
 		{
-			name: "missing Content field",
-			instance: DocumentMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-			},
+			name:    "Content MediaURL too long",
+			content: DocumentContent{MediaURL: fmt.Sprintf("https://www.g%sgle.com", strings.Repeat("o", 2040))},
 		},
 		{
-			name: "From too long",
-			instance: DocumentMessage{
-				MessageCommon: MessageCommon{
-					From:         "1617555121333333333333333",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: DocumentContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
-			},
-		},
-		{
-			name: "To too long",
-			instance: DocumentMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551212",
-					To:           "1617555121333333333333333",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: DocumentContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
-			},
-		},
-		{
-			name: "MessageID too long",
-			instance: DocumentMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    strings.Repeat("a", 51),
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: DocumentContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
-			},
-		},
-		{
-			name: "CallbackData too long",
-			instance: DocumentMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: strings.Repeat("a", 4001),
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: DocumentContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
-			},
-		},
-		{
-			name: "NotifyURL too long",
-			instance: DocumentMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    fmt.Sprintf("https://www.google%s.com", strings.Repeat("a", 4097)),
-				},
-				Content: DocumentContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
-			},
-		},
-		{
-			name: "NotifyURL not an url",
-			instance: DocumentMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "if only this was an url...",
-				},
-				Content: DocumentContent{MediaURL: "https://www.mypath.com/my_doc.txt"},
-			},
-		},
-		{
-			name: "missing Content MediaURL",
-			instance: DocumentMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: DocumentContent{Filename: "asd"},
-			},
-		},
-		{
-			name: "Content MediaURL too long",
-			instance: DocumentMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: DocumentContent{MediaURL: fmt.Sprintf("https://www.g%sgle.com", strings.Repeat("o", 2040))},
-			},
-		},
-		{
-			name: "Content invalid MediaURL",
-			instance: DocumentMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: DocumentContent{MediaURL: "asd"},
-			},
+			name:    "Content invalid MediaURL",
+			content: DocumentContent{MediaURL: "asd"},
 		},
 		{
 			name: "Content Caption too long",
-			instance: DocumentMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: DocumentContent{
-					MediaURL: "https://www.mypath.com/my_doc.txt",
-					Caption:  strings.Repeat("a", 3001),
-				},
+			content: DocumentContent{
+				MediaURL: "https://www.mypath.com/my_doc.txt",
+				Caption:  strings.Repeat("a", 3001),
 			},
 		},
 		{
 			name: "Content Filename too long",
-			instance: DocumentMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: DocumentContent{
-					MediaURL: "https://www.mypath.com/my_doc.txt",
-					Filename: strings.Repeat("a", 241),
-				},
+			content: DocumentContent{
+				MediaURL: "https://www.mypath.com/my_doc.txt",
+				Filename: strings.Repeat("a", 241),
 			},
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			err := tc.instance.Validate()
+			msg := DocumentMessage{
+				MessageCommon: msgCommon,
+				Content:       tc.content,
+			}
+			err := msg.Validate()
 			require.NotNil(t, err)
 		})
 	}

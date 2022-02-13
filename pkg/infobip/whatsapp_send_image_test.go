@@ -20,15 +20,8 @@ import (
 func TestImageValidReq(t *testing.T) {
 	apiKey := "secret"
 	msg := models.ImageMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-
-		Content: models.ImageContent{MediaURL: "https://www.mypath.com/whatsappimage.jpg"},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.ImageContent{MediaURL: "https://www.mypath.com/whatsappimage.jpg"},
 	}
 	rawJSONResp := []byte(`{
 		"to": "441134960001",
@@ -87,14 +80,8 @@ func TestInvalidImageMsg(t *testing.T) {
 		apiKey:     apiKey,
 	}}
 	msg := models.ImageMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-		Content: models.ImageContent{MediaURL: "hello world"},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.ImageContent{MediaURL: "hello world"},
 	}
 
 	messageResponse, respDetails, err := whatsApp.SendImageMessage(context.Background(), msg)
@@ -152,14 +139,8 @@ func TestImage4xxErrors(t *testing.T) {
 	}
 	apiKey := "secret"
 	msg := models.ImageMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-		Content: models.ImageContent{MediaURL: "https://www.mypath.com/whatsappimage.jpg"},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.ImageContent{MediaURL: "https://www.mypath.com/whatsappimage.jpg"},
 	}
 
 	for _, tc := range tests {

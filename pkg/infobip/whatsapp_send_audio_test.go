@@ -20,15 +20,8 @@ import (
 func TestAudioValidReq(t *testing.T) {
 	apiKey := "secret"
 	msg := models.AudioMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-
-		Content: models.AudioContent{MediaURL: "https://www.mypath.com/whatsappaudio.mp3"},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.AudioContent{MediaURL: "https://www.mypath.com/whatsappaudio.mp3"},
 	}
 	rawJSONResp := []byte(`{
 		"to": "441134960001",
@@ -87,14 +80,8 @@ func TestInvalidAudioMsg(t *testing.T) {
 		apiKey:     apiKey,
 	}}
 	msg := models.AudioMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-		Content: models.AudioContent{MediaURL: "hello world"},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.AudioContent{MediaURL: "hello world"},
 	}
 
 	messageResponse, respDetails, err := whatsApp.SendAudioMessage(context.Background(), msg)
@@ -152,14 +139,8 @@ func TestAudio4xxErrors(t *testing.T) {
 	}
 	apiKey := "secret"
 	msg := models.AudioMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-		Content: models.AudioContent{MediaURL: "https://www.mypath.com/whatsappaudio.mp3"},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.AudioContent{MediaURL: "https://www.mypath.com/whatsappaudio.mp3"},
 	}
 
 	for _, tc := range tests {

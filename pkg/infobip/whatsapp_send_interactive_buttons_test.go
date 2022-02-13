@@ -20,13 +20,7 @@ import (
 func TestInteractiveButtonsValidReq(t *testing.T) {
 	apiKey := "secret"
 	msg := models.InteractiveButtonsMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
+		MessageCommon: models.GenerateTestMessageCommon(),
 		Content: models.InteractiveButtonsContent{
 			Body: models.InteractiveButtonsBody{Text: "Some text"},
 			Action: models.InteractiveButtons{
@@ -94,13 +88,7 @@ func TestInvalidInteractiveButtonsMsg(t *testing.T) {
 		apiKey:     apiKey,
 	}}
 	msg := models.InteractiveButtonsMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
+		MessageCommon: models.GenerateTestMessageCommon(),
 		Content: models.InteractiveButtonsContent{
 			Body: models.InteractiveButtonsBody{Text: "Some text"},
 			Action: models.InteractiveButtons{
@@ -167,13 +155,7 @@ func TestInteractiveButtons4xxErrors(t *testing.T) {
 	}
 	apiKey := "secret"
 	msg := models.InteractiveButtonsMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
+		MessageCommon: models.GenerateTestMessageCommon(),
 		Content: models.InteractiveButtonsContent{
 			Body: models.InteractiveButtonsBody{Text: "Some text"},
 			Action: models.InteractiveButtons{

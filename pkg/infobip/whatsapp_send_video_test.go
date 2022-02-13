@@ -20,15 +20,8 @@ import (
 func TestVideoValidReq(t *testing.T) {
 	apiKey := "secret"
 	msg := models.VideoMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-
-		Content: models.VideoContent{MediaURL: "https://www.mypath.com/whatsappvideo.mp4"},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.VideoContent{MediaURL: "https://www.mypath.com/whatsappvideo.mp4"},
 	}
 	rawJSONResp := []byte(`{
 		"to": "441134960001",
@@ -87,14 +80,8 @@ func TestInvalidVideoMsg(t *testing.T) {
 		apiKey:     apiKey,
 	}}
 	msg := models.VideoMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-		Content: models.VideoContent{MediaURL: "hello world"},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.VideoContent{MediaURL: "hello world"},
 	}
 
 	messageResponse, respDetails, err := whatsApp.SendVideoMessage(context.Background(), msg)
@@ -152,14 +139,8 @@ func TestVideo4xxErrors(t *testing.T) {
 	}
 	apiKey := "secret"
 	msg := models.VideoMessage{
-		MessageCommon: models.MessageCommon{
-			From:         "16175551213",
-			To:           "16175551212",
-			MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-			CallbackData: "some data",
-			NotifyURL:    "https://www.google.com",
-		},
-		Content: models.VideoContent{MediaURL: "https://www.mypath.com/whatsappvideo.mp4"},
+		MessageCommon: models.GenerateTestMessageCommon(),
+		Content:       models.VideoContent{MediaURL: "https://www.mypath.com/whatsappvideo.mp4"},
 	}
 
 	for _, tc := range tests {

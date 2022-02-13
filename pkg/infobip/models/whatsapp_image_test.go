@@ -20,17 +20,12 @@ func TestValidImageMessage(t *testing.T) {
 					To:   "16175551212",
 				},
 				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsappimage.jpg"},
-			}},
+			},
+		},
 		{
 			name: "complete input",
 			instance: ImageMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
+				MessageCommon: GenerateTestMessageCommon(),
 				Content: ImageContent{
 					MediaURL: "https://www.mypath.com/whatsapp.jpg",
 					Caption:  "hello world",
@@ -48,186 +43,43 @@ func TestValidImageMessage(t *testing.T) {
 }
 
 func TestImageMessageConstraints(t *testing.T) {
+	msgCommon := GenerateTestMessageCommon()
 	tests := []struct {
-		name     string
-		instance ImageMessage
+		name    string
+		content ImageContent
 	}{
 		{
-			name: "missing From field",
-			instance: ImageMessage{
-				MessageCommon: MessageCommon{
-					From:         "",
-					To:           "16175551213",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsapp.jpg"},
-			},
+			name:    "missing Content field",
+			content: ImageContent{},
 		},
 		{
-			name: "missing To field",
-			instance: ImageMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsapp.jpg"},
-			},
+			name:    "missing Content MediaURL",
+			content: ImageContent{Caption: "asd"},
 		},
 		{
-			name: "missing Content field",
-			instance: ImageMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-			},
+			name:    "Content MediaURL too long",
+			content: ImageContent{MediaURL: fmt.Sprintf("https://www.g%sgle.com", strings.Repeat("o", 2040))},
 		},
 		{
-			name: "From too long",
-			instance: ImageMessage{
-				MessageCommon: MessageCommon{
-					From:         "1617555121333333333333333",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsapp.jpg"},
-			},
-		},
-		{
-			name: "To too long",
-			instance: ImageMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551212",
-					To:           "1617555121333333333333333",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsapp.jpg"},
-			},
-		},
-		{
-			name: "MessageID too long",
-			instance: ImageMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    strings.Repeat("a", 51),
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsapp.jpg"},
-			},
-		},
-		{
-			name: "CallbackData too long",
-			instance: ImageMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: strings.Repeat("a", 4001),
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsapp.jpg"},
-			},
-		},
-		{
-			name: "NotifyURL too long",
-			instance: ImageMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    fmt.Sprintf("https://www.google%s.com", strings.Repeat("a", 4097)),
-				},
-				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsapp.jpg"},
-			},
-		},
-		{
-			name: "NotifyURL not an url",
-			instance: ImageMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "if only this was an url...",
-				},
-				Content: ImageContent{MediaURL: "https://www.mypath.com/whatsapp.jpg"},
-			},
-		},
-		{
-			name: "missing Content MediaURL",
-			instance: ImageMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ImageContent{Caption: "asd"},
-			},
-		},
-		{
-			name: "Content MediaURL too long",
-			instance: ImageMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ImageContent{MediaURL: fmt.Sprintf("https://www.g%sgle.com", strings.Repeat("o", 2040))},
-			},
-		},
-		{
-			name: "Content invalid MediaURL",
-			instance: ImageMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ImageContent{MediaURL: "asd"},
-			},
+			name:    "Content invalid MediaURL",
+			content: ImageContent{MediaURL: "asd"},
 		},
 		{
 			name: "Content Caption too long",
-			instance: ImageMessage{
-				MessageCommon: MessageCommon{
-					From:         "16175551213",
-					To:           "16175551212",
-					MessageID:    "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-					CallbackData: "some data",
-					NotifyURL:    "https://www.google.com",
-				},
-				Content: ImageContent{
-					MediaURL: "https://www.mypath.com/whatsapp.jpg",
-					Caption:  strings.Repeat("a", 3001),
-				},
+			content: ImageContent{
+				MediaURL: "https://www.mypath.com/whatsapp.jpg",
+				Caption:  strings.Repeat("a", 3001),
 			},
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			err := tc.instance.Validate()
+			msg := ImageMessage{
+				MessageCommon: msgCommon,
+				Content:       tc.content,
+			}
+			err := msg.Validate()
 			require.NotNil(t, err)
 		})
 	}
