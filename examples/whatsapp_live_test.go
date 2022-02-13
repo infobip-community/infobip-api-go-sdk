@@ -199,3 +199,37 @@ func TestContactExample(t *testing.T) {
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
 	assert.NotEqual(t, models.MessageResponse{}, msgResp)
 }
+
+func TestInteractiveButtonsExample(t *testing.T) {
+	apiKey := "secret"
+	baseURL := "https://myinfobipurl.com"
+	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
+	whatsApp := client.WhatsApp()
+	message := models.InteractiveButtonsMessage{
+		MessageCommon: models.MessageCommon{
+			From: "111111111111",
+			To:   "222222222222",
+		},
+		Content: models.InteractiveButtonsContent{
+			Body: models.InteractiveButtonsBody{Text: "Some text"},
+			Action: models.InteractiveButtons{
+				Buttons: []models.InteractiveButton{
+					{Type: "REPLY", ID: "1", Title: "Yes"},
+					{Type: "REPLY", ID: "2", Title: "No"},
+				},
+			},
+			Header: &models.InteractiveButtonsHeader{
+				Type:     "IMAGE",
+				MediaURL: "https://thumbs.dreamstime.com/z/example-red-tag-example-red-square-price-tag-117502755.jpg",
+			},
+		},
+	}
+
+	msgResp, respDetails, err := whatsApp.SendInteractiveButtonsMessage(context.Background(), message)
+	fmt.Printf("%+v\n", msgResp)
+
+	require.Nil(t, err)
+	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+}
