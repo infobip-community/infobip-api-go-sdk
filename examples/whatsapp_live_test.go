@@ -233,3 +233,39 @@ func TestInteractiveButtonsExample(t *testing.T) {
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
 	assert.NotEqual(t, models.MessageResponse{}, msgResp)
 }
+
+func TestInteractiveListExample(t *testing.T) {
+	apiKey := "secret"
+	baseURL := "https://myinfobipurl.com"
+	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
+	whatsApp := client.WhatsApp()
+	message := models.InteractiveListMessage{
+		MessageCommon: models.MessageCommon{
+			From: "111111111111",
+			To:   "222222222222",
+		},
+		Content: models.InteractiveListContent{
+			Body: models.InteractiveListBody{Text: "Some text"},
+			Action: models.InteractiveListAction{
+				Title: "some title",
+				Sections: []models.Section{
+					{Title: "Title 1", Rows: []models.SectionRow{{ID: "1", Title: "Row1 Title", Description: "desc"}}},
+					{Title: "Title 2", Rows: []models.SectionRow{{ID: "2", Title: "Row2 Title", Description: "desc"}}},
+				},
+			},
+			Header: &models.InteractiveListHeader{
+				Type: "TEXT",
+				Text: "Header text",
+			},
+			Footer: &models.InteractiveListFooter{Text: "Footer text"},
+		},
+	}
+
+	msgResp, respDetails, err := whatsApp.SendInteractiveListMessage(context.Background(), message)
+	fmt.Printf("%+v\n", msgResp)
+
+	require.Nil(t, err)
+	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+}
