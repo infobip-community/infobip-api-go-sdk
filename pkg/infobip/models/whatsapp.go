@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -15,6 +16,12 @@ type MessageCommon struct {
 	NotifyURL    string `json:"notifyUrl,omitempty" validate:"omitempty,url,lte=2048"`
 }
 
+func (t *TextMessage) Validate() error {
+	validate = validator.New()
+	validate.RegisterStructValidation(PreviewURLValidation, TextContent{})
+	return validate.Struct(t)
+}
+
 type TextMessage struct {
 	MessageCommon
 	Content TextContent `json:"content" validate:"required"`
@@ -23,12 +30,6 @@ type TextMessage struct {
 type TextContent struct {
 	Text       string `json:"text" validate:"required,gte=1,lte=4096"`
 	PreviewURL bool   `json:"previewURL,omitempty"`
-}
-
-func (t *TextMessage) Validate() error {
-	validate = validator.New()
-	validate.RegisterStructValidation(PreviewURLValidation, TextContent{})
-	return validate.Struct(t)
 }
 
 func PreviewURLValidation(sl validator.StructLevel) {
@@ -60,15 +61,15 @@ type DocumentMessage struct {
 	Content DocumentContent `json:"content" validate:"required"`
 }
 
+func (t *DocumentMessage) Validate() error {
+	validate = validator.New()
+	return validate.Struct(t)
+}
+
 type DocumentContent struct {
 	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
 	Caption  string `json:"caption,omitempty" validate:"lte=3000"`
 	Filename string `json:"filename,omitempty" validate:"lte=240"`
-}
-
-func (t *DocumentMessage) Validate() error {
-	validate = validator.New()
-	return validate.Struct(t)
 }
 
 type ImageMessage struct {
@@ -76,14 +77,14 @@ type ImageMessage struct {
 	Content ImageContent `json:"content" validate:"required"`
 }
 
-type ImageContent struct {
-	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
-	Caption  string `json:"caption,omitempty" validate:"lte=3000"`
-}
-
 func (t *ImageMessage) Validate() error {
 	validate = validator.New()
 	return validate.Struct(t)
+}
+
+type ImageContent struct {
+	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
+	Caption  string `json:"caption,omitempty" validate:"lte=3000"`
 }
 
 type AudioMessage struct {
@@ -91,13 +92,13 @@ type AudioMessage struct {
 	Content AudioContent `json:"content" validate:"required"`
 }
 
-type AudioContent struct {
-	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
-}
-
 func (t *AudioMessage) Validate() error {
 	validate = validator.New()
 	return validate.Struct(t)
+}
+
+type AudioContent struct {
+	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
 }
 
 type VideoMessage struct {
@@ -105,14 +106,14 @@ type VideoMessage struct {
 	Content VideoContent `json:"content" validate:"required"`
 }
 
-type VideoContent struct {
-	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
-	Caption  string `json:"caption,omitempty" validate:"lte=3000"`
-}
-
 func (t *VideoMessage) Validate() error {
 	validate = validator.New()
 	return validate.Struct(t)
+}
+
+type VideoContent struct {
+	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
+	Caption  string `json:"caption,omitempty" validate:"lte=3000"`
 }
 
 type StickerMessage struct {
@@ -120,18 +121,23 @@ type StickerMessage struct {
 	Content StickerContent `json:"content" validate:"required"`
 }
 
-type StickerContent struct {
-	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
-}
-
 func (t *StickerMessage) Validate() error {
 	validate = validator.New()
 	return validate.Struct(t)
 }
 
+type StickerContent struct {
+	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
+}
+
 type LocationMessage struct {
 	MessageCommon
 	Content LocationContent `json:"content" validate:"required"`
+}
+
+func (t *LocationMessage) Validate() error {
+	validate = validator.New()
+	return validate.Struct(t)
 }
 
 type LocationContent struct {
@@ -141,28 +147,9 @@ type LocationContent struct {
 	Address   string   `json:"address" validate:"lte=1000"`
 }
 
-func (t *LocationMessage) Validate() error {
-	validate = validator.New()
-	return validate.Struct(t)
-}
-
 type ContactMessage struct {
 	MessageCommon
 	Content ContactContent `json:"content" validate:"required"`
-}
-
-type ContactContent struct {
-	Contacts []Contact `json:"contacts" validate:"required,dive"`
-}
-
-type Contact struct {
-	Addresses []ContactAddress `json:"addresses,omitempty" validate:"omitempty,dive"`
-	Birthday  string           `json:"birthday,omitempty"`
-	Emails    []ContactEmail   `json:"emails,omitempty" validate:"omitempty,dive"`
-	Name      ContactName      `json:"name" validate:"required"`
-	Org       ContactOrg       `json:"org,omitempty"`
-	Phones    []ContactPhone   `json:"phones,omitempty" validate:"omitempty,dive"`
-	Urls      []ContactURL     `json:"urls,omitempty" validate:"omitempty,dive"`
 }
 
 func (t *ContactMessage) Validate() error {
@@ -180,6 +167,20 @@ func BirthdayValidation(sl validator.StructLevel) {
 	if err != nil {
 		sl.ReportError(contact.Birthday, "birthday", "Contact", "invalidbirthdayformat", "")
 	}
+}
+
+type ContactContent struct {
+	Contacts []Contact `json:"contacts" validate:"required,dive"`
+}
+
+type Contact struct {
+	Addresses []ContactAddress `json:"addresses,omitempty" validate:"omitempty,dive"`
+	Birthday  string           `json:"birthday,omitempty"`
+	Emails    []ContactEmail   `json:"emails,omitempty" validate:"omitempty,dive"`
+	Name      ContactName      `json:"name" validate:"required"`
+	Org       ContactOrg       `json:"org,omitempty"`
+	Phones    []ContactPhone   `json:"phones,omitempty" validate:"omitempty,dive"`
+	Urls      []ContactURL     `json:"urls,omitempty" validate:"omitempty,dive"`
 }
 
 type ContactAddress struct {
@@ -228,13 +229,6 @@ type InteractiveButtonsMessage struct {
 	Content InteractiveButtonsContent `json:"content" validate:"required"`
 }
 
-type InteractiveButtonsContent struct {
-	Body   InteractiveButtonsBody    `json:"body" validate:"required"`
-	Action InteractiveButtons        `json:"action" validate:"required"`
-	Header *InteractiveButtonsHeader `json:"header,omitempty" validate:"omitempty"`
-	Footer *InteractiveButtonsFooter `json:"footer,omitempty"`
-}
-
 func (t *InteractiveButtonsMessage) Validate() error {
 	validate = validator.New()
 	validate.RegisterStructValidation(ButtonHeaderValidation, InteractiveButtonsHeader{})
@@ -253,6 +247,13 @@ func ButtonHeaderValidation(sl validator.StructLevel) {
 			sl.ReportError(header.MediaURL, "mediaUrl", "MediaURL", "missingmediaurl", "")
 		}
 	}
+}
+
+type InteractiveButtonsContent struct {
+	Body   InteractiveButtonsBody    `json:"body" validate:"required"`
+	Action InteractiveButtons        `json:"action" validate:"required"`
+	Header *InteractiveButtonsHeader `json:"header,omitempty" validate:"omitempty"`
+	Footer *InteractiveButtonsFooter `json:"footer,omitempty"`
 }
 
 type InteractiveButtonsBody struct {
@@ -277,5 +278,92 @@ type InteractiveButtonsHeader struct {
 }
 
 type InteractiveButtonsFooter struct {
+	Text string `json:"text" validate:"required,lte=60"`
+}
+
+type InteractiveListMessage struct {
+	MessageCommon
+	Content InteractiveListContent `json:"content" validate:"required"`
+}
+
+func (t *InteractiveListMessage) Validate() error {
+	validate = validator.New()
+	validate.RegisterStructValidation(InteractiveListActionValidation, InteractiveListAction{})
+	return validate.Struct(t)
+}
+
+func InteractiveListActionValidation(sl validator.StructLevel) {
+	action, _ := sl.Current().Interface().(InteractiveListAction)
+	validateDuplicateRows(sl, action)
+	validateSectionTitles(sl, action)
+}
+
+func validateDuplicateRows(sl validator.StructLevel, action InteractiveListAction) {
+	rowIDs := make(map[string]int)
+	for _, section := range action.Sections {
+		for _, row := range section.Rows {
+			rowIDs[row.ID]++
+			if rowIDs[row.ID] > 1 {
+				sl.ReportError(
+					action.Sections,
+					"sections",
+					"Sections",
+					fmt.Sprintf("duplicaterowID%s", row.ID),
+					"",
+				)
+			}
+		}
+	}
+}
+
+func validateSectionTitles(sl validator.StructLevel, action InteractiveListAction) {
+	if len(action.Sections) > 1 {
+		for _, section := range action.Sections {
+			if section.Title == "" {
+				sl.ReportError(
+					action.Sections,
+					"sections",
+					"Sections",
+					"missingtitlemultiplesections",
+					"",
+				)
+			}
+		}
+	}
+}
+
+type InteractiveListContent struct {
+	Body   InteractiveListBody    `json:"body" validate:"required"`
+	Action InteractiveListAction  `json:"action" validate:"required"`
+	Header *InteractiveListHeader `json:"header,omitempty" validate:"omitempty"`
+	Footer *InteractiveListFooter `json:"footer,omitempty"`
+}
+
+type InteractiveListBody struct {
+	Text string `json:"text" validate:"required,lte=1024"`
+}
+
+type InteractiveListAction struct {
+	Title    string    `json:"title" validate:"required,lte=20"`
+	Sections []Section `json:"sections" validate:"required,min=1,max=10,dive"`
+}
+
+type Section struct {
+	Title string       `json:"title,omitempty" validate:"lte=24"`
+	Rows  []SectionRow `json:"rows" validate:"required,min=1,max=10,dive"`
+}
+
+type SectionRow struct {
+	ID          string `json:"id" validate:"required,lte=200"`
+	Title       string `json:"title" validate:"required,lte=24"`
+	Description string `json:"description,omitempty" validate:"lte=72"`
+}
+
+type InteractiveListHeader struct {
+	Type string `json:"type" validate:"required,oneof=TEXT"`
+	Text string `json:"text" validate:"required,lte=60"`
+}
+
+type InteractiveListFooter struct {
 	Text string `json:"text" validate:"required,lte=60"`
 }
