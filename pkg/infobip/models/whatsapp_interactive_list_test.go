@@ -24,7 +24,7 @@ func TestValidInteractiveListMessage(t *testing.T) {
 					Body: InteractiveListBody{Text: "Some text"},
 					Action: InteractiveListAction{
 						Title:    "Choose one",
-						Sections: []Section{{Rows: []SectionRow{{ID: "1", Title: "row title"}}}},
+						Sections: []InteractiveListSection{{Rows: []SectionRow{{ID: "1", Title: "row title"}}}},
 					},
 				},
 			},
@@ -37,7 +37,7 @@ func TestValidInteractiveListMessage(t *testing.T) {
 					Body: InteractiveListBody{Text: "Some text"},
 					Action: InteractiveListAction{
 						Title: "some title",
-						Sections: []Section{
+						Sections: []InteractiveListSection{
 							{Title: "Title 1", Rows: []SectionRow{{ID: "1", Title: "Row1 Title", Description: "desc"}}},
 							{Title: "Title 2", Rows: []SectionRow{{ID: "2", Title: "Row2 Title", Description: "desc"}}},
 						},
@@ -75,7 +75,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 			content: InteractiveListContent{
 				Action: InteractiveListAction{
 					Title:    "Choose one",
-					Sections: []Section{{Rows: []SectionRow{{ID: "1", Title: "row title"}}}},
+					Sections: []InteractiveListSection{{Rows: []SectionRow{{ID: "1", Title: "row title"}}}},
 				},
 			},
 		},
@@ -85,7 +85,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{},
 				Action: InteractiveListAction{
 					Title:    "Choose one",
-					Sections: []Section{{Rows: []SectionRow{{ID: "1", Title: "row title"}}}},
+					Sections: []InteractiveListSection{{Rows: []SectionRow{{ID: "1", Title: "row title"}}}},
 				},
 			},
 		},
@@ -95,7 +95,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{Text: strings.Repeat("a", 1025)},
 				Action: InteractiveListAction{
 					Title:    "Choose one",
-					Sections: []Section{{Rows: []SectionRow{{ID: "1", Title: "row title"}}}},
+					Sections: []InteractiveListSection{{Rows: []SectionRow{{ID: "1", Title: "row title"}}}},
 				},
 			},
 		},
@@ -110,7 +110,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 			content: InteractiveListContent{
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
-					Sections: []Section{{Rows: []SectionRow{{ID: "1", Title: "row title"}}}},
+					Sections: []InteractiveListSection{{Rows: []SectionRow{{ID: "1", Title: "row title"}}}},
 				},
 			},
 		},
@@ -120,7 +120,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title:    strings.Repeat("a", 21),
-					Sections: []Section{{Rows: []SectionRow{{ID: "1", Title: "row title"}}}},
+					Sections: []InteractiveListSection{{Rows: []SectionRow{{ID: "1", Title: "row title"}}}},
 				},
 			},
 		},
@@ -139,7 +139,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title: "Choose one",
-					Sections: []Section{
+					Sections: []InteractiveListSection{
 						{Rows: []SectionRow{{ID: "1", Title: "row title"}}},
 						{Rows: []SectionRow{{ID: "2", Title: "row title"}}},
 						{Rows: []SectionRow{{ID: "3", Title: "row title"}}},
@@ -161,7 +161,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title: "Choose one",
-					Sections: []Section{{
+					Sections: []InteractiveListSection{{
 						Title: strings.Repeat("a", 25),
 						Rows:  []SectionRow{{ID: "1", Title: "row title"}},
 					}},
@@ -174,7 +174,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title: "Choose one",
-					Sections: []Section{
+					Sections: []InteractiveListSection{
 						{Title: "section title", Rows: []SectionRow{{ID: "1", Title: "row title"}}},
 						{Rows: []SectionRow{{ID: "1", Title: "row title"}}},
 					},
@@ -187,7 +187,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title:    "Choose one",
-					Sections: []Section{{}},
+					Sections: []InteractiveListSection{{}},
 				},
 			},
 		},
@@ -197,7 +197,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title: "Choose one",
-					Sections: []Section{{
+					Sections: []InteractiveListSection{{
 						Rows: []SectionRow{
 							{ID: "1", Title: "row title"},
 							{ID: "2", Title: "row title"},
@@ -221,7 +221,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title: "Choose one",
-					Sections: []Section{{
+					Sections: []InteractiveListSection{{
 						Rows: []SectionRow{{Title: "row title"}},
 					}},
 				},
@@ -233,7 +233,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title: "Choose one",
-					Sections: []Section{{
+					Sections: []InteractiveListSection{{
 						Rows: []SectionRow{{ID: strings.Repeat("a", 201), Title: "row title"}},
 					}},
 				},
@@ -245,7 +245,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title: "Choose one",
-					Sections: []Section{{
+					Sections: []InteractiveListSection{{
 						Rows: []SectionRow{
 							{ID: "1", Title: "row title"},
 							{ID: "2", Title: "row title"},
@@ -261,7 +261,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title: "Choose one",
-					Sections: []Section{
+					Sections: []InteractiveListSection{
 						{Title: "First title", Rows: []SectionRow{{ID: "1", Title: "row title"}}},
 						{Title: "Second title", Rows: []SectionRow{{ID: "1", Title: "row title"}}},
 					},
@@ -274,7 +274,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title: "Choose one",
-					Sections: []Section{{
+					Sections: []InteractiveListSection{{
 						Rows: []SectionRow{{ID: "1"}},
 					}},
 				},
@@ -286,7 +286,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title: "Choose one",
-					Sections: []Section{{
+					Sections: []InteractiveListSection{{
 						Rows: []SectionRow{{Title: strings.Repeat("a", 25), ID: "1"}},
 					}},
 				},
@@ -298,7 +298,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title: "Choose one",
-					Sections: []Section{{
+					Sections: []InteractiveListSection{{
 						Rows: []SectionRow{{ID: "1", Title: "row title", Description: strings.Repeat("a", 73)}},
 					}},
 				},
@@ -310,7 +310,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title: "Choose one",
-					Sections: []Section{{
+					Sections: []InteractiveListSection{{
 						Rows: []SectionRow{{ID: "1", Title: "row title"}},
 					}},
 				},
@@ -323,7 +323,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title: "Choose one",
-					Sections: []Section{{
+					Sections: []InteractiveListSection{{
 						Rows: []SectionRow{{ID: "1", Title: "row title"}},
 					}},
 				},
@@ -336,7 +336,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title: "Choose one",
-					Sections: []Section{{
+					Sections: []InteractiveListSection{{
 						Rows: []SectionRow{{ID: "1", Title: "row title"}},
 					}},
 				},
@@ -349,7 +349,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title: "Choose one",
-					Sections: []Section{{
+					Sections: []InteractiveListSection{{
 						Rows: []SectionRow{{ID: "1", Title: "row title"}},
 					}},
 				},
@@ -362,7 +362,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title: "Choose one",
-					Sections: []Section{{
+					Sections: []InteractiveListSection{{
 						Rows: []SectionRow{{ID: "1", Title: "row title"}},
 					}},
 				},
@@ -375,7 +375,7 @@ func TestTextInteractiveListConstraints(t *testing.T) {
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
 					Title: "Choose one",
-					Sections: []Section{{
+					Sections: []InteractiveListSection{{
 						Rows: []SectionRow{{ID: "1", Title: "row title"}},
 					}},
 				},

@@ -17,15 +17,18 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestInteractiveListValidReq(t *testing.T) {
+func TestInteractiveMultiproductValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.InteractiveListMessage{
+	msg := models.InteractiveMultiproductMessage{
 		MessageCommon: models.GenerateTestMessageCommon(),
-		Content: models.InteractiveListContent{
-			Body: models.InteractiveListBody{Text: "Some text"},
-			Action: models.InteractiveListAction{
-				Title:    "Choose one",
-				Sections: []models.InteractiveListSection{{Rows: []models.SectionRow{{ID: "1", Title: "row title"}}}},
+		Content: models.InteractiveMultiproductContent{
+			Header: models.InteractiveMultiproductHeader{Type: "TEXT", Text: "Header"},
+			Body:   models.InteractiveMultiproductBody{Text: "Some Text"},
+			Action: models.InteractiveMultiproductAction{
+				CatalogID: "1",
+				Sections: []models.InteractiveMultiproductSection{
+					{Title: "Title", ProductRetailerIDs: []string{"1", "2"}},
+				},
 			},
 		},
 	}
@@ -46,12 +49,12 @@ func TestInteractiveListValidReq(t *testing.T) {
 	require.Nil(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendInteractiveListPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendInteractiveMultiproductPath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.InteractiveListMessage
+		var receivedMsg models.InteractiveMultiproductMessage
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -67,7 +70,7 @@ func TestInteractiveListValidReq(t *testing.T) {
 		baseURL:    host,
 		apiKey:     apiKey,
 	}}
-	messageResponse, respDetails, err := whatsApp.SendInteractiveListMessage(context.Background(), msg)
+	messageResponse, respDetails, err := whatsApp.SendInteractiveMultiproductMessage(context.Background(), msg)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.MessageResponse{}, messageResponse)
@@ -78,32 +81,35 @@ func TestInteractiveListValidReq(t *testing.T) {
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidInteractiveListMsg(t *testing.T) {
+func TestInvalidInteractiveMultiproductMsg(t *testing.T) {
 	apiKey := "secret"
 	whatsApp := whatsAppChannel{reqHandler: httpHandler{
 		httpClient: http.Client{},
 		baseURL:    "https://something.api.infobip.com",
 		apiKey:     apiKey,
 	}}
-	msg := models.InteractiveListMessage{
+	msg := models.InteractiveMultiproductMessage{
 		MessageCommon: models.GenerateTestMessageCommon(),
-		Content: models.InteractiveListContent{
-			Body: models.InteractiveListBody{Text: "Some text"},
-			Action: models.InteractiveListAction{
-				Title:    "Choose one",
-				Sections: []models.InteractiveListSection{{Rows: []models.SectionRow{{ID: "1"}}}},
+		Content: models.InteractiveMultiproductContent{
+			Header: models.InteractiveMultiproductHeader{Type: "invalid", Text: "Header"},
+			Body:   models.InteractiveMultiproductBody{Text: "Some Text"},
+			Action: models.InteractiveMultiproductAction{
+				CatalogID: "1",
+				Sections: []models.InteractiveMultiproductSection{
+					{Title: "Title", ProductRetailerIDs: []string{"1", "2"}},
+				},
 			},
 		},
 	}
 
-	messageResponse, respDetails, err := whatsApp.SendInteractiveListMessage(context.Background(), msg)
+	messageResponse, respDetails, err := whatsApp.SendInteractiveMultiproductMessage(context.Background(), msg)
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
 	assert.Equal(t, models.MessageResponse{}, messageResponse)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestInteractiveList4xxErrors(t *testing.T) {
+func TestInteractiveMultiproduct4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -115,7 +121,7 @@ func TestInteractiveList4xxErrors(t *testing.T) {
 						"messageId": "BAD_REQUEST",
 						"text": "Bad request",
 						"validationErrors": {
-							"content.header.text": [
+							"content.footer.text": [
 								"size must be between 1 and 60",
 								"must not be blank"
 							]
@@ -149,13 +155,16 @@ func TestInteractiveList4xxErrors(t *testing.T) {
 		},
 	}
 	apiKey := "secret"
-	msg := models.InteractiveListMessage{
+	msg := models.InteractiveMultiproductMessage{
 		MessageCommon: models.GenerateTestMessageCommon(),
-		Content: models.InteractiveListContent{
-			Body: models.InteractiveListBody{Text: "Some text"},
-			Action: models.InteractiveListAction{
-				Title:    "Choose one",
-				Sections: []models.InteractiveListSection{{Rows: []models.SectionRow{{ID: "1", Title: "row title"}}}},
+		Content: models.InteractiveMultiproductContent{
+			Header: models.InteractiveMultiproductHeader{Type: "TEXT", Text: "Header"},
+			Body:   models.InteractiveMultiproductBody{Text: "Some Text"},
+			Action: models.InteractiveMultiproductAction{
+				CatalogID: "1",
+				Sections: []models.InteractiveMultiproductSection{
+					{Title: "Title", ProductRetailerIDs: []string{"1", "2"}},
+				},
 			},
 		},
 	}
@@ -177,7 +186,7 @@ func TestInteractiveList4xxErrors(t *testing.T) {
 				baseURL:    host,
 				apiKey:     apiKey,
 			}}
-			messageResponse, respDetails, err := whatsApp.SendInteractiveListMessage(context.Background(), msg)
+			messageResponse, respDetails, err := whatsApp.SendInteractiveMultiproductMessage(context.Background(), msg)
 			serv.Close()
 
 			require.Nil(t, err)
