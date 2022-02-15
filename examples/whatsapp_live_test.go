@@ -249,7 +249,7 @@ func TestInteractiveListExample(t *testing.T) {
 			Body: models.InteractiveListBody{Text: "Some text"},
 			Action: models.InteractiveListAction{
 				Title: "some title",
-				Sections: []models.Section{
+				Sections: []models.InteractiveListSection{
 					{Title: "Title 1", Rows: []models.SectionRow{{ID: "1", Title: "Row1 Title", Description: "desc"}}},
 					{Title: "Title 2", Rows: []models.SectionRow{{ID: "2", Title: "Row2 Title", Description: "desc"}}},
 				},
@@ -290,6 +290,37 @@ func TestInteractiveProductExample(t *testing.T) {
 	}
 
 	msgResp, respDetails, err := whatsApp.SendInteractiveProductMessage(context.Background(), message)
+	fmt.Printf("%+v\n", msgResp)
+
+	require.Nil(t, err)
+	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+}
+
+func TestInteractiveMultiproductExample(t *testing.T) {
+	apiKey := "secret"
+	baseURL := "https://myinfobipurl.com"
+	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
+	whatsApp := client.WhatsApp()
+	message := models.InteractiveMultiproductMessage{
+		MessageCommon: models.MessageCommon{
+			From: "111111111111",
+			To:   "222222222222",
+		},
+		Content: models.InteractiveMultiproductContent{
+			Header: models.InteractiveMultiproductHeader{Type: "TEXT", Text: "Header"},
+			Body:   models.InteractiveMultiproductBody{Text: "Some Text"},
+			Action: models.InteractiveMultiproductAction{
+				CatalogID: "1",
+				Sections: []models.InteractiveMultiproductSection{
+					{Title: "Title", ProductRetailerIDs: []string{"1", "2"}},
+				},
+			},
+		},
+	}
+
+	msgResp, respDetails, err := whatsApp.SendInteractiveMultiproductMessage(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)

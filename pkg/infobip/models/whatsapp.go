@@ -18,7 +18,7 @@ type MessageCommon struct {
 
 func (t *TextMessage) Validate() error {
 	validate = validator.New()
-	validate.RegisterStructValidation(PreviewURLValidation, TextContent{})
+	validate.RegisterStructValidation(previewURLValidation, TextContent{})
 	return validate.Struct(t)
 }
 
@@ -32,7 +32,7 @@ type TextContent struct {
 	PreviewURL bool   `json:"previewURL,omitempty"`
 }
 
-func PreviewURLValidation(sl validator.StructLevel) {
+func previewURLValidation(sl validator.StructLevel) {
 	content, _ := sl.Current().Interface().(TextContent)
 	containsURL := xurls.Relaxed().FindString(content.Text)
 	if content.PreviewURL && containsURL == "" {
@@ -154,11 +154,11 @@ type ContactMessage struct {
 
 func (t *ContactMessage) Validate() error {
 	validate = validator.New()
-	validate.RegisterStructValidation(BirthdayValidation, Contact{})
+	validate.RegisterStructValidation(birthdayValidation, Contact{})
 	return validate.Struct(t)
 }
 
-func BirthdayValidation(sl validator.StructLevel) {
+func birthdayValidation(sl validator.StructLevel) {
 	contact, _ := sl.Current().Interface().(Contact)
 	if contact.Birthday == "" {
 		return
@@ -231,11 +231,11 @@ type InteractiveButtonsMessage struct {
 
 func (t *InteractiveButtonsMessage) Validate() error {
 	validate = validator.New()
-	validate.RegisterStructValidation(ButtonHeaderValidation, InteractiveButtonsHeader{})
+	validate.RegisterStructValidation(buttonHeaderValidation, InteractiveButtonsHeader{})
 	return validate.Struct(t)
 }
 
-func ButtonHeaderValidation(sl validator.StructLevel) {
+func buttonHeaderValidation(sl validator.StructLevel) {
 	header, _ := sl.Current().Interface().(InteractiveButtonsHeader)
 	switch header.Type {
 	case "TEXT":
@@ -288,14 +288,14 @@ type InteractiveListMessage struct {
 
 func (t *InteractiveListMessage) Validate() error {
 	validate = validator.New()
-	validate.RegisterStructValidation(InteractiveListActionValidation, InteractiveListAction{})
+	validate.RegisterStructValidation(interactiveListActionValidation, InteractiveListAction{})
 	return validate.Struct(t)
 }
 
-func InteractiveListActionValidation(sl validator.StructLevel) {
+func interactiveListActionValidation(sl validator.StructLevel) {
 	action, _ := sl.Current().Interface().(InteractiveListAction)
 	validateDuplicateRows(sl, action)
-	validateSectionTitles(sl, action)
+	validateListSectionTitles(sl, action)
 }
 
 func validateDuplicateRows(sl validator.StructLevel, action InteractiveListAction) {
@@ -316,7 +316,7 @@ func validateDuplicateRows(sl validator.StructLevel, action InteractiveListActio
 	}
 }
 
-func validateSectionTitles(sl validator.StructLevel, action InteractiveListAction) {
+func validateListSectionTitles(sl validator.StructLevel, action InteractiveListAction) {
 	if len(action.Sections) > 1 {
 		for _, section := range action.Sections {
 			if section.Title == "" {
@@ -344,11 +344,11 @@ type InteractiveListBody struct {
 }
 
 type InteractiveListAction struct {
-	Title    string    `json:"title" validate:"required,lte=20"`
-	Sections []Section `json:"sections" validate:"required,min=1,max=10,dive"`
+	Title    string                   `json:"title" validate:"required,lte=20"`
+	Sections []InteractiveListSection `json:"sections" validate:"required,min=1,max=10,dive"`
 }
 
-type Section struct {
+type InteractiveListSection struct {
 	Title string       `json:"title,omitempty" validate:"lte=24"`
 	Rows  []SectionRow `json:"rows" validate:"required,min=1,max=10,dive"`
 }
@@ -394,5 +394,67 @@ type InteractiveProductBody struct {
 }
 
 type InteractiveProductFooter struct {
+	Text string `json:"text" validate:"required,lte=60"`
+}
+
+type InteractiveMultiproductMessage struct {
+	MessageCommon
+	Content InteractiveMultiproductContent `json:"content" validate:"required"`
+}
+
+func (t *InteractiveMultiproductMessage) Validate() error {
+	validate = validator.New()
+	validate.RegisterStructValidation(multiproductActionValidation, InteractiveMultiproductAction{})
+	return validate.Struct(t)
+}
+
+func multiproductActionValidation(sl validator.StructLevel) {
+	action, _ := sl.Current().Interface().(InteractiveMultiproductAction)
+	validateMultiproductSectionTitles(sl, action)
+}
+
+func validateMultiproductSectionTitles(sl validator.StructLevel, action InteractiveMultiproductAction) {
+	if len(action.Sections) > 1 {
+		for _, section := range action.Sections {
+			if section.Title == "" {
+				sl.ReportError(
+					action.Sections,
+					"sections",
+					"Sections",
+					"missingtitlemultiplesections",
+					"",
+				)
+			}
+		}
+	}
+}
+
+type InteractiveMultiproductContent struct {
+	Header InteractiveMultiproductHeader  `json:"header" validate:"required"`
+	Body   InteractiveMultiproductBody    `json:"body" validate:"required"`
+	Action InteractiveMultiproductAction  `json:"action" validate:"required"`
+	Footer *InteractiveMultiproductFooter `json:"footer,omitempty"`
+}
+
+type InteractiveMultiproductHeader struct {
+	Type string `json:"type" validate:"required,oneof=TEXT"`
+	Text string `json:"text" validate:"required,lte=60"`
+}
+
+type InteractiveMultiproductBody struct {
+	Text string `json:"text" validate:"required,lte=1024"`
+}
+
+type InteractiveMultiproductAction struct {
+	CatalogID string                           `json:"catalogId" validate:"required"`
+	Sections  []InteractiveMultiproductSection `json:"sections" validate:"required,min=1,max=10,dive"`
+}
+
+type InteractiveMultiproductSection struct {
+	Title              string   `json:"title,omitempty" validate:"lte=24"`
+	ProductRetailerIDs []string `json:"productRetailerIds" validate:"required,min=1"`
+}
+
+type InteractiveMultiproductFooter struct {
 	Text string `json:"text" validate:"required,lte=60"`
 }
