@@ -21,6 +21,8 @@ type WhatsApp interface {
 	) (models.MessageResponse, models.ResponseDetails, error)
 	SendInteractiveListMessage(context.Context, models.InteractiveListMessage,
 	) (models.MessageResponse, models.ResponseDetails, error)
+	SendInteractiveProductMessage(context.Context, models.InteractiveProductMessage,
+	) (models.MessageResponse, models.ResponseDetails, error)
 }
 
 type whatsAppChannel struct {
@@ -43,6 +45,7 @@ const sendLocationPath = "whatsapp/1/message/location"
 const sendContactPath = "whatsapp/1/message/contact"
 const sendInteractiveButtonsPath = "whatsapp/1/message/interactive/buttons"
 const sendInteractiveListPath = "whatsapp/1/message/interactive/list"
+const sendInteractiveProductPath = "whatsapp/1/message/interactive/product"
 
 func (wap *whatsAppChannel) SendTextMessage(
 	ctx context.Context,
@@ -121,5 +124,13 @@ func (wap *whatsAppChannel) SendInteractiveListMessage(
 	buttons models.InteractiveListMessage,
 ) (msgResp models.MessageResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.reqHandler.postRequest(ctx, &buttons, &msgResp, sendInteractiveListPath)
+	return msgResp, respDetails, err
+}
+
+func (wap *whatsAppChannel) SendInteractiveProductMessage(
+	ctx context.Context,
+	buttons models.InteractiveProductMessage,
+) (msgResp models.MessageResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = wap.reqHandler.postRequest(ctx, &buttons, &msgResp, sendInteractiveProductPath)
 	return msgResp, respDetails, err
 }

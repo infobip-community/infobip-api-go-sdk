@@ -367,3 +367,32 @@ type InteractiveListHeader struct {
 type InteractiveListFooter struct {
 	Text string `json:"text" validate:"required,lte=60"`
 }
+
+type InteractiveProductMessage struct {
+	MessageCommon
+	Content InteractiveProductContent `json:"content" validate:"required"`
+}
+
+func (t *InteractiveProductMessage) Validate() error {
+	validate = validator.New()
+	return validate.Struct(t)
+}
+
+type InteractiveProductContent struct {
+	Action InteractiveProductAction  `json:"action" validate:"required"`
+	Body   *InteractiveProductBody   `json:"body,omitempty"`
+	Footer *InteractiveProductFooter `json:"footer,omitempty"`
+}
+
+type InteractiveProductAction struct {
+	CatalogID         string `json:"catalogId" validate:"required"`
+	ProductRetailerID string `json:"productRetailerId" validate:"required"`
+}
+
+type InteractiveProductBody struct {
+	Text string `json:"text" validate:"required,lte=1024"`
+}
+
+type InteractiveProductFooter struct {
+	Text string `json:"text" validate:"required,lte=60"`
+}
