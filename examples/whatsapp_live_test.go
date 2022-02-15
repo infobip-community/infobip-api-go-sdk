@@ -269,3 +269,30 @@ func TestInteractiveListExample(t *testing.T) {
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
 	assert.NotEqual(t, models.MessageResponse{}, msgResp)
 }
+
+func TestInteractiveProductExample(t *testing.T) {
+	apiKey := "secret"
+	baseURL := "https://myinfobipurl.com"
+	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
+	whatsApp := client.WhatsApp()
+	message := models.InteractiveProductMessage{
+		MessageCommon: models.MessageCommon{
+			From: "111111111111",
+			To:   "222222222222",
+		},
+		Content: models.InteractiveProductContent{
+			Action: models.InteractiveProductAction{
+				CatalogID:         "1",
+				ProductRetailerID: "2",
+			},
+		},
+	}
+
+	msgResp, respDetails, err := whatsApp.SendInteractiveProductMessage(context.Background(), message)
+	fmt.Printf("%+v\n", msgResp)
+
+	require.Nil(t, err)
+	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+}
