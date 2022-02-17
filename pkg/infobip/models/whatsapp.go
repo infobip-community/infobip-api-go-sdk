@@ -9,6 +9,8 @@ import (
 	"mvdan.cc/xurls/v2"
 )
 
+const maxInteractiveListRows = 10
+
 type MessageCommon struct {
 	From         string `json:"from" validate:"required,lte=24"`
 	To           string `json:"to" validate:"required,lte=24"`
@@ -131,7 +133,7 @@ type TemplateHeader struct {
 	Type        string   `json:"type" validate:"required,oneof=TEXT DOCUMENT IMAGE VIDEO LOCATION"`
 	Placeholder string   `json:"placeholder,omitempty"`
 	MediaURL    string   `json:"mediaUrl,omitempty" validate:"omitempty,url,lte=2048"`
-	Filename    string   `json:"filename" validate:"lte=240"`
+	Filename    string   `json:"filename,omitempty" validate:"lte=240"`
 	Latitude    *float32 `json:"latitude,omitempty" validate:"omitempty,latitude"`
 	Longitude   *float32 `json:"longitude,omitempty" validate:"omitempty,longitude"`
 }
@@ -429,8 +431,25 @@ func (t *InteractiveListMessage) Validate() error {
 
 func interactiveListActionValidation(sl validator.StructLevel) {
 	action, _ := sl.Current().Interface().(InteractiveListAction)
+	validateRowCount(sl, action)
 	validateDuplicateRows(sl, action)
 	validateListSectionTitles(sl, action)
+}
+
+func validateRowCount(sl validator.StructLevel, action InteractiveListAction) {
+	var rowCount int
+	for _, section := range action.Sections {
+		rowCount += len(section.Rows)
+		if rowCount > maxInteractiveListRows {
+			sl.ReportError(
+				action.Sections,
+				"sections",
+				"Sections",
+				"rowcountovermax",
+				"",
+			)
+		}
+	}
 }
 
 func validateDuplicateRows(sl validator.StructLevel, action InteractiveListAction) {
