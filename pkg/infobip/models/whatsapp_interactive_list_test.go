@@ -216,6 +216,43 @@ func TestInteractiveListConstraints(t *testing.T) {
 			},
 		},
 		{
+			name: "count over max for Action Section Rows across multiple Sections",
+			content: InteractiveListContent{
+				Body: InteractiveListBody{"Some text"},
+				Action: InteractiveListAction{
+					Title: "Choose one",
+					Sections: []InteractiveListSection{
+						{
+							Title: "First title",
+							Rows: []SectionRow{
+								{ID: "1", Title: "row title"},
+								{ID: "2", Title: "row title"},
+								{ID: "3", Title: "row title"},
+								{ID: "4", Title: "row title"},
+							},
+						},
+						{
+							Title: "Second title",
+							Rows: []SectionRow{
+								{ID: "5", Title: "row title"},
+								{ID: "6", Title: "row title"},
+								{ID: "7", Title: "row title"},
+								{ID: "8", Title: "row title"},
+							},
+						},
+						{
+							Title: "Third title",
+							Rows: []SectionRow{
+								{ID: "9", Title: "row title"},
+								{ID: "10", Title: "row title"},
+								{ID: "11", Title: "row title"},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "missing Action Section Row ID",
 			content: InteractiveListContent{
 				Body: InteractiveListBody{"Some text"},
