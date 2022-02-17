@@ -14,6 +14,45 @@ import (
 
 // The following examples can also be used to test the client against a real environment.
 // Replace the apiKey and baseURL params along with the From, To and Content fields of the message, then run the test.
+func TestTemplateMessagesExample(t *testing.T) {
+	apiKey := "secret"
+	baseURL := "https://myinfobipurl.com"
+	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
+	whatsApp := client.WhatsApp()
+	message := models.TemplateMessages{
+		Messages: []models.TemplateMessage{
+			{
+				MessageCommon: models.MessageCommon{From: "111111111111 ", To: "222222222222"},
+				Content: models.TemplateMessageContent{
+					TemplateName: "template_name",
+					TemplateData: models.TemplateData{
+						Body: models.TemplateBody{Placeholders: []string{}},
+					},
+					Language: "en_GB",
+				},
+			},
+			{
+				MessageCommon: models.MessageCommon{From: "111111111111 ", To: "222222222222"},
+				Content: models.TemplateMessageContent{
+					TemplateName: "template_name",
+					TemplateData: models.TemplateData{
+						Body: models.TemplateBody{Placeholders: []string{}},
+					},
+					Language: "en_GB",
+				},
+			},
+		},
+	}
+
+	msgResp, respDetails, err := whatsApp.SendTemplateMessages(context.Background(), message)
+	fmt.Printf("%+v\n", msgResp)
+
+	require.Nil(t, err)
+	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+}
+
 func TestSendTextExample(t *testing.T) {
 	apiKey := "secret"
 	baseURL := "https://myinfobipurl.com"

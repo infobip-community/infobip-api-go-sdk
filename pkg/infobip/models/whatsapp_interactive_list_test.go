@@ -60,7 +60,7 @@ func TestValidInteractiveListMessage(t *testing.T) {
 	}
 }
 
-func TestTextInteractiveListConstraints(t *testing.T) {
+func TestInteractiveListConstraints(t *testing.T) {
 	msgCommon := GenerateTestMessageCommon()
 	tests := []struct {
 		name    string
