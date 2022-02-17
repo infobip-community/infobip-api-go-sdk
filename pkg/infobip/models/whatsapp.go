@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"time"
+	"unicode"
 
 	"github.com/go-playground/validator/v10"
 	"mvdan.cc/xurls/v2"
@@ -16,10 +17,133 @@ type MessageCommon struct {
 	NotifyURL    string `json:"notifyUrl,omitempty" validate:"omitempty,url,lte=2048"`
 }
 
-func (t *TextMessage) Validate() error {
+type TemplateMessages struct {
+	Messages []TemplateMessage `json:"messages" validate:"required,min=1,dive"`
+	BulkID   string            `json:"bulkId,omitempty" validate:"lte=100"`
+}
+
+func (t *TemplateMessages) Validate() error {
 	validate = validator.New()
-	validate.RegisterStructValidation(previewURLValidation, TextContent{})
+	validate.RegisterStructValidation(templateMsgsValidation, TemplateMessageContent{})
+	validate.RegisterStructValidation(templateHeaderValidation, TemplateHeader{})
+	validate.RegisterStructValidation(templateDataValidation, TemplateData{})
+	validate.RegisterStructValidation(templateButtonValidation, TemplateButton{})
 	return validate.Struct(t)
+}
+
+func templateMsgsValidation(sl validator.StructLevel) {
+	content, _ := sl.Current().Interface().(TemplateMessageContent)
+
+	if !isSnakeCase(content.TemplateName) {
+		sl.ReportError(content.TemplateName, "templateName", "TemplateName", "templatenamenotsnakecase", "")
+	}
+}
+
+func isSnakeCase(s string) bool {
+	for _, r := range s {
+		if !unicode.IsLower(r) && r != '_' {
+			return false
+		}
+	}
+	return true
+}
+
+func templateHeaderValidation(sl validator.StructLevel) {
+	header, _ := sl.Current().Interface().(TemplateHeader)
+	switch header.Type {
+	case "TEXT":
+		if header.Placeholder == "" {
+			sl.ReportError(header.Placeholder, "placholder", "Placeholder", "missingplaceholder", "")
+		}
+	case "DOCUMENT":
+		if header.MediaURL == "" {
+			sl.ReportError(header.MediaURL, "mediaUrl", "MediaURL", "missingmediaurl", "")
+		}
+		if header.Filename == "" {
+			sl.ReportError(header.Filename, "filename", "Filename", "missingfilename", "")
+		}
+	case "VIDEO", "IMAGE":
+		if header.MediaURL == "" {
+			sl.ReportError(header.MediaURL, "mediaUrl", "MediaURL", "missingmediaurl", "")
+		}
+	case "LOCATION":
+		if header.Latitude == nil {
+			sl.ReportError(header.Latitude, "latitude", "Latitude", "missinglatitude", "")
+		}
+		if header.Longitude == nil {
+			sl.ReportError(header.Longitude, "longitude", "Longitude", "missinglongitude", "")
+		}
+	}
+}
+
+func templateDataValidation(sl validator.StructLevel) {
+	templateData, _ := sl.Current().Interface().(TemplateData)
+	validateTemplateButtonLength(sl, templateData)
+	validateTemplateButtonTypes(sl, templateData)
+}
+
+func validateTemplateButtonLength(sl validator.StructLevel, templateData TemplateData) {
+	if len(templateData.Buttons) > 1 && templateData.Buttons[0].Type == "URL" {
+		sl.ReportError(templateData.Buttons, "buttons", "Buttons", "dynamicurlcountoverone", "")
+	}
+}
+
+func validateTemplateButtonTypes(sl validator.StructLevel, templateData TemplateData) {
+	types := map[string]int{"QUICK_REPLY": 0, "URL": 0}
+	for _, button := range templateData.Buttons {
+		types[button.Type]++
+	}
+	if types["QUICK_REPLY"] > 0 && types["URL"] > 0 {
+		sl.ReportError(templateData.Buttons, "buttons", "Buttons", "bothreplyandurlpresent", "")
+	}
+}
+
+func templateButtonValidation(sl validator.StructLevel) {
+	button, _ := sl.Current().Interface().(TemplateButton)
+	if button.Type == "QUICK_REPLY" && len(button.Parameter) > 128 {
+		sl.ReportError(button.Parameter, "parameter", "Parameter", "parametertoolong", "")
+	}
+}
+
+type TemplateMessage struct {
+	MessageCommon
+	Content     TemplateMessageContent `json:"content" validate:"required"`
+	SMSFailover *SMSFailover           `json:"smsFailover,omitempty"`
+}
+
+type TemplateMessageContent struct {
+	TemplateName string       `json:"templateName" validate:"required,lte=512"`
+	TemplateData TemplateData `json:"templateData" validate:"required"`
+	Language     string       `json:"language" validate:"required"`
+}
+
+type TemplateData struct {
+	Body    TemplateBody     `json:"body" validate:"required"`
+	Header  *TemplateHeader  `json:"header,omitempty"`
+	Buttons []TemplateButton `json:"buttons,omitempty" validate:"omitempty,max=3,dive"`
+}
+
+type TemplateBody struct {
+	Placeholders []string `json:"placeholders" validate:"required,dive,gte=1"`
+}
+
+type TemplateHeader struct {
+	Type        string   `json:"type" validate:"required,oneof=TEXT DOCUMENT IMAGE VIDEO LOCATION"`
+	Placeholder string   `json:"placeholder,omitempty"`
+	MediaURL    string   `json:"mediaUrl,omitempty" validate:"omitempty,url,lte=2048"`
+	Filename    string   `json:"filename" validate:"lte=240"`
+	Latitude    *float32 `json:"latitude,omitempty" validate:"omitempty,latitude"`
+	Longitude   *float32 `json:"longitude,omitempty" validate:"omitempty,longitude"`
+}
+
+type TemplateButton struct {
+	Type      string `json:"type" validate:"required,oneof=QUICK_REPLY URL"`
+	Parameter string `json:"parameter" validate:"required"`
+}
+
+type SMSFailover struct {
+	From string `json:"from" validate:"required,lte=24"`
+	Text string `json:"text" validate:"required,lte=4096"`
 }
 
 type TextMessage struct {
@@ -27,17 +151,15 @@ type TextMessage struct {
 	Content TextContent `json:"content" validate:"required"`
 }
 
-type TextContent struct {
-	Text       string `json:"text" validate:"required,gte=1,lte=4096"`
-	PreviewURL bool   `json:"previewURL,omitempty"`
+func (t *TextMessage) Validate() error {
+	validate = validator.New()
+	validate.RegisterStructValidation(previewURLValidation, TextContent{})
+	return validate.Struct(t)
 }
 
-func previewURLValidation(sl validator.StructLevel) {
-	content, _ := sl.Current().Interface().(TextContent)
-	containsURL := xurls.Relaxed().FindString(content.Text)
-	if content.PreviewURL && containsURL == "" {
-		sl.ReportError(content.Text, "text", "Text", "missingurlintext", "")
-	}
+type BulkMessageResponse struct {
+	Messages []MessageResponse `json:"messages"`
+	BulkID   string            `json:"bulkId"`
 }
 
 type MessageResponse struct {
@@ -54,6 +176,19 @@ type Status struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Action      string `json:"action"`
+}
+
+type TextContent struct {
+	Text       string `json:"text" validate:"required,gte=1,lte=4096"`
+	PreviewURL bool   `json:"previewURL,omitempty"`
+}
+
+func previewURLValidation(sl validator.StructLevel) {
+	content, _ := sl.Current().Interface().(TextContent)
+	containsURL := xurls.Relaxed().FindString(content.Text)
+	if content.PreviewURL && containsURL == "" {
+		sl.ReportError(content.Text, "text", "Text", "missingurlintext", "")
+	}
 }
 
 type DocumentMessage struct {
