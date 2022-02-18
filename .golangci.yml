@@ -75,7 +75,7 @@ linters-settings:
   goconst:
     match-constant: true # look for existing constants matching the values # default true
     min-len: 3 # minimal length of string constant # default 3
-    min-occurrences: 3 # minimum occurrences of constant string count to trigger issue # default 3
+    min-occurrences: 4 # minimum occurrences of constant string count to trigger issue # default 3
     numbers: true # search also for duplicated numbers # default false
     min: 3 # minimum value, only works with goconst.numbers # default 3
     max: 3 # maximum value, only works with goconst.numbers # default 3

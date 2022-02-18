@@ -47,23 +47,94 @@ type TemplateResponse struct {
 }
 
 type TemplateStructure struct {
-	Header  TemplateHeader   `json:"header"`
-	Body    string           `json:"body"`
-	Footer  string           `json:"footer,omitempty"`
-	Buttons []TemplateButton `json:"buttons,omitempty"`
-	Type    string           `json:"type,omitempty"`
+	Header  *TemplateHeader  `json:"header,omitempty"`
+	Body    string           `json:"body" validate:"required"`
+	Footer  string           `json:"footer,omitempty" validate:"lte=60"`
+	Buttons []TemplateButton `json:"buttons,omitempty" validate:"omitempty,min=1,max=3,dive"`
+	Type    string           `json:"type,omitempty" validate:"oneof=TEXT MEDIA UNSUPPORTED"`
 }
 
 type TemplateHeader struct {
-	Format string `json:"format"`
-	Text   string `json:"text"`
+	Format string `json:"format,omitempty" validate:"oneof=TEXT IMAGE VIDEO DOCUMENT LOCATION"`
+	Text   string `json:"text" validate:"lte=60"`
 }
 
 type TemplateButton struct {
-	Type        string `json:"type"`
-	Text        string `json:"text"`
-	PhoneNumber string `json:"phoneNumber"`
-	URL         string `json:"url"`
+	Type        string `json:"type" validate:"required,oneof=PHONE_NUMBER URL QUICK_REPLY"`
+	Text        string `json:"text" validate:"required,lte=200"`
+	PhoneNumber string `json:"phoneNumber,omitempty"`
+	URL         string `json:"url,omitempty" validate:"omitempty,url"`
+}
+
+type TemplateCreate struct {
+	Name      string            `json:"name" validate:"required"`
+	Language  string            `json:"language" validate:"required"`
+	Category  string            `json:"category" validate:"required"`
+	Structure TemplateStructure `json:"structure" validate:"required"`
+}
+
+func (t *TemplateCreate) Validate() error {
+	validate = validator.New()
+	validate.RegisterStructValidation(templateCreateValidation, TemplateCreate{})
+	validate.RegisterStructValidation(templateHeaderValidation, TemplateHeader{})
+	validate.RegisterStructValidation(templateButtonValidation, TemplateButton{})
+	return validate.Struct(t)
+}
+
+func templateCreateValidation(sl validator.StructLevel) {
+	template, _ := sl.Current().Interface().(TemplateCreate)
+	validateTemplateName(sl, template)
+	validateTemplateLanguage(sl, template)
+	validateCategory(sl, template)
+}
+
+func validateTemplateName(sl validator.StructLevel, template TemplateCreate) {
+	if !isSnakeCase(template.Name) {
+		sl.ReportError(template.Name, "name", "Name", "namenotsnakecase", "")
+	}
+}
+
+func validateTemplateLanguage(sl validator.StructLevel, template TemplateCreate) {
+	switch template.Language {
+	case "af", "sq", "ar", "az", "bn", "bg", "ca", "zh_CN", "zh_HK", "zh_TW", "hr", "cs", "da", "nl", "en", "en_GB",
+		"en_US", "et", "fil", "fi", "fr", "de", "el", "gu", "ha", "he", "hi", "hu", "id", "ga", "it", "ja", "kn", "kk",
+		"ko", "lo", "lv", "lt", "mk", "ms", "ml", "mr", "nb", "fa", "pl", "pt_BR", "pt_PT", "pa", "ro", "ru", "sr",
+		"sk", "sl", "es", "es_AR", "es_ES", "es_MX", "sw", "sv", "ta", "te", "th", "tr", "uk", "ur", "uz", "vi",
+		"unknown":
+	default:
+		sl.ReportError(template.Language, "language", "Language", "invalidlanguage", "")
+	}
+}
+
+func validateCategory(sl validator.StructLevel, template TemplateCreate) {
+	switch template.Category {
+	case "ACCOUNT_UPDATE", "PAYMENT_UPDATE", "PERSONAL_FINANCE_UPDATE", "SHIPPING_UPDATE",
+		"RESERVATION_UPDATE", "ISSUE_RESOLUTION", "APPOINTMENT_UPDATE", "TRANSPORTATION_UPDATE",
+		"TICKET_UPDATE", "ALERT_UPDATE", "AUTO_REPLY":
+	default:
+		sl.ReportError(template.Category, "category", "Category", "invalidcategory", "")
+	}
+}
+
+func templateHeaderValidation(sl validator.StructLevel) {
+	header, _ := sl.Current().Interface().(TemplateHeader)
+	if header.Format == "TEXT" && header.Text == "" {
+		sl.ReportError(header.Text, "text", "Text", "missingtext", "")
+	}
+}
+
+func templateButtonValidation(sl validator.StructLevel) {
+	button, _ := sl.Current().Interface().(TemplateButton)
+	switch button.Type {
+	case "PHONE_NUMBER":
+		if button.PhoneNumber == "" {
+			sl.ReportError(button.PhoneNumber, "phoneNumber", "PhoneNumber", "required", "")
+		}
+	case "URL":
+		if button.URL == "" {
+			sl.ReportError(button.URL, "url", "URL", "required", "")
+		}
+	}
 }
 
 type MessageCommon struct {
@@ -82,9 +153,9 @@ type TemplateMessages struct {
 func (t *TemplateMessages) Validate() error {
 	validate = validator.New()
 	validate.RegisterStructValidation(templateMsgsValidation, TemplateMessageContent{})
-	validate.RegisterStructValidation(templateHeaderValidation, TemplateHeaderSend{})
+	validate.RegisterStructValidation(templateHeaderSendValidation, TemplateHeaderSend{})
 	validate.RegisterStructValidation(templateDataValidation, TemplateData{})
-	validate.RegisterStructValidation(templateButtonValidation, TemplateButtonSend{})
+	validate.RegisterStructValidation(templateButtonSendValidation, TemplateButtonSend{})
 	return validate.Struct(t)
 }
 
@@ -105,7 +176,7 @@ func isSnakeCase(s string) bool {
 	return true
 }
 
-func templateHeaderValidation(sl validator.StructLevel) {
+func templateHeaderSendValidation(sl validator.StructLevel) {
 	header, _ := sl.Current().Interface().(TemplateHeaderSend)
 	switch header.Type {
 	case "TEXT":
@@ -155,7 +226,7 @@ func validateTemplateButtonTypes(sl validator.StructLevel, templateData Template
 	}
 }
 
-func templateButtonValidation(sl validator.StructLevel) {
+func templateButtonSendValidation(sl validator.StructLevel) {
 	button, _ := sl.Current().Interface().(TemplateButtonSend)
 	if button.Type == "QUICK_REPLY" && len(button.Parameter) > 128 {
 		sl.ReportError(button.Parameter, "parameter", "Parameter", "parametertoolong", "")

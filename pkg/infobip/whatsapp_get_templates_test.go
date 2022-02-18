@@ -44,7 +44,7 @@ func TestGetTemplatesValidReq(t *testing.T) {
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
-		assert.True(t, strings.HasSuffix(r.URL.Path, fmt.Sprintf(getTemplatesPath, sender)))
+		assert.True(t, strings.HasSuffix(r.URL.Path, fmt.Sprintf(templatesPath, sender)))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 
 		_, servErr := w.Write(rawJSONResp)
