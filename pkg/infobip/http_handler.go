@@ -65,6 +65,32 @@ func (h *httpHandler) request(
 	return resp, parsedBody, err
 }
 
+func (h *httpHandler) getRequest(
+	ctx context.Context,
+	respResource interface{},
+	reqPath string,
+) (respDetails models.ResponseDetails, err error) {
+	resp, parsedBody, err := h.request( //nolint: bodyclose // closed in the method below
+		ctx,
+		http.MethodGet,
+		reqPath,
+		nil,
+		nil,
+	)
+	if err != nil {
+		_ = json.Unmarshal(parsedBody, &respDetails.ErrorResponse)
+		return respDetails, err
+	}
+	respDetails.HTTPResponse = *resp
+
+	if statusCodeIs2xx(resp.StatusCode) {
+		err = json.Unmarshal(parsedBody, &respResource)
+	} else {
+		_ = json.Unmarshal(parsedBody, &respDetails.ErrorResponse)
+	}
+	return respDetails, err
+}
+
 func (h *httpHandler) postRequest(
 	ctx context.Context,
 	postResource models.Validatable,
@@ -102,6 +128,7 @@ func (h *httpHandler) generateHeaders(method string) http.Header {
 	header := http.Header{}
 
 	header.Add("Authorization", fmt.Sprintf("App %s", h.apiKey))
+	header.Add("Accept", "application/json")
 
 	if method == http.MethodPost {
 		header.Add("Content-Type", "application/json")

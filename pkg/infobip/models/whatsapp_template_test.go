@@ -60,7 +60,7 @@ func TestValidTemplateMessage(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body:   TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Header: &TemplateHeader{Type: "TEXT", Placeholder: "Placeholder header value"},
+								Header: &TemplateHeaderSend{Type: "TEXT", Placeholder: "Placeholder header value"},
 							},
 							Language: "en_GB",
 						},
@@ -78,7 +78,7 @@ func TestValidTemplateMessage(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body: TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Header: &TemplateHeader{
+								Header: &TemplateHeaderSend{
 									Type:     "DOCUMENT",
 									MediaURL: "https://myurl.com/asd.pdf",
 									Filename: "asd.pdf",
@@ -100,7 +100,7 @@ func TestValidTemplateMessage(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body:   TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Header: &TemplateHeader{Type: "IMAGE", MediaURL: "https://myurl.com/asd.jpg"},
+								Header: &TemplateHeaderSend{Type: "IMAGE", MediaURL: "https://myurl.com/asd.jpg"},
 							},
 							Language: "en_GB",
 						},
@@ -118,7 +118,7 @@ func TestValidTemplateMessage(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body:   TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Header: &TemplateHeader{Type: "VIDEO", MediaURL: "https://myurl.com/asd.mp4"},
+								Header: &TemplateHeaderSend{Type: "VIDEO", MediaURL: "https://myurl.com/asd.mp4"},
 							},
 							Language: "en_GB",
 						},
@@ -136,7 +136,7 @@ func TestValidTemplateMessage(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body: TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Header: &TemplateHeader{
+								Header: &TemplateHeaderSend{
 									Type:      "LOCATION",
 									Latitude:  utils.Float32Ptr(73.5164),
 									Longitude: utils.Float32Ptr(56.2502),
@@ -158,7 +158,7 @@ func TestValidTemplateMessage(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body: TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Buttons: []TemplateButton{
+								Buttons: []TemplateButtonSend{
 									{Type: "QUICK_REPLY", Parameter: "Some parameter"},
 								},
 							},
@@ -178,7 +178,7 @@ func TestValidTemplateMessage(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body: TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Buttons: []TemplateButton{
+								Buttons: []TemplateButtonSend{
 									{
 										Type:      "URL",
 										Parameter: fmt.Sprintf("over 128 cha%srs", strings.Repeat("a", 128)),
@@ -327,7 +327,7 @@ func TestTemplateConstraints(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body:   TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Header: &TemplateHeader{Placeholder: "Text"},
+								Header: &TemplateHeaderSend{Placeholder: "Text"},
 							},
 							Language: "en_GB",
 						},
@@ -345,7 +345,7 @@ func TestTemplateConstraints(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body:   TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Header: &TemplateHeader{Type: "invalid", Placeholder: "Text"},
+								Header: &TemplateHeaderSend{Type: "invalid", Placeholder: "Text"},
 							},
 							Language: "en_GB",
 						},
@@ -363,7 +363,7 @@ func TestTemplateConstraints(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body:   TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Header: &TemplateHeader{Type: "TEXT"},
+								Header: &TemplateHeaderSend{Type: "TEXT"},
 							},
 							Language: "en_GB",
 						},
@@ -381,7 +381,7 @@ func TestTemplateConstraints(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body:   TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Header: &TemplateHeader{Type: "DOCUMENT", MediaURL: "https://www.myurl.com/1.pdf"},
+								Header: &TemplateHeaderSend{Type: "DOCUMENT", MediaURL: "https://www.myurl.com/1.pdf"},
 							},
 							Language: "en_GB",
 						},
@@ -399,7 +399,7 @@ func TestTemplateConstraints(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body: TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Header: &TemplateHeader{
+								Header: &TemplateHeaderSend{
 									Type:     "DOCUMENT",
 									MediaURL: "https://www.myurl.com/1.pdf",
 									Filename: strings.Repeat("a", 241),
@@ -421,7 +421,7 @@ func TestTemplateConstraints(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body:   TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Header: &TemplateHeader{Type: "DOCUMENT", Filename: "asd.pdf"},
+								Header: &TemplateHeaderSend{Type: "DOCUMENT", Filename: "asd.pdf"},
 							},
 							Language: "en_GB",
 						},
@@ -439,7 +439,7 @@ func TestTemplateConstraints(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body: TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Header: &TemplateHeader{
+								Header: &TemplateHeaderSend{
 									Type:     "DOCUMENT",
 									MediaURL: fmt.Sprintf("https://%srl.com/asd.pdf", strings.Repeat("a", 2048)),
 									Filename: "asd.pdf",
@@ -461,7 +461,7 @@ func TestTemplateConstraints(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body:   TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Header: &TemplateHeader{Type: "IMAGE"},
+								Header: &TemplateHeaderSend{Type: "IMAGE"},
 							},
 							Language: "en_GB",
 						},
@@ -479,7 +479,7 @@ func TestTemplateConstraints(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body:   TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Header: &TemplateHeader{Type: "VIDEO"},
+								Header: &TemplateHeaderSend{Type: "VIDEO"},
 							},
 							Language: "en_GB",
 						},
@@ -497,7 +497,7 @@ func TestTemplateConstraints(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body:   TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Header: &TemplateHeader{Type: "LOCATION", Longitude: utils.Float32Ptr(10.55)},
+								Header: &TemplateHeaderSend{Type: "LOCATION", Longitude: utils.Float32Ptr(10.55)},
 							},
 							Language: "en_GB",
 						},
@@ -515,7 +515,7 @@ func TestTemplateConstraints(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body:   TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Header: &TemplateHeader{Type: "LOCATION", Latitude: utils.Float32Ptr(10.55)},
+								Header: &TemplateHeaderSend{Type: "LOCATION", Latitude: utils.Float32Ptr(10.55)},
 							},
 							Language: "en_GB",
 						},
@@ -533,7 +533,7 @@ func TestTemplateConstraints(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body: TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Header: &TemplateHeader{
+								Header: &TemplateHeaderSend{
 									Type:      "LOCATION",
 									Latitude:  utils.Float32Ptr(91.5),
 									Longitude: utils.Float32Ptr(10.5),
@@ -555,7 +555,7 @@ func TestTemplateConstraints(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body: TemplateBody{Placeholders: []string{"Placeholder Value1", "Placeholder Value2"}},
-								Header: &TemplateHeader{
+								Header: &TemplateHeaderSend{
 									Type:      "LOCATION",
 									Latitude:  utils.Float32Ptr(10.5),
 									Longitude: utils.Float32Ptr(181.5),
@@ -577,7 +577,7 @@ func TestTemplateConstraints(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body:    TemplateBody{Placeholders: []string{"Value1", "Value2"}},
-								Buttons: []TemplateButton{{Type: "invalid", Parameter: "payload"}},
+								Buttons: []TemplateButtonSend{{Type: "invalid", Parameter: "payload"}},
 							},
 							Language: "en_GB",
 						},
@@ -595,7 +595,7 @@ func TestTemplateConstraints(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body:    TemplateBody{Placeholders: []string{"Value1", "Value2"}},
-								Buttons: []TemplateButton{{Type: "QUICK_REPLY", Parameter: strings.Repeat("a", 129)}},
+								Buttons: []TemplateButtonSend{{Type: "QUICK_REPLY", Parameter: strings.Repeat("a", 129)}},
 							},
 							Language: "en_GB",
 						},
@@ -613,7 +613,7 @@ func TestTemplateConstraints(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body: TemplateBody{Placeholders: []string{"Value1", "Value2"}},
-								Buttons: []TemplateButton{
+								Buttons: []TemplateButtonSend{
 									{Type: "QUICK_REPLY", Parameter: "value1"},
 									{Type: "QUICK_REPLY", Parameter: "value2"},
 									{Type: "QUICK_REPLY", Parameter: "value3"},
@@ -636,7 +636,7 @@ func TestTemplateConstraints(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body: TemplateBody{Placeholders: []string{"Value1", "Value2"}},
-								Buttons: []TemplateButton{
+								Buttons: []TemplateButtonSend{
 									{Type: "URL", Parameter: "value1"},
 									{Type: "URL", Parameter: "value2"},
 								},
@@ -657,7 +657,7 @@ func TestTemplateConstraints(t *testing.T) {
 							TemplateName: "template_name",
 							TemplateData: TemplateData{
 								Body: TemplateBody{Placeholders: []string{"Value1", "Value2"}},
-								Buttons: []TemplateButton{
+								Buttons: []TemplateButtonSend{
 									{Type: "QUICK_REPLY", Parameter: "value1"},
 									{Type: "URL", Parameter: "value2"},
 								},
