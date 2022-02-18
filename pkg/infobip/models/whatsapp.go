@@ -11,6 +11,61 @@ import (
 
 const maxInteractiveListRows = 10
 
+type BulkMessageResponse struct {
+	Messages []MessageResponse `json:"messages"`
+	BulkID   string            `json:"bulkId"`
+}
+
+type MessageResponse struct {
+	To           string `json:"to"`
+	MessageCount int32  `json:"messageCount"`
+	MessageID    string `json:"messageId"`
+	Status       Status `json:"status"`
+}
+
+type Status struct {
+	GroupID     int32  `json:"groupId"`
+	GroupName   string `json:"groupName"`
+	ID          int32  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Action      string `json:"action"`
+}
+
+type TemplatesResponse struct {
+	Templates []TemplateResponse `json:"templates"`
+}
+
+type TemplateResponse struct {
+	ID                string            `json:"ID"`
+	BusinessAccountID int64             `json:"businessAccountID"`
+	Name              string            `json:"name"`
+	Language          string            `json:"language"`
+	Status            string            `json:"status"`
+	Category          string            `json:"category"`
+	Structure         TemplateStructure `json:"structure"`
+}
+
+type TemplateStructure struct {
+	Header  TemplateHeader   `json:"header"`
+	Body    string           `json:"body"`
+	Footer  string           `json:"footer,omitempty"`
+	Buttons []TemplateButton `json:"buttons,omitempty"`
+	Type    string           `json:"type,omitempty"`
+}
+
+type TemplateHeader struct {
+	Format string `json:"format"`
+	Text   string `json:"text"`
+}
+
+type TemplateButton struct {
+	Type        string `json:"type"`
+	Text        string `json:"text"`
+	PhoneNumber string `json:"phoneNumber"`
+	URL         string `json:"url"`
+}
+
 type MessageCommon struct {
 	From         string `json:"from" validate:"required,lte=24"`
 	To           string `json:"to" validate:"required,lte=24"`
@@ -27,9 +82,9 @@ type TemplateMessages struct {
 func (t *TemplateMessages) Validate() error {
 	validate = validator.New()
 	validate.RegisterStructValidation(templateMsgsValidation, TemplateMessageContent{})
-	validate.RegisterStructValidation(templateHeaderValidation, TemplateHeader{})
+	validate.RegisterStructValidation(templateHeaderValidation, TemplateHeaderSend{})
 	validate.RegisterStructValidation(templateDataValidation, TemplateData{})
-	validate.RegisterStructValidation(templateButtonValidation, TemplateButton{})
+	validate.RegisterStructValidation(templateButtonValidation, TemplateButtonSend{})
 	return validate.Struct(t)
 }
 
@@ -51,7 +106,7 @@ func isSnakeCase(s string) bool {
 }
 
 func templateHeaderValidation(sl validator.StructLevel) {
-	header, _ := sl.Current().Interface().(TemplateHeader)
+	header, _ := sl.Current().Interface().(TemplateHeaderSend)
 	switch header.Type {
 	case "TEXT":
 		if header.Placeholder == "" {
@@ -101,7 +156,7 @@ func validateTemplateButtonTypes(sl validator.StructLevel, templateData Template
 }
 
 func templateButtonValidation(sl validator.StructLevel) {
-	button, _ := sl.Current().Interface().(TemplateButton)
+	button, _ := sl.Current().Interface().(TemplateButtonSend)
 	if button.Type == "QUICK_REPLY" && len(button.Parameter) > 128 {
 		sl.ReportError(button.Parameter, "parameter", "Parameter", "parametertoolong", "")
 	}
@@ -120,16 +175,16 @@ type TemplateMessageContent struct {
 }
 
 type TemplateData struct {
-	Body    TemplateBody     `json:"body" validate:"required"`
-	Header  *TemplateHeader  `json:"header,omitempty"`
-	Buttons []TemplateButton `json:"buttons,omitempty" validate:"omitempty,max=3,dive"`
+	Body    TemplateBody         `json:"body" validate:"required"`
+	Header  *TemplateHeaderSend  `json:"header,omitempty"`
+	Buttons []TemplateButtonSend `json:"buttons,omitempty" validate:"omitempty,max=3,dive"`
 }
 
 type TemplateBody struct {
 	Placeholders []string `json:"placeholders" validate:"required,dive,gte=1"`
 }
 
-type TemplateHeader struct {
+type TemplateHeaderSend struct {
 	Type        string   `json:"type" validate:"required,oneof=TEXT DOCUMENT IMAGE VIDEO LOCATION"`
 	Placeholder string   `json:"placeholder,omitempty"`
 	MediaURL    string   `json:"mediaUrl,omitempty" validate:"omitempty,url,lte=2048"`
@@ -138,7 +193,7 @@ type TemplateHeader struct {
 	Longitude   *float32 `json:"longitude,omitempty" validate:"omitempty,longitude"`
 }
 
-type TemplateButton struct {
+type TemplateButtonSend struct {
 	Type      string `json:"type" validate:"required,oneof=QUICK_REPLY URL"`
 	Parameter string `json:"parameter" validate:"required"`
 }
@@ -157,27 +212,6 @@ func (t *TextMessage) Validate() error {
 	validate = validator.New()
 	validate.RegisterStructValidation(previewURLValidation, TextContent{})
 	return validate.Struct(t)
-}
-
-type BulkMessageResponse struct {
-	Messages []MessageResponse `json:"messages"`
-	BulkID   string            `json:"bulkId"`
-}
-
-type MessageResponse struct {
-	To           string `json:"to"`
-	MessageCount int32  `json:"messageCount"`
-	MessageID    string `json:"messageId"`
-	Status       Status `json:"status"`
-}
-
-type Status struct {
-	GroupID     int32  `json:"groupId"`
-	GroupName   string `json:"groupName"`
-	ID          int32  `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Action      string `json:"action"`
 }
 
 type TextContent struct {

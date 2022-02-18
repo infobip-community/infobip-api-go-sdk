@@ -2,6 +2,7 @@ package infobip
 
 import (
 	"context"
+	"fmt"
 	"infobip-go-client/pkg/infobip/models"
 	"net/http"
 )
@@ -27,6 +28,7 @@ type WhatsApp interface {
 	) (models.MessageResponse, models.ResponseDetails, error)
 	SendInteractiveMultiproductMessage(context.Context, models.InteractiveMultiproductMessage,
 	) (models.MessageResponse, models.ResponseDetails, error)
+	GetTemplates(context.Context, string) (models.TemplatesResponse, models.ResponseDetails, error)
 }
 
 type whatsAppChannel struct {
@@ -52,6 +54,7 @@ const sendInteractiveButtonsPath = "whatsapp/1/message/interactive/buttons"
 const sendInteractiveListPath = "whatsapp/1/message/interactive/list"
 const sendInteractiveProductPath = "whatsapp/1/message/interactive/product"
 const sendInteractiveMultiproductPath = "whatsapp/1/message/interactive/multi-product"
+const getTemplatesPath = "whatsapp/1/senders/%s/templates"
 
 func (wap *whatsAppChannel) SendTemplateMessages(
 	ctx context.Context,
@@ -155,4 +158,12 @@ func (wap *whatsAppChannel) SendInteractiveMultiproductMessage(
 ) (msgResp models.MessageResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.reqHandler.postRequest(ctx, &msg, &msgResp, sendInteractiveMultiproductPath)
 	return msgResp, respDetails, err
+}
+
+func (wap *whatsAppChannel) GetTemplates(
+	ctx context.Context,
+	sender string,
+) (resp models.TemplatesResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = wap.reqHandler.getRequest(ctx, &resp, fmt.Sprintf(getTemplatesPath, sender))
+	return resp, respDetails, err
 }

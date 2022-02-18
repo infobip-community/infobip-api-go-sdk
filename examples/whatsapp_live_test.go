@@ -366,3 +366,19 @@ func TestInteractiveMultiproductExample(t *testing.T) {
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
 	assert.NotEqual(t, models.MessageResponse{}, msgResp)
 }
+
+func TestGetTemplatesExample(t *testing.T) {
+	apiKey := "secret"
+	baseURL := "https://myinfobipurl.com"
+	sender := "111111111111"
+
+	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
+	whatsApp := client.WhatsApp()
+	msgResp, respDetails, err := whatsApp.GetTemplates(context.Background(), sender)
+	fmt.Printf("%+v\n", msgResp)
+
+	require.Nil(t, err)
+	assert.NotEqual(t, models.TemplatesResponse{}, respDetails)
+	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+}

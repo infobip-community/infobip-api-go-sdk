@@ -184,9 +184,22 @@ func TestReqInvalidHost(t *testing.T) {
 	assert.Nil(t, resp)
 }
 
-func TestPostInvalidHost(t *testing.T) {
+func TestGetReqErr(t *testing.T) {
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Length", "1")
+	}))
+	defer serv.Close()
+
+	handler := httpHandler{httpClient: http.Client{}, baseURL: "nonexistent"}
+	respResource := models.MessageResponse{}
+	respDetails, err := handler.getRequest(context.Background(), &respResource, "some/path")
+
+	require.NotNil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.Equal(t, models.MessageResponse{}, models.MessageResponse{})
+}
+
+func TestPostReqErr(t *testing.T) {
+	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	}))
 	defer serv.Close()
 
