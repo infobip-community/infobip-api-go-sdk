@@ -382,3 +382,29 @@ func TestGetTemplatesExample(t *testing.T) {
 	assert.NotEqual(t, models.TemplatesResponse{}, respDetails)
 	assert.NotEqual(t, models.MessageResponse{}, msgResp)
 }
+
+func TestCreateTemplateExample(t *testing.T) {
+	apiKey := "secret"
+	baseURL := "https://myinfobipurl.com"
+	sender := "111111111111"
+
+	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
+	whatsApp := client.WhatsApp()
+	template := models.TemplateCreate{
+		Name:     "template_name_mytest",
+		Language: "en",
+		Category: "ACCOUNT_UPDATE",
+		Structure: models.TemplateStructure{
+			Body: "body {{1}} content",
+			Type: "TEXT",
+		},
+	}
+
+	msgResp, respDetails, err := whatsApp.CreateTemplate(context.Background(), sender, template)
+	fmt.Printf("%+v\n", msgResp)
+
+	require.Nil(t, err)
+	assert.NotEqual(t, models.TemplateResponse{}, respDetails)
+	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+}

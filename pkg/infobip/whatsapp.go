@@ -29,6 +29,7 @@ type WhatsApp interface {
 	SendInteractiveMultiproductMessage(context.Context, models.InteractiveMultiproductMessage,
 	) (models.MessageResponse, models.ResponseDetails, error)
 	GetTemplates(context.Context, string) (models.TemplatesResponse, models.ResponseDetails, error)
+	CreateTemplate(context.Context, string, models.TemplateCreate) (models.TemplateResponse, models.ResponseDetails, error)
 }
 
 type whatsAppChannel struct {
@@ -54,7 +55,7 @@ const sendInteractiveButtonsPath = "whatsapp/1/message/interactive/buttons"
 const sendInteractiveListPath = "whatsapp/1/message/interactive/list"
 const sendInteractiveProductPath = "whatsapp/1/message/interactive/product"
 const sendInteractiveMultiproductPath = "whatsapp/1/message/interactive/multi-product"
-const getTemplatesPath = "whatsapp/1/senders/%s/templates"
+const templatesPath = "whatsapp/1/senders/%s/templates"
 
 func (wap *whatsAppChannel) SendTemplateMessages(
 	ctx context.Context,
@@ -164,6 +165,15 @@ func (wap *whatsAppChannel) GetTemplates(
 	ctx context.Context,
 	sender string,
 ) (resp models.TemplatesResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.getRequest(ctx, &resp, fmt.Sprintf(getTemplatesPath, sender))
+	respDetails, err = wap.reqHandler.getRequest(ctx, &resp, fmt.Sprintf(templatesPath, sender))
+	return resp, respDetails, err
+}
+
+func (wap *whatsAppChannel) CreateTemplate(
+	ctx context.Context,
+	sender string,
+	template models.TemplateCreate,
+) (resp models.TemplateResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = wap.reqHandler.postRequest(ctx, &template, &resp, fmt.Sprintf(templatesPath, sender))
 	return resp, respDetails, err
 }
