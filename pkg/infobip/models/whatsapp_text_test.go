@@ -10,11 +10,11 @@ import (
 func TestValidTextMessage(t *testing.T) {
 	tests := []struct {
 		name     string
-		instance TextMessage
+		instance TextMsg
 	}{
 		{name: "minimum input",
-			instance: TextMessage{
-				MessageCommon: MessageCommon{
+			instance: TextMsg{
+				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
 				},
@@ -22,8 +22,8 @@ func TestValidTextMessage(t *testing.T) {
 			}},
 		{
 			name: "complete input",
-			instance: TextMessage{
-				MessageCommon: GenerateTestMessageCommon(),
+			instance: TextMsg{
+				MsgCommon: GenerateTestMsgCommon(),
 				Content: TextContent{
 					Text:       "hello world, here's the link: https://www.google.com",
 					PreviewURL: true,
@@ -41,7 +41,7 @@ func TestValidTextMessage(t *testing.T) {
 }
 
 func TestTextMessageConstraints(t *testing.T) {
-	msgCommon := GenerateTestMessageCommon()
+	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name    string
 		content TextContent
@@ -66,9 +66,9 @@ func TestTextMessageConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := TextMessage{
-				MessageCommon: msgCommon,
-				Content:       tc.content,
+			msg := TextMsg{
+				MsgCommon: msgCommon,
+				Content:   tc.content,
 			}
 			err := msg.Validate()
 			require.NotNil(t, err)

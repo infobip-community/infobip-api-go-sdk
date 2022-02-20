@@ -11,12 +11,33 @@ import (
 
 const maxInteractiveListRows = 10
 
-type BulkMessageResponse struct {
-	Messages []MessageResponse `json:"messages"`
-	BulkID   string            `json:"bulkId"`
+func setupWhatsAppValidations() {
+	if validate == nil {
+		validate = validator.New()
+	}
+	validate.RegisterStructValidation(templateCreateValidation, TemplateCreate{})
+	validate.RegisterStructValidation(templateButtonValidation, TemplateButton{})
+
+	validate.RegisterStructValidation(templateMsgValidation, TemplateMsg{})
+	validate.RegisterStructValidation(templateMsgButtonValidation, TemplateMsgButton{})
+
+	validate.RegisterStructValidation(textMsgValidation, TextMsg{})
+
+	validate.RegisterStructValidation(contactValidation, Contact{})
+
+	validate.RegisterStructValidation(interactiveButtonsMsgValidation, InteractiveButtonsMsg{})
+
+	validate.RegisterStructValidation(interactiveListMsgValidation, InteractiveListMsg{})
+
+	validate.RegisterStructValidation(multiproductMsgValidation, InteractiveMultiproductMsg{})
 }
 
-type MessageResponse struct {
+type BulkMsgResponse struct {
+	Messages []MsgResponse `json:"messages"`
+	BulkID   string        `json:"bulkId"`
+}
+
+type MsgResponse struct {
 	To           string `json:"to"`
 	MessageCount int32  `json:"messageCount"`
 	MessageID    string `json:"messageId"`
@@ -47,9 +68,10 @@ type TemplateResponse struct {
 }
 
 type TemplateStructure struct {
-	Header  *TemplateHeader  `json:"header,omitempty"`
-	Body    string           `json:"body" validate:"required"`
-	Footer  string           `json:"footer,omitempty" validate:"lte=60"`
+	Header *TemplateHeader `json:"header,omitempty"`
+	Body   string          `json:"body" validate:"required"`
+	Footer string          `json:"footer,omitempty" validate:"lte=60"`
+	// TODO: add validation for up to 2 action buttons and 3 quick replies
 	Buttons []TemplateButton `json:"buttons,omitempty" validate:"omitempty,min=1,max=3,dive"`
 	Type    string           `json:"type,omitempty" validate:"oneof=TEXT MEDIA UNSUPPORTED"`
 }
@@ -74,10 +96,6 @@ type TemplateCreate struct {
 }
 
 func (t *TemplateCreate) Validate() error {
-	validate = validator.New()
-	validate.RegisterStructValidation(templateCreateValidation, TemplateCreate{})
-	validate.RegisterStructValidation(templateHeaderValidation, TemplateHeader{})
-	validate.RegisterStructValidation(templateButtonValidation, TemplateButton{})
 	return validate.Struct(t)
 }
 
@@ -86,6 +104,7 @@ func templateCreateValidation(sl validator.StructLevel) {
 	validateTemplateName(sl, template)
 	validateTemplateLanguage(sl, template)
 	validateCategory(sl, template)
+	validateTemplateHeader(sl, template)
 }
 
 func validateTemplateName(sl validator.StructLevel, template TemplateCreate) {
@@ -116,9 +135,9 @@ func validateCategory(sl validator.StructLevel, template TemplateCreate) {
 	}
 }
 
-func templateHeaderValidation(sl validator.StructLevel) {
-	header, _ := sl.Current().Interface().(TemplateHeader)
-	if header.Format == "TEXT" && header.Text == "" {
+func validateTemplateHeader(sl validator.StructLevel, template TemplateCreate) {
+	header := template.Structure.Header
+	if header != nil && header.Format == "TEXT" && header.Text == "" {
 		sl.ReportError(header.Text, "text", "Text", "missingtext", "")
 	}
 }
@@ -137,7 +156,7 @@ func templateButtonValidation(sl validator.StructLevel) {
 	}
 }
 
-type MessageCommon struct {
+type MsgCommon struct {
 	From         string `json:"from" validate:"required,lte=24"`
 	To           string `json:"to" validate:"required,lte=24"`
 	MessageID    string `json:"messageId,omitempty" validate:"lte=50"`
@@ -145,25 +164,26 @@ type MessageCommon struct {
 	NotifyURL    string `json:"notifyUrl,omitempty" validate:"omitempty,url,lte=2048"`
 }
 
-type TemplateMessages struct {
-	Messages []TemplateMessage `json:"messages" validate:"required,min=1,dive"`
-	BulkID   string            `json:"bulkId,omitempty" validate:"lte=100"`
+type TemplateMsgs struct {
+	Messages []TemplateMsg `json:"messages" validate:"required,min=1,dive"`
+	BulkID   string        `json:"bulkId,omitempty" validate:"lte=100"`
 }
 
-func (t *TemplateMessages) Validate() error {
-	validate = validator.New()
-	validate.RegisterStructValidation(templateMsgsValidation, TemplateMessageContent{})
-	validate.RegisterStructValidation(templateHeaderSendValidation, TemplateHeaderSend{})
-	validate.RegisterStructValidation(templateDataValidation, TemplateData{})
-	validate.RegisterStructValidation(templateButtonSendValidation, TemplateButtonSend{})
+func (t *TemplateMsgs) Validate() error {
 	return validate.Struct(t)
 }
 
-func templateMsgsValidation(sl validator.StructLevel) {
-	content, _ := sl.Current().Interface().(TemplateMessageContent)
+func templateMsgValidation(sl validator.StructLevel) {
+	msg, _ := sl.Current().Interface().(TemplateMsg)
+	validateTemplateMsgName(sl, msg)
+	validateTemplateMsgHeader(sl, msg)
+	validateTemplateButtonLength(sl, msg.Content.TemplateData)
+	validateTemplateButtonTypes(sl, msg.Content.TemplateData)
+}
 
-	if !isSnakeCase(content.TemplateName) {
-		sl.ReportError(content.TemplateName, "templateName", "TemplateName", "templatenamenotsnakecase", "")
+func validateTemplateMsgName(sl validator.StructLevel, msg TemplateMsg) {
+	if !isSnakeCase(msg.Content.TemplateName) {
+		sl.ReportError(msg.Content.TemplateName, "templateName", "TemplateName", "templatenamenotsnakecase", "")
 	}
 }
 
@@ -176,8 +196,12 @@ func isSnakeCase(s string) bool {
 	return true
 }
 
-func templateHeaderSendValidation(sl validator.StructLevel) {
-	header, _ := sl.Current().Interface().(TemplateHeaderSend)
+func validateTemplateMsgHeader(sl validator.StructLevel, msg TemplateMsg) {
+	header := msg.Content.TemplateData.Header
+	if header == nil {
+		return
+	}
+
 	switch header.Type {
 	case "TEXT":
 		if header.Placeholder == "" {
@@ -204,12 +228,6 @@ func templateHeaderSendValidation(sl validator.StructLevel) {
 	}
 }
 
-func templateDataValidation(sl validator.StructLevel) {
-	templateData, _ := sl.Current().Interface().(TemplateData)
-	validateTemplateButtonLength(sl, templateData)
-	validateTemplateButtonTypes(sl, templateData)
-}
-
 func validateTemplateButtonLength(sl validator.StructLevel, templateData TemplateData) {
 	if len(templateData.Buttons) > 1 && templateData.Buttons[0].Type == "URL" {
 		sl.ReportError(templateData.Buttons, "buttons", "Buttons", "dynamicurlcountoverone", "")
@@ -226,36 +244,36 @@ func validateTemplateButtonTypes(sl validator.StructLevel, templateData Template
 	}
 }
 
-func templateButtonSendValidation(sl validator.StructLevel) {
-	button, _ := sl.Current().Interface().(TemplateButtonSend)
+func templateMsgButtonValidation(sl validator.StructLevel) {
+	button, _ := sl.Current().Interface().(TemplateMsgButton)
 	if button.Type == "QUICK_REPLY" && len(button.Parameter) > 128 {
 		sl.ReportError(button.Parameter, "parameter", "Parameter", "parametertoolong", "")
 	}
 }
 
-type TemplateMessage struct {
-	MessageCommon
-	Content     TemplateMessageContent `json:"content" validate:"required"`
-	SMSFailover *SMSFailover           `json:"smsFailover,omitempty"`
+type TemplateMsg struct {
+	MsgCommon
+	Content     TemplateMsgContent `json:"content" validate:"required"`
+	SMSFailover *SMSFailover       `json:"smsFailover,omitempty"`
 }
 
-type TemplateMessageContent struct {
+type TemplateMsgContent struct {
 	TemplateName string       `json:"templateName" validate:"required,lte=512"`
 	TemplateData TemplateData `json:"templateData" validate:"required"`
 	Language     string       `json:"language" validate:"required"`
 }
 
 type TemplateData struct {
-	Body    TemplateBody         `json:"body" validate:"required"`
-	Header  *TemplateHeaderSend  `json:"header,omitempty"`
-	Buttons []TemplateButtonSend `json:"buttons,omitempty" validate:"omitempty,max=3,dive"`
+	Body    TemplateBody        `json:"body" validate:"required"`
+	Header  *TemplateMsgHeader  `json:"header,omitempty"`
+	Buttons []TemplateMsgButton `json:"buttons,omitempty" validate:"omitempty,max=3,dive"`
 }
 
 type TemplateBody struct {
 	Placeholders []string `json:"placeholders" validate:"required,dive,gte=1"`
 }
 
-type TemplateHeaderSend struct {
+type TemplateMsgHeader struct {
 	Type        string   `json:"type" validate:"required,oneof=TEXT DOCUMENT IMAGE VIDEO LOCATION"`
 	Placeholder string   `json:"placeholder,omitempty"`
 	MediaURL    string   `json:"mediaUrl,omitempty" validate:"omitempty,url,lte=2048"`
@@ -264,7 +282,7 @@ type TemplateHeaderSend struct {
 	Longitude   *float32 `json:"longitude,omitempty" validate:"omitempty,longitude"`
 }
 
-type TemplateButtonSend struct {
+type TemplateMsgButton struct {
 	Type      string `json:"type" validate:"required,oneof=QUICK_REPLY URL"`
 	Parameter string `json:"parameter" validate:"required"`
 }
@@ -274,15 +292,18 @@ type SMSFailover struct {
 	Text string `json:"text" validate:"required,lte=4096"`
 }
 
-type TextMessage struct {
-	MessageCommon
+type TextMsg struct {
+	MsgCommon
 	Content TextContent `json:"content" validate:"required"`
 }
 
-func (t *TextMessage) Validate() error {
-	validate = validator.New()
-	validate.RegisterStructValidation(previewURLValidation, TextContent{})
+func (t *TextMsg) Validate() error {
 	return validate.Struct(t)
+}
+
+func textMsgValidation(sl validator.StructLevel) {
+	msg, _ := sl.Current().Interface().(TextMsg)
+	previewURLValidation(sl, msg)
 }
 
 type TextContent struct {
@@ -290,21 +311,20 @@ type TextContent struct {
 	PreviewURL bool   `json:"previewURL,omitempty"`
 }
 
-func previewURLValidation(sl validator.StructLevel) {
-	content, _ := sl.Current().Interface().(TextContent)
+func previewURLValidation(sl validator.StructLevel, msg TextMsg) {
+	content := msg.Content
 	containsURL := xurls.Relaxed().FindString(content.Text)
 	if content.PreviewURL && containsURL == "" {
-		sl.ReportError(content.Text, "text", "Text", "missingurlintext", "")
+		sl.ReportError(msg.Content.Text, "text", "Text", "missingurlintext", "")
 	}
 }
 
-type DocumentMessage struct {
-	MessageCommon
+type DocumentMsg struct {
+	MsgCommon
 	Content DocumentContent `json:"content" validate:"required"`
 }
 
-func (t *DocumentMessage) Validate() error {
-	validate = validator.New()
+func (t *DocumentMsg) Validate() error {
 	return validate.Struct(t)
 }
 
@@ -314,13 +334,12 @@ type DocumentContent struct {
 	Filename string `json:"filename,omitempty" validate:"lte=240"`
 }
 
-type ImageMessage struct {
-	MessageCommon
+type ImageMsg struct {
+	MsgCommon
 	Content ImageContent `json:"content" validate:"required"`
 }
 
-func (t *ImageMessage) Validate() error {
-	validate = validator.New()
+func (t *ImageMsg) Validate() error {
 	return validate.Struct(t)
 }
 
@@ -329,13 +348,12 @@ type ImageContent struct {
 	Caption  string `json:"caption,omitempty" validate:"lte=3000"`
 }
 
-type AudioMessage struct {
-	MessageCommon
+type AudioMsg struct {
+	MsgCommon
 	Content AudioContent `json:"content" validate:"required"`
 }
 
-func (t *AudioMessage) Validate() error {
-	validate = validator.New()
+func (t *AudioMsg) Validate() error {
 	return validate.Struct(t)
 }
 
@@ -343,13 +361,12 @@ type AudioContent struct {
 	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
 }
 
-type VideoMessage struct {
-	MessageCommon
+type VideoMsg struct {
+	MsgCommon
 	Content VideoContent `json:"content" validate:"required"`
 }
 
-func (t *VideoMessage) Validate() error {
-	validate = validator.New()
+func (t *VideoMsg) Validate() error {
 	return validate.Struct(t)
 }
 
@@ -358,13 +375,12 @@ type VideoContent struct {
 	Caption  string `json:"caption,omitempty" validate:"lte=3000"`
 }
 
-type StickerMessage struct {
-	MessageCommon
+type StickerMsg struct {
+	MsgCommon
 	Content StickerContent `json:"content" validate:"required"`
 }
 
-func (t *StickerMessage) Validate() error {
-	validate = validator.New()
+func (t *StickerMsg) Validate() error {
 	return validate.Struct(t)
 }
 
@@ -372,13 +388,12 @@ type StickerContent struct {
 	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
 }
 
-type LocationMessage struct {
-	MessageCommon
+type LocationMsg struct {
+	MsgCommon
 	Content LocationContent `json:"content" validate:"required"`
 }
 
-func (t *LocationMessage) Validate() error {
-	validate = validator.New()
+func (t *LocationMsg) Validate() error {
 	return validate.Struct(t)
 }
 
@@ -389,18 +404,16 @@ type LocationContent struct {
 	Address   string   `json:"address" validate:"lte=1000"`
 }
 
-type ContactMessage struct {
-	MessageCommon
+type ContactMsg struct {
+	MsgCommon
 	Content ContactContent `json:"content" validate:"required"`
 }
 
-func (t *ContactMessage) Validate() error {
-	validate = validator.New()
-	validate.RegisterStructValidation(birthdayValidation, Contact{})
+func (t *ContactMsg) Validate() error {
 	return validate.Struct(t)
 }
 
-func birthdayValidation(sl validator.StructLevel) {
+func contactValidation(sl validator.StructLevel) {
 	contact, _ := sl.Current().Interface().(Contact)
 	if contact.Birthday == "" {
 		return
@@ -466,27 +479,34 @@ type ContactURL struct {
 	Type string `json:"type,omitempty" validate:"omitempty,oneof=HOME WORK"`
 }
 
-type InteractiveButtonsMessage struct {
-	MessageCommon
+type InteractiveButtonsMsg struct {
+	MsgCommon
 	Content InteractiveButtonsContent `json:"content" validate:"required"`
 }
 
-func (t *InteractiveButtonsMessage) Validate() error {
-	validate = validator.New()
-	validate.RegisterStructValidation(buttonHeaderValidation, InteractiveButtonsHeader{})
+func (t *InteractiveButtonsMsg) Validate() error {
 	return validate.Struct(t)
 }
 
-func buttonHeaderValidation(sl validator.StructLevel) {
-	header, _ := sl.Current().Interface().(InteractiveButtonsHeader)
+func interactiveButtonsMsgValidation(sl validator.StructLevel) {
+	msg, _ := sl.Current().Interface().(InteractiveButtonsMsg)
+	validateInteractiveButtonsHeader(sl, msg)
+}
+
+func validateInteractiveButtonsHeader(sl validator.StructLevel, msg InteractiveButtonsMsg) {
+	header := msg.Content.Header
+	if header == nil {
+		return
+	}
+
 	switch header.Type {
 	case "TEXT":
 		if header.Text == "" {
-			sl.ReportError(header.Text, "text", "Text", "missingtext", "")
+			sl.ReportError(msg.Content.Header.Text, "text", "Text", "missingtext", "")
 		}
 	case "VIDEO", "IMAGE", "DOCUMENT":
 		if header.MediaURL == "" {
-			sl.ReportError(header.MediaURL, "mediaUrl", "MediaURL", "missingmediaurl", "")
+			sl.ReportError(msg.Content.Header.MediaURL, "mediaUrl", "MediaURL", "missingmediaurl", "")
 		}
 	}
 }
@@ -523,31 +543,31 @@ type InteractiveButtonsFooter struct {
 	Text string `json:"text" validate:"required,lte=60"`
 }
 
-type InteractiveListMessage struct {
-	MessageCommon
+type InteractiveListMsg struct {
+	MsgCommon
 	Content InteractiveListContent `json:"content" validate:"required"`
 }
 
-func (t *InteractiveListMessage) Validate() error {
-	validate = validator.New()
-	validate.RegisterStructValidation(interactiveListActionValidation, InteractiveListAction{})
+func (t *InteractiveListMsg) Validate() error {
 	return validate.Struct(t)
 }
 
-func interactiveListActionValidation(sl validator.StructLevel) {
-	action, _ := sl.Current().Interface().(InteractiveListAction)
-	validateRowCount(sl, action)
-	validateDuplicateRows(sl, action)
-	validateListSectionTitles(sl, action)
+func interactiveListMsgValidation(sl validator.StructLevel) {
+	msg, _ := sl.Current().Interface().(InteractiveListMsg)
+	validateListSectionRowCount(sl, msg)
+	validateListDuplicateRows(sl, msg)
+	validateListSectionTitles(sl, msg)
 }
 
-func validateRowCount(sl validator.StructLevel, action InteractiveListAction) {
+func validateListSectionRowCount(sl validator.StructLevel, msg InteractiveListMsg) {
 	var rowCount int
-	for _, section := range action.Sections {
+	sections := msg.Content.Action.Sections
+
+	for _, section := range sections {
 		rowCount += len(section.Rows)
 		if rowCount > maxInteractiveListRows {
 			sl.ReportError(
-				action.Sections,
+				msg.Content.Action.Sections,
 				"sections",
 				"Sections",
 				"rowcountovermax",
@@ -557,14 +577,16 @@ func validateRowCount(sl validator.StructLevel, action InteractiveListAction) {
 	}
 }
 
-func validateDuplicateRows(sl validator.StructLevel, action InteractiveListAction) {
+func validateListDuplicateRows(sl validator.StructLevel, msg InteractiveListMsg) {
 	rowIDs := make(map[string]int)
-	for _, section := range action.Sections {
+	sections := msg.Content.Action.Sections
+
+	for _, section := range sections {
 		for _, row := range section.Rows {
 			rowIDs[row.ID]++
 			if rowIDs[row.ID] > 1 {
 				sl.ReportError(
-					action.Sections,
+					msg.Content.Action.Sections,
 					"sections",
 					"Sections",
 					fmt.Sprintf("duplicaterowID%s", row.ID),
@@ -575,12 +597,14 @@ func validateDuplicateRows(sl validator.StructLevel, action InteractiveListActio
 	}
 }
 
-func validateListSectionTitles(sl validator.StructLevel, action InteractiveListAction) {
-	if len(action.Sections) > 1 {
-		for _, section := range action.Sections {
+func validateListSectionTitles(sl validator.StructLevel, msg InteractiveListMsg) {
+	sections := msg.Content.Action.Sections
+
+	if len(sections) > 1 {
+		for _, section := range sections {
 			if section.Title == "" {
 				sl.ReportError(
-					action.Sections,
+					msg.Content.Action.Sections,
 					"sections",
 					"Sections",
 					"missingtitlemultiplesections",
@@ -627,13 +651,12 @@ type InteractiveListFooter struct {
 	Text string `json:"text" validate:"required,lte=60"`
 }
 
-type InteractiveProductMessage struct {
-	MessageCommon
+type InteractiveProductMsg struct {
+	MsgCommon
 	Content InteractiveProductContent `json:"content" validate:"required"`
 }
 
-func (t *InteractiveProductMessage) Validate() error {
-	validate = validator.New()
+func (t *InteractiveProductMsg) Validate() error {
 	return validate.Struct(t)
 }
 
@@ -656,28 +679,27 @@ type InteractiveProductFooter struct {
 	Text string `json:"text" validate:"required,lte=60"`
 }
 
-type InteractiveMultiproductMessage struct {
-	MessageCommon
+type InteractiveMultiproductMsg struct {
+	MsgCommon
 	Content InteractiveMultiproductContent `json:"content" validate:"required"`
 }
 
-func (t *InteractiveMultiproductMessage) Validate() error {
-	validate = validator.New()
-	validate.RegisterStructValidation(multiproductActionValidation, InteractiveMultiproductAction{})
+func (t *InteractiveMultiproductMsg) Validate() error {
 	return validate.Struct(t)
 }
 
-func multiproductActionValidation(sl validator.StructLevel) {
-	action, _ := sl.Current().Interface().(InteractiveMultiproductAction)
-	validateMultiproductSectionTitles(sl, action)
+func multiproductMsgValidation(sl validator.StructLevel) {
+	msg, _ := sl.Current().Interface().(InteractiveMultiproductMsg)
+	validateMultiproductSectionTitles(sl, msg)
 }
 
-func validateMultiproductSectionTitles(sl validator.StructLevel, action InteractiveMultiproductAction) {
-	if len(action.Sections) > 1 {
-		for _, section := range action.Sections {
+func validateMultiproductSectionTitles(sl validator.StructLevel, msg InteractiveMultiproductMsg) {
+	sections := msg.Content.Action.Sections
+	if len(sections) > 1 {
+		for _, section := range sections {
 			if section.Title == "" {
 				sl.ReportError(
-					action.Sections,
+					msg.Content.Action.Sections,
 					"sections",
 					"Sections",
 					"missingtitlemultiplesections",

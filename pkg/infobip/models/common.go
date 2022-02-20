@@ -8,6 +8,14 @@ import (
 
 var validate *validator.Validate //nolint: gochecknoglobals // thread safe and needed only once, caches validations
 
+func SetupValidation() {
+	if validate != nil {
+		return
+	}
+	validate = validator.New()
+	setupWhatsAppValidations()
+}
+
 type Validatable interface {
 	Validate() error
 }

@@ -4,6 +4,7 @@
 package infobip
 
 import (
+	"infobip-go-client/pkg/infobip/models"
 	"net/http"
 	"net/url"
 )
@@ -29,6 +30,8 @@ func NewClient(baseURL string, apiKey string, options ...func(*Client)) (Client,
 	for _, opt := range options {
 		opt(&c)
 	}
+
+	models.SetupValidation()
 
 	return c, nil
 }

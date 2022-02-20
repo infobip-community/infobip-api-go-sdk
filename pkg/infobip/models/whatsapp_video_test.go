@@ -11,11 +11,11 @@ import (
 func TestValidVideoMessage(t *testing.T) {
 	tests := []struct {
 		name     string
-		instance VideoMessage
+		instance VideoMsg
 	}{
 		{name: "minimum input",
-			instance: VideoMessage{
-				MessageCommon: MessageCommon{
+			instance: VideoMsg{
+				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
 				},
@@ -23,8 +23,8 @@ func TestValidVideoMessage(t *testing.T) {
 			}},
 		{
 			name: "complete input",
-			instance: VideoMessage{
-				MessageCommon: GenerateTestMessageCommon(),
+			instance: VideoMsg{
+				MsgCommon: GenerateTestMsgCommon(),
 				Content: VideoContent{
 					MediaURL: "https://www.mypath.com/whatsapp.jpg",
 					Caption:  "hello world",
@@ -42,7 +42,7 @@ func TestValidVideoMessage(t *testing.T) {
 }
 
 func TestVideoMessageConstraints(t *testing.T) {
-	msgCommon := GenerateTestMessageCommon()
+	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name    string
 		content VideoContent
@@ -74,9 +74,9 @@ func TestVideoMessageConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := VideoMessage{
-				MessageCommon: msgCommon,
-				Content:       tc.content,
+			msg := VideoMsg{
+				MsgCommon: msgCommon,
+				Content:   tc.content,
 			}
 			err := msg.Validate()
 			require.NotNil(t, err)

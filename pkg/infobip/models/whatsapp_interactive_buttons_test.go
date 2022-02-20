@@ -9,15 +9,15 @@ import (
 )
 
 func TestValidInteractiveButtonsMessage(t *testing.T) {
-	msgCommon := GenerateTestMessageCommon()
+	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name     string
-		instance InteractiveButtonsMessage
+		instance InteractiveButtonsMsg
 	}{
 		{
 			name: "minimum input, no header",
-			instance: InteractiveButtonsMessage{
-				MessageCommon: MessageCommon{
+			instance: InteractiveButtonsMsg{
+				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
 				},
@@ -34,8 +34,8 @@ func TestValidInteractiveButtonsMessage(t *testing.T) {
 		},
 		{
 			name: "complete input, text header",
-			instance: InteractiveButtonsMessage{
-				MessageCommon: msgCommon,
+			instance: InteractiveButtonsMsg{
+				MsgCommon: msgCommon,
 				Content: InteractiveButtonsContent{
 					Body:   InteractiveButtonsBody{Text: "Some text"},
 					Action: InteractiveButtons{Buttons: []InteractiveButton{{Type: "REPLY", ID: "1", Title: "Yes"}}},
@@ -46,8 +46,8 @@ func TestValidInteractiveButtonsMessage(t *testing.T) {
 		},
 		{
 			name: "complete input, video header",
-			instance: InteractiveButtonsMessage{
-				MessageCommon: msgCommon,
+			instance: InteractiveButtonsMsg{
+				MsgCommon: msgCommon,
 				Content: InteractiveButtonsContent{
 					Body:   InteractiveButtonsBody{Text: "Some text"},
 					Action: InteractiveButtons{Buttons: []InteractiveButton{{Type: "REPLY", ID: "1", Title: "Yes"}}},
@@ -58,8 +58,8 @@ func TestValidInteractiveButtonsMessage(t *testing.T) {
 		},
 		{
 			name: "complete input, image header",
-			instance: InteractiveButtonsMessage{
-				MessageCommon: msgCommon,
+			instance: InteractiveButtonsMsg{
+				MsgCommon: msgCommon,
 				Content: InteractiveButtonsContent{
 					Body:   InteractiveButtonsBody{Text: "Some text"},
 					Action: InteractiveButtons{Buttons: []InteractiveButton{{Type: "REPLY", ID: "1", Title: "Yes"}}},
@@ -70,8 +70,8 @@ func TestValidInteractiveButtonsMessage(t *testing.T) {
 		},
 		{
 			name: "complete input, document header",
-			instance: InteractiveButtonsMessage{
-				MessageCommon: msgCommon,
+			instance: InteractiveButtonsMsg{
+				MsgCommon: msgCommon,
 				Content: InteractiveButtonsContent{
 					Body:   InteractiveButtonsBody{Text: "Some text"},
 					Action: InteractiveButtons{Buttons: []InteractiveButton{{Type: "REPLY", ID: "1", Title: "Yes"}}},
@@ -95,7 +95,7 @@ func TestValidInteractiveButtonsMessage(t *testing.T) {
 }
 
 func TestTextInteractiveButtonsConstraints(t *testing.T) {
-	msgCommon := GenerateTestMessageCommon()
+	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name    string
 		content InteractiveButtonsContent
@@ -324,9 +324,9 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := InteractiveButtonsMessage{
-				MessageCommon: msgCommon,
-				Content:       tc.content,
+			msg := InteractiveButtonsMsg{
+				MsgCommon: msgCommon,
+				Content:   tc.content,
 			}
 			err := msg.Validate()
 			require.NotNil(t, err)

@@ -64,13 +64,10 @@ func TestCreateTemplateValidReq(t *testing.T) {
 	}))
 	defer serv.Close()
 
-	host := serv.URL
-	whatsApp := whatsAppChannel{reqHandler: httpHandler{
-		httpClient: http.Client{},
-		baseURL:    host,
-		apiKey:     apiKey,
-	}}
-	messageResponse, respDetails, err := whatsApp.CreateTemplate(context.Background(), sender, template)
+	client, err := NewClient(serv.URL, apiKey)
+	require.Nil(t, err)
+
+	messageResponse, respDetails, err := client.WhatsApp().CreateTemplate(context.Background(), sender, template)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.TemplateResponse{}, messageResponse)
@@ -82,13 +79,6 @@ func TestCreateTemplateValidReq(t *testing.T) {
 }
 
 func TestInvalidCreateTemplate(t *testing.T) {
-	sender := "16175551213"
-	apiKey := "secret"
-	whatsApp := whatsAppChannel{reqHandler: httpHandler{
-		httpClient: http.Client{},
-		baseURL:    "https://something.api.infobip.com",
-		apiKey:     apiKey,
-	}}
 	template := models.TemplateCreate{
 		Name:     "template_name",
 		Language: "en",
@@ -98,8 +88,11 @@ func TestInvalidCreateTemplate(t *testing.T) {
 			Type: "TEXT",
 		},
 	}
+	client, err := NewClient("https://something.api.infobip.com", "secret")
+	require.Nil(t, err)
 
-	messageResponse, respDetails, err := whatsApp.CreateTemplate(context.Background(), sender, template)
+	messageResponse, respDetails, err := client.WhatsApp().CreateTemplate(context.Background(), "16175551213", template)
+
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
 	assert.Equal(t, models.TemplateResponse{}, messageResponse)
@@ -146,7 +139,6 @@ func TestCreateTemplate4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	apiKey := "secret"
 	template := models.TemplateCreate{
 		Name:     "template_name",
 		Language: "en",
@@ -168,13 +160,10 @@ func TestCreateTemplate4xxErrors(t *testing.T) {
 				assert.Nil(t, servErr)
 			}))
 
-			host := serv.URL
-			whatsApp := whatsAppChannel{reqHandler: httpHandler{
-				httpClient: http.Client{},
-				baseURL:    host,
-				apiKey:     apiKey,
-			}}
-			messageResponse, respDetails, err := whatsApp.CreateTemplate(context.Background(), sender, template)
+			client, err := NewClient(serv.URL, "secret")
+			require.Nil(t, err)
+
+			msgResp, respDetails, err := client.WhatsApp().CreateTemplate(context.Background(), sender, template)
 			serv.Close()
 
 			require.Nil(t, err)
@@ -182,7 +171,7 @@ func TestCreateTemplate4xxErrors(t *testing.T) {
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
-			assert.Equal(t, models.TemplateResponse{}, messageResponse)
+			assert.Equal(t, models.TemplateResponse{}, msgResp)
 		})
 	}
 }
