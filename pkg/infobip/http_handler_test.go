@@ -190,12 +190,12 @@ func TestGetReqErr(t *testing.T) {
 	defer serv.Close()
 
 	handler := httpHandler{httpClient: http.Client{}, baseURL: "nonexistent"}
-	respResource := models.MessageResponse{}
+	respResource := models.MsgResponse{}
 	respDetails, err := handler.getRequest(context.Background(), &respResource, "some/path")
 
 	require.NotNil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.Equal(t, models.MessageResponse{}, models.MessageResponse{})
+	assert.Equal(t, models.MsgResponse{}, models.MsgResponse{})
 }
 
 func TestPostReqErr(t *testing.T) {
@@ -204,19 +204,19 @@ func TestPostReqErr(t *testing.T) {
 	defer serv.Close()
 
 	handler := httpHandler{httpClient: http.Client{}, baseURL: "nonexistent"}
-	msg := models.TextMessage{
-		MessageCommon: models.MessageCommon{
+	msg := models.TextMsg{
+		MsgCommon: models.MsgCommon{
 			From: "+16175551213",
 			To:   "+16175551212",
 		},
 		Content: models.TextContent{Text: "hello world"},
 	}
-	respResource := models.MessageResponse{}
+	respResource := models.MsgResponse{}
 	respDetails, err := handler.postRequest(context.Background(), &msg, &respResource, "some/path")
 
 	require.NotNil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.Equal(t, models.MessageResponse{}, models.MessageResponse{})
+	assert.Equal(t, models.MsgResponse{}, models.MsgResponse{})
 }
 
 func TestGenerateHeaders(t *testing.T) {

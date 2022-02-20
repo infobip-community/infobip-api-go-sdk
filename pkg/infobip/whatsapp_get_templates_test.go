@@ -52,13 +52,10 @@ func TestGetTemplatesValidReq(t *testing.T) {
 	}))
 	defer serv.Close()
 
-	host := serv.URL
-	whatsApp := whatsAppChannel{reqHandler: httpHandler{
-		httpClient: http.Client{},
-		baseURL:    host,
-		apiKey:     apiKey,
-	}}
-	messageResponse, respDetails, err := whatsApp.GetTemplates(context.Background(), sender)
+	client, err := NewClient(serv.URL, apiKey)
+	require.Nil(t, err)
+
+	messageResponse, respDetails, err := client.WhatsApp().GetTemplates(context.Background(), sender)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.TemplatesResponse{}, messageResponse)
@@ -70,7 +67,6 @@ func TestGetTemplatesValidReq(t *testing.T) {
 }
 
 func TestGetTemplates4xxErrors(t *testing.T) {
-	sender := "111111111111"
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -110,14 +106,10 @@ func TestGetTemplates4xxErrors(t *testing.T) {
 				_, servErr := w.Write(tc.rawJSONResp)
 				assert.Nil(t, servErr)
 			}))
+			client, err := NewClient(serv.URL, apiKey)
+			require.Nil(t, err)
 
-			host := serv.URL
-			whatsApp := whatsAppChannel{reqHandler: httpHandler{
-				httpClient: http.Client{},
-				baseURL:    host,
-				apiKey:     apiKey,
-			}}
-			messageResponse, respDetails, err := whatsApp.GetTemplates(context.Background(), sender)
+			messageResponse, respDetails, err := client.WhatsApp().GetTemplates(context.Background(), "111111111111")
 			serv.Close()
 
 			require.Nil(t, err)

@@ -11,11 +11,11 @@ import (
 func TestValidAudioMessage(t *testing.T) {
 	tests := []struct {
 		name     string
-		instance AudioMessage
+		instance AudioMsg
 	}{
 		{name: "minimum input",
-			instance: AudioMessage{
-				MessageCommon: MessageCommon{
+			instance: AudioMsg{
+				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
 				},
@@ -23,8 +23,8 @@ func TestValidAudioMessage(t *testing.T) {
 			}},
 		{
 			name: "complete input",
-			instance: AudioMessage{
-				MessageCommon: GenerateTestMessageCommon(),
+			instance: AudioMsg{
+				MsgCommon: GenerateTestMsgCommon(),
 				Content: AudioContent{
 					MediaURL: "https://www.mypath.com/audio.mp3",
 				},
@@ -41,7 +41,7 @@ func TestValidAudioMessage(t *testing.T) {
 }
 
 func TestAudioMessageConstraints(t *testing.T) {
-	msgCommon := GenerateTestMessageCommon()
+	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name    string
 		content AudioContent
@@ -62,9 +62,9 @@ func TestAudioMessageConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := AudioMessage{
-				MessageCommon: msgCommon,
-				Content:       tc.content,
+			msg := AudioMsg{
+				MsgCommon: msgCommon,
+				Content:   tc.content,
 			}
 			err := msg.Validate()
 			require.NotNil(t, err)

@@ -9,15 +9,15 @@ import (
 )
 
 func TestValidLocationMessage(t *testing.T) {
-	msgCommon := GenerateTestMessageCommon()
+	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name     string
-		instance LocationMessage
+		instance LocationMsg
 	}{
 		{
 			name: "minimum input",
-			instance: LocationMessage{
-				MessageCommon: MessageCommon{
+			instance: LocationMsg{
+				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
 				},
@@ -26,8 +26,8 @@ func TestValidLocationMessage(t *testing.T) {
 		},
 		{
 			name: "complete input",
-			instance: LocationMessage{
-				MessageCommon: msgCommon,
+			instance: LocationMsg{
+				MsgCommon: msgCommon,
 				Content: LocationContent{
 					Name:      "Some Place",
 					Address:   "My Address",
@@ -38,23 +38,23 @@ func TestValidLocationMessage(t *testing.T) {
 		},
 		{
 			name: "Latitude and longitude 0",
-			instance: LocationMessage{
-				MessageCommon: msgCommon,
-				Content:       LocationContent{Latitude: utils.Float32Ptr(0), Longitude: utils.Float32Ptr(0)},
+			instance: LocationMsg{
+				MsgCommon: msgCommon,
+				Content:   LocationContent{Latitude: utils.Float32Ptr(0), Longitude: utils.Float32Ptr(0)},
 			},
 		},
 		{
 			name: "Latitude and longitude edge values positive",
-			instance: LocationMessage{
-				MessageCommon: msgCommon,
-				Content:       LocationContent{Latitude: utils.Float32Ptr(90), Longitude: utils.Float32Ptr(180)},
+			instance: LocationMsg{
+				MsgCommon: msgCommon,
+				Content:   LocationContent{Latitude: utils.Float32Ptr(90), Longitude: utils.Float32Ptr(180)},
 			},
 		},
 		{
 			name: "Latitude and longitude edge values negative",
-			instance: LocationMessage{
-				MessageCommon: msgCommon,
-				Content:       LocationContent{Latitude: utils.Float32Ptr(-90), Longitude: utils.Float32Ptr(-180)},
+			instance: LocationMsg{
+				MsgCommon: msgCommon,
+				Content:   LocationContent{Latitude: utils.Float32Ptr(-90), Longitude: utils.Float32Ptr(-180)},
 			},
 		},
 	}
@@ -68,7 +68,7 @@ func TestValidLocationMessage(t *testing.T) {
 }
 
 func TestTextLocationConstraints(t *testing.T) {
-	msgCommon := GenerateTestMessageCommon()
+	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name    string
 		content LocationContent
@@ -105,9 +105,9 @@ func TestTextLocationConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := LocationMessage{
-				MessageCommon: msgCommon,
-				Content:       tc.content,
+			msg := LocationMsg{
+				MsgCommon: msgCommon,
+				Content:   tc.content,
 			}
 			err := msg.Validate()
 			require.NotNil(t, err)

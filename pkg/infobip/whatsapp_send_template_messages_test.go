@@ -19,11 +19,11 @@ import (
 
 func TestTemplateMsgValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.TemplateMessages{
-		Messages: []models.TemplateMessage{
+	msg := models.TemplateMsgs{
+		Messages: []models.TemplateMsg{
 			{
-				MessageCommon: models.MessageCommon{From: "16175551213", To: "16175551212"},
-				Content: models.TemplateMessageContent{
+				MsgCommon: models.MsgCommon{From: "16175551213", To: "16175551212"},
+				Content: models.TemplateMsgContent{
 					TemplateName: "template_name",
 					TemplateData: models.TemplateData{
 						Body: models.TemplateBody{Placeholders: []string{}},
@@ -50,7 +50,7 @@ func TestTemplateMsgValidReq(t *testing.T) {
 		],
 		"bulkId": "2034072219640523073"
 	}`)
-	var expectedResp models.BulkMessageResponse
+	var expectedResp models.BulkMsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.Nil(t, err)
 
@@ -60,7 +60,7 @@ func TestTemplateMsgValidReq(t *testing.T) {
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.TemplateMessages
+		var receivedMsg models.TemplateMsgs
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -69,18 +69,14 @@ func TestTemplateMsgValidReq(t *testing.T) {
 		assert.Nil(t, servErr)
 	}))
 	defer serv.Close()
+	client, err := NewClient(serv.URL, apiKey)
+	require.Nil(t, err)
 
-	host := serv.URL
-	whatsApp := whatsAppChannel{reqHandler: httpHandler{
-		httpClient: http.Client{},
-		baseURL:    host,
-		apiKey:     apiKey,
-	}}
-	messageResponse, respDetails, err := whatsApp.SendTemplateMessages(context.Background(), msg)
+	msgResp, respDetails, err := client.WhatsApp().SendTemplateMsgs(context.Background(), msg)
 
 	require.Nil(t, err)
-	assert.NotEqual(t, models.BulkMessageResponse{}, messageResponse)
-	assert.Equal(t, expectedResp, messageResponse)
+	assert.NotEqual(t, models.BulkMsgResponse{}, msgResp)
+	assert.Equal(t, expectedResp, msgResp)
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
@@ -88,17 +84,11 @@ func TestTemplateMsgValidReq(t *testing.T) {
 }
 
 func TestInvalidTemplateMsg(t *testing.T) {
-	apiKey := "secret"
-	whatsApp := whatsAppChannel{reqHandler: httpHandler{
-		httpClient: http.Client{},
-		baseURL:    "https://something.api.infobip.com",
-		apiKey:     apiKey,
-	}}
-	msg := models.TemplateMessages{
-		Messages: []models.TemplateMessage{
+	msg := models.TemplateMsgs{
+		Messages: []models.TemplateMsg{
 			{
-				MessageCommon: models.MessageCommon{From: "16175551213", To: "16175551212"},
-				Content: models.TemplateMessageContent{
+				MsgCommon: models.MsgCommon{From: "16175551213", To: "16175551212"},
+				Content: models.TemplateMsgContent{
 					TemplateName: "INVALID",
 					TemplateData: models.TemplateData{
 						Body: models.TemplateBody{Placeholders: []string{}},
@@ -108,11 +98,14 @@ func TestInvalidTemplateMsg(t *testing.T) {
 			},
 		},
 	}
+	client, err := NewClient("https://something.api.infobip.com", "secret")
+	require.Nil(t, err)
 
-	messageResponse, respDetails, err := whatsApp.SendTemplateMessages(context.Background(), msg)
+	msgResp, respDetails, err := client.WhatsApp().SendTemplateMsgs(context.Background(), msg)
+
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
-	assert.Equal(t, models.BulkMessageResponse{}, messageResponse)
+	assert.Equal(t, models.BulkMsgResponse{}, msgResp)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
@@ -160,12 +153,11 @@ func TestTemplateMsg4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	apiKey := "secret"
-	msg := models.TemplateMessages{
-		Messages: []models.TemplateMessage{
+	msg := models.TemplateMsgs{
+		Messages: []models.TemplateMsg{
 			{
-				MessageCommon: models.MessageCommon{From: "16175551213", To: "16175551212"},
-				Content: models.TemplateMessageContent{
+				MsgCommon: models.MsgCommon{From: "16175551213", To: "16175551212"},
+				Content: models.TemplateMsgContent{
 					TemplateName: "template_name",
 					TemplateData: models.TemplateData{
 						Body: models.TemplateBody{Placeholders: []string{}},
@@ -187,13 +179,9 @@ func TestTemplateMsg4xxErrors(t *testing.T) {
 				assert.Nil(t, servErr)
 			}))
 
-			host := serv.URL
-			whatsApp := whatsAppChannel{reqHandler: httpHandler{
-				httpClient: http.Client{},
-				baseURL:    host,
-				apiKey:     apiKey,
-			}}
-			messageResponse, respDetails, err := whatsApp.SendTemplateMessages(context.Background(), msg)
+			client, err := NewClient(serv.URL, "secret")
+			require.Nil(t, err)
+			msgResp, respDetails, err := client.WhatsApp().SendTemplateMsgs(context.Background(), msg)
 			serv.Close()
 
 			require.Nil(t, err)
@@ -201,7 +189,7 @@ func TestTemplateMsg4xxErrors(t *testing.T) {
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
-			assert.Equal(t, models.BulkMessageResponse{}, messageResponse)
+			assert.Equal(t, models.BulkMsgResponse{}, msgResp)
 		})
 	}
 }

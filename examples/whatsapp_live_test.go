@@ -20,11 +20,11 @@ func TestTemplateMessagesExample(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
-	message := models.TemplateMessages{
-		Messages: []models.TemplateMessage{
+	message := models.TemplateMsgs{
+		Messages: []models.TemplateMsg{
 			{
-				MessageCommon: models.MessageCommon{From: "111111111111 ", To: "222222222222"},
-				Content: models.TemplateMessageContent{
+				MsgCommon: models.MsgCommon{From: "111111111111 ", To: "222222222222"},
+				Content: models.TemplateMsgContent{
 					TemplateName: "template_name",
 					TemplateData: models.TemplateData{
 						Body: models.TemplateBody{Placeholders: []string{}},
@@ -33,8 +33,8 @@ func TestTemplateMessagesExample(t *testing.T) {
 				},
 			},
 			{
-				MessageCommon: models.MessageCommon{From: "111111111111 ", To: "222222222222"},
-				Content: models.TemplateMessageContent{
+				MsgCommon: models.MsgCommon{From: "111111111111 ", To: "222222222222"},
+				Content: models.TemplateMsgContent{
 					TemplateName: "template_name",
 					TemplateData: models.TemplateData{
 						Body: models.TemplateBody{Placeholders: []string{}},
@@ -45,12 +45,12 @@ func TestTemplateMessagesExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendTemplateMessages(context.Background(), message)
+	msgResp, respDetails, err := whatsApp.SendTemplateMsgs(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 }
 
 func TestSendTextExample(t *testing.T) {
@@ -59,19 +59,19 @@ func TestSendTextExample(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
-	message := models.TextMessage{
-		MessageCommon: models.MessageCommon{
+	message := models.TextMsg{
+		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
 		},
 		Content: models.TextContent{Text: "This message was sent from the Infobip API using the Go API client."},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendTextMessage(context.Background(), message)
+	msgResp, respDetails, err := whatsApp.SendTextMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
-	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 	fmt.Printf("%+v", msgResp)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
 }
@@ -82,20 +82,20 @@ func TestSendDocumentExample(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
-	message := models.DocumentMessage{
-		MessageCommon: models.MessageCommon{
+	message := models.DocumentMsg{
+		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
 		},
 		Content: models.DocumentContent{MediaURL: "https://myurl.com/doc1.doc"},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendDocumentMessage(context.Background(), message)
+	msgResp, respDetails, err := whatsApp.SendDocumentMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 }
 
 func TestSendImageExample(t *testing.T) {
@@ -104,8 +104,8 @@ func TestSendImageExample(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
-	message := models.ImageMessage{
-		MessageCommon: models.MessageCommon{
+	message := models.ImageMsg{
+		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
 		},
@@ -114,12 +114,12 @@ func TestSendImageExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendImageMessage(context.Background(), message)
+	msgResp, respDetails, err := whatsApp.SendImageMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 }
 
 func TestAudioExample(t *testing.T) {
@@ -128,20 +128,20 @@ func TestAudioExample(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
-	message := models.AudioMessage{
-		MessageCommon: models.MessageCommon{
+	message := models.AudioMsg{
+		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
 		},
 		Content: models.AudioContent{MediaURL: "https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.aac"},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendAudioMessage(context.Background(), message)
+	msgResp, respDetails, err := whatsApp.SendAudioMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 }
 
 func TestVideoExample(t *testing.T) {
@@ -150,20 +150,20 @@ func TestVideoExample(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
-	message := models.VideoMessage{
-		MessageCommon: models.MessageCommon{
+	message := models.VideoMsg{
+		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
 		},
 		Content: models.VideoContent{MediaURL: "https://download.samplelib.com/mp4/sample-5s.mp4"},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendVideoMessage(context.Background(), message)
+	msgResp, respDetails, err := whatsApp.SendVideoMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 }
 
 func TestStickerExample(t *testing.T) {
@@ -172,20 +172,20 @@ func TestStickerExample(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
-	message := models.StickerMessage{
-		MessageCommon: models.MessageCommon{
+	message := models.StickerMsg{
+		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
 		},
 		Content: models.StickerContent{MediaURL: "https://myurl.com/sticker.webp"},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendStickerMessage(context.Background(), message)
+	msgResp, respDetails, err := whatsApp.SendStickerMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 }
 
 func TestLocationExample(t *testing.T) {
@@ -194,8 +194,8 @@ func TestLocationExample(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
-	message := models.LocationMessage{
-		MessageCommon: models.MessageCommon{
+	message := models.LocationMsg{
+		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
 		},
@@ -207,12 +207,12 @@ func TestLocationExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendLocationMessage(context.Background(), message)
+	msgResp, respDetails, err := whatsApp.SendLocationMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 }
 
 func TestContactExample(t *testing.T) {
@@ -221,8 +221,8 @@ func TestContactExample(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
-	message := models.ContactMessage{
-		MessageCommon: models.MessageCommon{
+	message := models.ContactMsg{
+		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
 		},
@@ -231,12 +231,12 @@ func TestContactExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendContactMessage(context.Background(), message)
+	msgResp, respDetails, err := whatsApp.SendContactMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 }
 
 func TestInteractiveButtonsExample(t *testing.T) {
@@ -245,8 +245,8 @@ func TestInteractiveButtonsExample(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
-	message := models.InteractiveButtonsMessage{
-		MessageCommon: models.MessageCommon{
+	message := models.InteractiveButtonsMsg{
+		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
 		},
@@ -265,12 +265,12 @@ func TestInteractiveButtonsExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendInteractiveButtonsMessage(context.Background(), message)
+	msgResp, respDetails, err := whatsApp.SendInteractiveButtonsMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 }
 
 func TestInteractiveListExample(t *testing.T) {
@@ -279,8 +279,8 @@ func TestInteractiveListExample(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
-	message := models.InteractiveListMessage{
-		MessageCommon: models.MessageCommon{
+	message := models.InteractiveListMsg{
+		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
 		},
@@ -301,12 +301,12 @@ func TestInteractiveListExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendInteractiveListMessage(context.Background(), message)
+	msgResp, respDetails, err := whatsApp.SendInteractiveListMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 }
 
 func TestInteractiveProductExample(t *testing.T) {
@@ -315,8 +315,8 @@ func TestInteractiveProductExample(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
-	message := models.InteractiveProductMessage{
-		MessageCommon: models.MessageCommon{
+	message := models.InteractiveProductMsg{
+		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
 		},
@@ -328,12 +328,12 @@ func TestInteractiveProductExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendInteractiveProductMessage(context.Background(), message)
+	msgResp, respDetails, err := whatsApp.SendInteractiveProductMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 }
 
 func TestInteractiveMultiproductExample(t *testing.T) {
@@ -342,8 +342,8 @@ func TestInteractiveMultiproductExample(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 	whatsApp := client.WhatsApp()
-	message := models.InteractiveMultiproductMessage{
-		MessageCommon: models.MessageCommon{
+	message := models.InteractiveMultiproductMsg{
+		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
 		},
@@ -359,12 +359,12 @@ func TestInteractiveMultiproductExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendInteractiveMultiproductMessage(context.Background(), message)
+	msgResp, respDetails, err := whatsApp.SendInteractiveMultiproductMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 }
 
 func TestGetTemplatesExample(t *testing.T) {
@@ -380,7 +380,7 @@ func TestGetTemplatesExample(t *testing.T) {
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.TemplatesResponse{}, respDetails)
-	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 }
 
 func TestCreateTemplateExample(t *testing.T) {
@@ -406,5 +406,5 @@ func TestCreateTemplateExample(t *testing.T) {
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.TemplateResponse{}, respDetails)
-	assert.NotEqual(t, models.MessageResponse{}, msgResp)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 }

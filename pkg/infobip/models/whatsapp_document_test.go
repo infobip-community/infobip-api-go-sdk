@@ -11,11 +11,11 @@ import (
 func TestValidDocumentMessage(t *testing.T) {
 	tests := []struct {
 		name     string
-		instance DocumentMessage
+		instance DocumentMsg
 	}{
 		{name: "minimum input",
-			instance: DocumentMessage{
-				MessageCommon: MessageCommon{
+			instance: DocumentMsg{
+				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
 				},
@@ -23,8 +23,8 @@ func TestValidDocumentMessage(t *testing.T) {
 			}},
 		{
 			name: "complete input",
-			instance: DocumentMessage{
-				MessageCommon: GenerateTestMessageCommon(),
+			instance: DocumentMsg{
+				MsgCommon: GenerateTestMsgCommon(),
 				Content: DocumentContent{
 					MediaURL: "https://www.mypath.com/my_doc.txt",
 					Caption:  "hello world",
@@ -43,7 +43,7 @@ func TestValidDocumentMessage(t *testing.T) {
 }
 
 func TestDocumentMessageConstraints(t *testing.T) {
-	msgCommon := GenerateTestMessageCommon()
+	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name    string
 		content DocumentContent
@@ -82,9 +82,9 @@ func TestDocumentMessageConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := DocumentMessage{
-				MessageCommon: msgCommon,
-				Content:       tc.content,
+			msg := DocumentMsg{
+				MsgCommon: msgCommon,
+				Content:   tc.content,
 			}
 			err := msg.Validate()
 			require.NotNil(t, err)

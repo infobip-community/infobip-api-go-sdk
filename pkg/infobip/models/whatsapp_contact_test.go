@@ -9,12 +9,12 @@ import (
 func TestValidContactMessage(t *testing.T) {
 	tests := []struct {
 		name     string
-		instance ContactMessage
+		instance ContactMsg
 	}{
 		{
 			name: "minimum input",
-			instance: ContactMessage{
-				MessageCommon: MessageCommon{
+			instance: ContactMsg{
+				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
 				},
@@ -25,8 +25,8 @@ func TestValidContactMessage(t *testing.T) {
 		},
 		{
 			name: "complete input",
-			instance: ContactMessage{
-				MessageCommon: GenerateTestMessageCommon(),
+			instance: ContactMsg{
+				MsgCommon: GenerateTestMsgCommon(),
 				Content: ContactContent{
 					Contacts: []Contact{
 						{
@@ -85,7 +85,7 @@ func TestValidContactMessage(t *testing.T) {
 }
 
 func TestContactMessageConstraints(t *testing.T) {
-	msgCommon := GenerateTestMessageCommon()
+	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name    string
 		content ContactContent
@@ -187,9 +187,9 @@ func TestContactMessageConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := ContactMessage{
-				MessageCommon: msgCommon,
-				Content:       tc.content,
+			msg := ContactMsg{
+				MsgCommon: msgCommon,
+				Content:   tc.content,
 			}
 			err := msg.Validate()
 			require.NotNil(t, err)

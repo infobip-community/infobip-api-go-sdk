@@ -8,15 +8,15 @@ import (
 )
 
 func TestValidInteractiveListMessage(t *testing.T) {
-	msgCommon := GenerateTestMessageCommon()
+	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name     string
-		instance InteractiveListMessage
+		instance InteractiveListMsg
 	}{
 		{
 			name: "minimum input",
-			instance: InteractiveListMessage{
-				MessageCommon: MessageCommon{
+			instance: InteractiveListMsg{
+				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
 				},
@@ -31,8 +31,8 @@ func TestValidInteractiveListMessage(t *testing.T) {
 		},
 		{
 			name: "complete input",
-			instance: InteractiveListMessage{
-				MessageCommon: msgCommon,
+			instance: InteractiveListMsg{
+				MsgCommon: msgCommon,
 				Content: InteractiveListContent{
 					Body: InteractiveListBody{Text: "Some text"},
 					Action: InteractiveListAction{
@@ -61,7 +61,7 @@ func TestValidInteractiveListMessage(t *testing.T) {
 }
 
 func TestInteractiveListConstraints(t *testing.T) {
-	msgCommon := GenerateTestMessageCommon()
+	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name    string
 		content InteractiveListContent
@@ -423,9 +423,9 @@ func TestInteractiveListConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := InteractiveListMessage{
-				MessageCommon: msgCommon,
-				Content:       tc.content,
+			msg := InteractiveListMsg{
+				MsgCommon: msgCommon,
+				Content:   tc.content,
 			}
 			err := msg.Validate()
 			require.NotNil(t, err)

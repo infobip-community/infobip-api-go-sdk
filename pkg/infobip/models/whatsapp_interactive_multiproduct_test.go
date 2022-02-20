@@ -8,15 +8,15 @@ import (
 )
 
 func TestValidInteractiveMultiproductMessage(t *testing.T) {
-	msgCommon := GenerateTestMessageCommon()
+	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name     string
-		instance InteractiveMultiproductMessage
+		instance InteractiveMultiproductMsg
 	}{
 		{
 			name: "minimum input",
-			instance: InteractiveMultiproductMessage{
-				MessageCommon: MessageCommon{
+			instance: InteractiveMultiproductMsg{
+				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
 				},
@@ -34,8 +34,8 @@ func TestValidInteractiveMultiproductMessage(t *testing.T) {
 		},
 		{
 			name: "complete input",
-			instance: InteractiveMultiproductMessage{
-				MessageCommon: msgCommon,
+			instance: InteractiveMultiproductMsg{
+				MsgCommon: msgCommon,
 				Content: InteractiveMultiproductContent{
 					Header: InteractiveMultiproductHeader{Type: "TEXT", Text: "Header"},
 					Body:   InteractiveMultiproductBody{Text: "Some Text"},
@@ -61,7 +61,7 @@ func TestValidInteractiveMultiproductMessage(t *testing.T) {
 }
 
 func TestTextInteractiveMultiproductConstraints(t *testing.T) {
-	msgCommon := GenerateTestMessageCommon()
+	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name    string
 		content InteractiveMultiproductContent
@@ -296,9 +296,9 @@ func TestTextInteractiveMultiproductConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := InteractiveMultiproductMessage{
-				MessageCommon: msgCommon,
-				Content:       tc.content,
+			msg := InteractiveMultiproductMsg{
+				MsgCommon: msgCommon,
+				Content:   tc.content,
 			}
 			err := msg.Validate()
 			require.NotNil(t, err)

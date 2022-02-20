@@ -11,11 +11,11 @@ import (
 func TestValidImageMessage(t *testing.T) {
 	tests := []struct {
 		name     string
-		instance ImageMessage
+		instance ImageMsg
 	}{
 		{name: "minimum input",
-			instance: ImageMessage{
-				MessageCommon: MessageCommon{
+			instance: ImageMsg{
+				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
 				},
@@ -24,8 +24,8 @@ func TestValidImageMessage(t *testing.T) {
 		},
 		{
 			name: "complete input",
-			instance: ImageMessage{
-				MessageCommon: GenerateTestMessageCommon(),
+			instance: ImageMsg{
+				MsgCommon: GenerateTestMsgCommon(),
 				Content: ImageContent{
 					MediaURL: "https://www.mypath.com/whatsapp.jpg",
 					Caption:  "hello world",
@@ -43,7 +43,7 @@ func TestValidImageMessage(t *testing.T) {
 }
 
 func TestImageMessageConstraints(t *testing.T) {
-	msgCommon := GenerateTestMessageCommon()
+	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name    string
 		content ImageContent
@@ -75,9 +75,9 @@ func TestImageMessageConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := ImageMessage{
-				MessageCommon: msgCommon,
-				Content:       tc.content,
+			msg := ImageMsg{
+				MsgCommon: msgCommon,
+				Content:   tc.content,
 			}
 			err := msg.Validate()
 			require.NotNil(t, err)

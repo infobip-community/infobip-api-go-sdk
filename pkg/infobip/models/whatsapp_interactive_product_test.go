@@ -8,15 +8,15 @@ import (
 )
 
 func TestValidInteractiveProductMessage(t *testing.T) {
-	msgCommon := GenerateTestMessageCommon()
+	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name     string
-		instance InteractiveProductMessage
+		instance InteractiveProductMsg
 	}{
 		{
 			name: "minimum input",
-			instance: InteractiveProductMessage{
-				MessageCommon: MessageCommon{
+			instance: InteractiveProductMsg{
+				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
 				},
@@ -30,8 +30,8 @@ func TestValidInteractiveProductMessage(t *testing.T) {
 		},
 		{
 			name: "complete input",
-			instance: InteractiveProductMessage{
-				MessageCommon: msgCommon,
+			instance: InteractiveProductMsg{
+				MsgCommon: msgCommon,
 				Content: InteractiveProductContent{
 					Action: InteractiveProductAction{
 						CatalogID:         "1",
@@ -53,7 +53,7 @@ func TestValidInteractiveProductMessage(t *testing.T) {
 }
 
 func TestTextInteractiveProductConstraints(t *testing.T) {
-	msgCommon := GenerateTestMessageCommon()
+	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name    string
 		content InteractiveProductContent
@@ -128,9 +128,9 @@ func TestTextInteractiveProductConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := InteractiveProductMessage{
-				MessageCommon: msgCommon,
-				Content:       tc.content,
+			msg := InteractiveProductMsg{
+				MsgCommon: msgCommon,
+				Content:   tc.content,
 			}
 			err := msg.Validate()
 			require.NotNil(t, err)

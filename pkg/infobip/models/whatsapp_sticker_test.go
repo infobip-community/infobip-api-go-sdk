@@ -11,12 +11,12 @@ import (
 func TestValidStickerMessage(t *testing.T) {
 	tests := []struct {
 		name     string
-		instance StickerMessage
+		instance StickerMsg
 	}{
 		{
 			name: "minimum input",
-			instance: StickerMessage{
-				MessageCommon: MessageCommon{
+			instance: StickerMsg{
+				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
 				},
@@ -24,8 +24,8 @@ func TestValidStickerMessage(t *testing.T) {
 			}},
 		{
 			name: "complete input",
-			instance: StickerMessage{
-				MessageCommon: GenerateTestMessageCommon(),
+			instance: StickerMsg{
+				MsgCommon: GenerateTestMsgCommon(),
 				Content: StickerContent{
 					MediaURL: "https://www.mypath.com/audio.mp3",
 				},
@@ -42,7 +42,7 @@ func TestValidStickerMessage(t *testing.T) {
 }
 
 func TestStickerMessageConstraints(t *testing.T) {
-	msgCommon := GenerateTestMessageCommon()
+	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name    string
 		content StickerContent
@@ -63,9 +63,9 @@ func TestStickerMessageConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := StickerMessage{
-				MessageCommon: msgCommon,
-				Content:       tc.content,
+			msg := StickerMsg{
+				MsgCommon: msgCommon,
+				Content:   tc.content,
 			}
 			err := msg.Validate()
 			require.NotNil(t, err)
