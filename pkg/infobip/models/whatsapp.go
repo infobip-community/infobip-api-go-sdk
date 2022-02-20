@@ -16,19 +16,13 @@ func setupWhatsAppValidations() {
 		validate = validator.New()
 	}
 	validate.RegisterStructValidation(templateCreateValidation, TemplateCreate{})
-	validate.RegisterStructValidation(templateButtonValidation, TemplateButton{})
-
+	validate.RegisterStructValidation(templateCreateButtonValidation, TemplateButton{})
 	validate.RegisterStructValidation(templateMsgValidation, TemplateMsg{})
 	validate.RegisterStructValidation(templateMsgButtonValidation, TemplateMsgButton{})
-
 	validate.RegisterStructValidation(textMsgValidation, TextMsg{})
-
 	validate.RegisterStructValidation(contactValidation, Contact{})
-
 	validate.RegisterStructValidation(interactiveButtonsMsgValidation, InteractiveButtonsMsg{})
-
 	validate.RegisterStructValidation(interactiveListMsgValidation, InteractiveListMsg{})
-
 	validate.RegisterStructValidation(multiproductMsgValidation, InteractiveMultiproductMsg{})
 }
 
@@ -68,10 +62,9 @@ type TemplateResponse struct {
 }
 
 type TemplateStructure struct {
-	Header *TemplateHeader `json:"header,omitempty"`
-	Body   string          `json:"body" validate:"required"`
-	Footer string          `json:"footer,omitempty" validate:"lte=60"`
-	// TODO: add validation for up to 2 action buttons and 3 quick replies
+	Header  *TemplateHeader  `json:"header,omitempty"`
+	Body    string           `json:"body" validate:"required"`
+	Footer  string           `json:"footer,omitempty" validate:"lte=60"`
 	Buttons []TemplateButton `json:"buttons,omitempty" validate:"omitempty,min=1,max=3,dive"`
 	Type    string           `json:"type,omitempty" validate:"oneof=TEXT MEDIA UNSUPPORTED"`
 }
@@ -103,8 +96,9 @@ func templateCreateValidation(sl validator.StructLevel) {
 	template, _ := sl.Current().Interface().(TemplateCreate)
 	validateTemplateName(sl, template)
 	validateTemplateLanguage(sl, template)
-	validateCategory(sl, template)
+	validateTemplateCategory(sl, template)
 	validateTemplateHeader(sl, template)
+	validateTemplateButtons(sl, template)
 }
 
 func validateTemplateName(sl validator.StructLevel, template TemplateCreate) {
@@ -125,7 +119,7 @@ func validateTemplateLanguage(sl validator.StructLevel, template TemplateCreate)
 	}
 }
 
-func validateCategory(sl validator.StructLevel, template TemplateCreate) {
+func validateTemplateCategory(sl validator.StructLevel, template TemplateCreate) {
 	switch template.Category {
 	case "ACCOUNT_UPDATE", "PAYMENT_UPDATE", "PERSONAL_FINANCE_UPDATE", "SHIPPING_UPDATE",
 		"RESERVATION_UPDATE", "ISSUE_RESOLUTION", "APPOINTMENT_UPDATE", "TRANSPORTATION_UPDATE",
@@ -142,7 +136,21 @@ func validateTemplateHeader(sl validator.StructLevel, template TemplateCreate) {
 	}
 }
 
-func templateButtonValidation(sl validator.StructLevel) {
+func validateTemplateButtons(sl validator.StructLevel, template TemplateCreate) {
+	types := map[string]int{"QUICK_REPLY": 0, "PHONE_NUMBER": 0, "URL": 0}
+	for _, button := range template.Structure.Buttons {
+		types[button.Type]++
+	}
+
+	if types["QUICK_REPLY"] > 0 && (types["URL"] > 0 || types["PHONE_NUMBER"] > 0) {
+		sl.ReportError(template.Structure.Buttons, "buttons", "Buttons", "mixedquickreplyactiontypes", "")
+	}
+	if types["URL"] > 1 || types["PHONE_NUMBER"] > 1 {
+		sl.ReportError(template.Structure.Buttons, "buttons", "Buttons", "multiplesameactiontypes", "")
+	}
+}
+
+func templateCreateButtonValidation(sl validator.StructLevel) {
 	button, _ := sl.Current().Interface().(TemplateButton)
 	switch button.Type {
 	case "PHONE_NUMBER":

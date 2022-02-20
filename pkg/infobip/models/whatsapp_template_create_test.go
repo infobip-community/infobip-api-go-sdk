@@ -89,6 +89,43 @@ func TestValidTemplateCreate(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "complete input, multiple QUICK_REPLY buttons",
+			instance: TemplateCreate{
+				Name:     "template_name",
+				Language: "en",
+				Category: "ACCOUNT_UPDATE",
+				Structure: TemplateStructure{
+					Header: &TemplateHeader{Format: "TEXT", Text: "Some text"},
+					Body:   "body {{1}} content",
+					Footer: "Footer text",
+					Buttons: []TemplateButton{
+						{Type: "QUICK_REPLY", Text: "Button text"},
+						{Type: "QUICK_REPLY", Text: "Button text"},
+						{Type: "QUICK_REPLY", Text: "Button text"},
+					},
+					Type: "TEXT",
+				},
+			},
+		},
+		{
+			name: "complete input, multiple PHONE_NUMBER/URL buttons",
+			instance: TemplateCreate{
+				Name:     "template_name",
+				Language: "en",
+				Category: "ACCOUNT_UPDATE",
+				Structure: TemplateStructure{
+					Header: &TemplateHeader{Format: "TEXT", Text: "Some text"},
+					Body:   "body {{1}} content",
+					Footer: "Footer text",
+					Buttons: []TemplateButton{
+						{Type: "PHONE_NUMBER", Text: "Button text", PhoneNumber: "16175551213"},
+						{Type: "URL", Text: "Button text", URL: "https://www.google.com"},
+					},
+					Type: "TEXT",
+				},
+			},
+		},
 	}
 
 	for _, tc := range tests {
@@ -347,6 +384,88 @@ func TestTemplateCreateConstraints(t *testing.T) {
 					Type: "TEXT",
 					Buttons: []TemplateButton{
 						{Type: "QUICK_REPLY"},
+					},
+				},
+			},
+		},
+		{
+			name: "more than 3 Structure Buttons of type QUICK_REPLY",
+			instance: TemplateCreate{
+				Name:     "template_name",
+				Language: "en",
+				Category: "ACCOUNT_UPDATE",
+				Structure: TemplateStructure{
+					Body: "body {{1}} content",
+					Type: "TEXT",
+					Buttons: []TemplateButton{
+						{Type: "QUICK_REPLY", Text: "Some text"},
+						{Type: "QUICK_REPLY", Text: "Some text"},
+						{Type: "QUICK_REPLY", Text: "Some text"},
+						{Type: "QUICK_REPLY", Text: "Some text"},
+					},
+				},
+			},
+		},
+		{
+			name: "more than 1 Structure Button of type PHONE_NUMBER",
+			instance: TemplateCreate{
+				Name:     "template_name",
+				Language: "en",
+				Category: "ACCOUNT_UPDATE",
+				Structure: TemplateStructure{
+					Body: "body {{1}} content",
+					Type: "TEXT",
+					Buttons: []TemplateButton{
+						{Type: "PHONE_NUMBER", Text: "Button text", PhoneNumber: "16175551213"},
+						{Type: "PHONE_NUMBER", Text: "Button text", PhoneNumber: "16175551213"},
+					},
+				},
+			},
+		},
+		{
+			name: "more than 1 Structure Button of type URL",
+			instance: TemplateCreate{
+				Name:     "template_name",
+				Language: "en",
+				Category: "ACCOUNT_UPDATE",
+				Structure: TemplateStructure{
+					Body: "body {{1}} content",
+					Type: "TEXT",
+					Buttons: []TemplateButton{
+						{Type: "URL", Text: "Button text", URL: "https://www.google.com"},
+						{Type: "URL", Text: "Button text", URL: "https://www.google.com"},
+					},
+				},
+			},
+		},
+		{
+			name: "contains Structure Buttons of type QUICK_REPLY and PHONE_NUMBER",
+			instance: TemplateCreate{
+				Name:     "template_name",
+				Language: "en",
+				Category: "ACCOUNT_UPDATE",
+				Structure: TemplateStructure{
+					Body: "body {{1}} content",
+					Type: "TEXT",
+					Buttons: []TemplateButton{
+						{Type: "QUICK_REPLY", Text: "Some text"},
+						{Type: "PHONE_NUMBER", Text: "Button text", PhoneNumber: "16175551213"},
+					},
+				},
+			},
+		},
+		{
+			name: "contains Structure Buttons of type QUICK_REPLY and URL",
+			instance: TemplateCreate{
+				Name:     "template_name",
+				Language: "en",
+				Category: "ACCOUNT_UPDATE",
+				Structure: TemplateStructure{
+					Body: "body {{1}} content",
+					Type: "TEXT",
+					Buttons: []TemplateButton{
+						{Type: "QUICK_REPLY", Text: "Some text"},
+						{Type: "URL", Text: "Button text", URL: "https://www.google.com"},
 					},
 				},
 			},
