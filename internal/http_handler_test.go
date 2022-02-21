@@ -1,4 +1,4 @@
-package infobip
+package internal
 
 import (
 	"context"
@@ -18,7 +18,7 @@ import (
 
 func TestReqValidInput(t *testing.T) {
 	type test struct {
-		handler     httpHandler
+		handler     HTTPHandler
 		method      string
 		path        string
 		body        interface{}
@@ -99,9 +99,9 @@ func TestReqValidInput(t *testing.T) {
 			defer serv.Close()
 
 			host := serv.URL
-			tc.handler.baseURL = host
-			tc.handler.httpClient = tc.httpClient
-			tc.handler.apiKey = apiKey
+			tc.handler.BaseURL = host
+			tc.handler.HTTPClient = tc.httpClient
+			tc.handler.APIKey = apiKey
 
 			resp, body, err := tc.handler.request(context.Background(), tc.method, tc.path, tc.body, tc.queryParams)
 
@@ -119,7 +119,7 @@ func TestReqContext(t *testing.T) {
 	}))
 	defer serv.Close()
 
-	handler := httpHandler{httpClient: http.Client{}, baseURL: serv.URL}
+	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
 		cancel()
@@ -136,7 +136,7 @@ func TestReqInvalidMethod(t *testing.T) {
 	}))
 	defer serv.Close()
 
-	handler := httpHandler{httpClient: http.Client{}, baseURL: serv.URL}
+	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
 	resp, _, err := handler.request(context.Background(), "ČĆŽŽ", "some/path", nil, nil)
 
 	require.NotNil(t, err)
@@ -150,7 +150,7 @@ func TestReqInvalidResBody(t *testing.T) {
 	}))
 	defer serv.Close()
 
-	handler := httpHandler{httpClient: http.Client{}, baseURL: serv.URL}
+	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
 	resp, _, err := handler.request(context.Background(), http.MethodGet, "some/path", nil, nil)
 
 	require.NotNil(t, err)
@@ -163,7 +163,7 @@ func TestReqInvalidPayload(t *testing.T) {
 	}))
 	defer serv.Close()
 
-	handler := httpHandler{httpClient: http.Client{}, baseURL: serv.URL}
+	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
 	resp, _, err := handler.request(context.Background(), http.MethodPost, "some/path", math.Inf(1), nil)
 
 	require.NotNil(t, err)
@@ -177,7 +177,7 @@ func TestReqInvalidHost(t *testing.T) {
 	}))
 	defer serv.Close()
 
-	handler := httpHandler{httpClient: http.Client{}, baseURL: "nonexistent"}
+	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: "nonexistent"}
 	resp, _, err := handler.request(context.Background(), http.MethodGet, "some/path", nil, nil)
 
 	require.NotNil(t, err)
@@ -189,9 +189,9 @@ func TestGetReqErr(t *testing.T) {
 	}))
 	defer serv.Close()
 
-	handler := httpHandler{httpClient: http.Client{}, baseURL: "nonexistent"}
+	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: "nonexistent"}
 	respResource := models.MsgResponse{}
-	respDetails, err := handler.getRequest(context.Background(), &respResource, "some/path")
+	respDetails, err := handler.GetRequest(context.Background(), &respResource, "some/path")
 
 	require.NotNil(t, err)
 	assert.NotNil(t, respDetails)
@@ -203,7 +203,7 @@ func TestPostReqErr(t *testing.T) {
 	}))
 	defer serv.Close()
 
-	handler := httpHandler{httpClient: http.Client{}, baseURL: "nonexistent"}
+	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: "nonexistent"}
 	msg := models.TextMsg{
 		MsgCommon: models.MsgCommon{
 			From: "+16175551213",
@@ -212,7 +212,7 @@ func TestPostReqErr(t *testing.T) {
 		Content: models.TextContent{Text: "hello world"},
 	}
 	respResource := models.MsgResponse{}
-	respDetails, err := handler.postRequest(context.Background(), &msg, &respResource, "some/path")
+	respDetails, err := handler.PostRequest(context.Background(), &msg, &respResource, "some/path")
 
 	require.NotNil(t, err)
 	assert.NotNil(t, respDetails)
@@ -226,7 +226,7 @@ func TestGenerateHeaders(t *testing.T) {
 	}
 
 	apiKey := "secret"
-	handler := httpHandler{apiKey: apiKey}
+	handler := HTTPHandler{APIKey: apiKey}
 	tests := []test{{method: "GET"}, {method: "POST", expectedContentType: "application/json"}}
 	for _, tc := range tests {
 		t.Run(tc.method, func(t *testing.T) {

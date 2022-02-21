@@ -1,9 +1,10 @@
-package infobip
+package whatsapp
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"infobip-go-client/internal"
 	"infobip-go-client/pkg/infobip/models"
 	"io/ioutil"
 	"net/http"
@@ -17,11 +18,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDocValidReq(t *testing.T) {
+func TestAudioValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.DocumentMsg{
+	msg := models.AudioMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.DocumentContent{MediaURL: "https://www.mypath.com/whatsappdoc.txt"},
+		Content:   models.AudioContent{MediaURL: "https://www.mypath.com/whatsappaudio.mp3"},
 	}
 	rawJSONResp := []byte(`{
 		"to": "441134960001",
@@ -40,12 +41,12 @@ func TestDocValidReq(t *testing.T) {
 	require.Nil(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendDocumentPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendAudioPath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.DocumentMsg
+		var receivedMsg models.AudioMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -54,10 +55,13 @@ func TestDocValidReq(t *testing.T) {
 		assert.Nil(t, servErr)
 	}))
 	defer serv.Close()
-	client, err := NewClient(serv.URL, apiKey)
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    serv.URL,
+		APIKey:     apiKey,
+	}}
 
-	msgResp, respDetails, err := client.WhatsApp().SendDocumentMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendAudioMsg(context.Background(), msg)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.MsgResponse{}, msgResp)
@@ -68,23 +72,26 @@ func TestDocValidReq(t *testing.T) {
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidDoc(t *testing.T) {
-	msg := models.DocumentMsg{
+func TestInvalidAudioMsg(t *testing.T) {
+	msg := models.AudioMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.DocumentContent{MediaURL: "hello world"},
+		Content:   models.AudioContent{MediaURL: "hello world"},
 	}
-	client, err := NewClient("https://something.api.infobip.com", "secret")
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    "https://something.api.infobip.com",
+		APIKey:     "secret",
+	}}
 
-	msgResp, respDetails, err := client.WhatsApp().SendDocumentMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendAudioMsg(context.Background(), msg)
+
 	require.NotNil(t, err)
-
 	assert.IsType(t, err, validator.ValidationErrors{})
 	assert.Equal(t, models.MsgResponse{}, msgResp)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestDoc4xxErrors(t *testing.T) {
+func TestAudio4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -130,9 +137,9 @@ func TestDoc4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.DocumentMsg{
+	msg := models.AudioMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.DocumentContent{MediaURL: "https://www.mypath.com/whatsappdoc.txt"},
+		Content:   models.AudioContent{MediaURL: "https://www.mypath.com/whatsappaudio.mp3"},
 	}
 
 	for _, tc := range tests {
@@ -145,10 +152,13 @@ func TestDoc4xxErrors(t *testing.T) {
 				_, servErr := w.Write(tc.rawJSONResp)
 				assert.Nil(t, servErr)
 			}))
-			client, err := NewClient(serv.URL, "secret")
-			require.Nil(t, err)
+			whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+				HTTPClient: http.Client{},
+				BaseURL:    serv.URL,
+				APIKey:     "secret",
+			}}
 
-			msgResp, respDetails, err := client.WhatsApp().SendDocumentMsg(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.SendAudioMsg(context.Background(), msg)
 			serv.Close()
 
 			require.Nil(t, err)

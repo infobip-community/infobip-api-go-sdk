@@ -1,9 +1,10 @@
-package infobip
+package whatsapp
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"infobip-go-client/internal"
 	"infobip-go-client/pkg/infobip/models"
 	"io/ioutil"
 	"net/http"
@@ -63,10 +64,13 @@ func TestInteractiveMultiproductValidReq(t *testing.T) {
 		assert.Nil(t, servErr)
 	}))
 	defer serv.Close()
-	client, err := NewClient(serv.URL, apiKey)
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    serv.URL,
+		APIKey:     apiKey,
+	}}
 
-	msgResp, respDetails, err := client.WhatsApp().SendInteractiveMultiproductMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendInteractiveMultiproductMsg(context.Background(), msg)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.MsgResponse{}, msgResp)
@@ -91,10 +95,13 @@ func TestInvalidInteractiveMultiproductMsg(t *testing.T) {
 			},
 		},
 	}
-	client, err := NewClient("https://something.api.infobip.com", "secret")
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    "https://something.api.infobip.com",
+		APIKey:     "secret",
+	}}
 
-	msgResp, respDetails, err := client.WhatsApp().SendInteractiveMultiproductMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendInteractiveMultiproductMsg(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
@@ -171,10 +178,13 @@ func TestInteractiveMultiproduct4xxErrors(t *testing.T) {
 				_, servErr := w.Write(tc.rawJSONResp)
 				assert.Nil(t, servErr)
 			}))
-			client, err := NewClient(serv.URL, "secret")
-			require.Nil(t, err)
+			whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+				HTTPClient: http.Client{},
+				BaseURL:    serv.URL,
+				APIKey:     "secret",
+			}}
 
-			msgResp, respDetails, err := client.WhatsApp().SendInteractiveMultiproductMsg(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.SendInteractiveMultiproductMsg(context.Background(), msg)
 			serv.Close()
 
 			require.Nil(t, err)

@@ -1,11 +1,11 @@
-package infobip
+package whatsapp
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"infobip-go-client/internal"
 	"infobip-go-client/pkg/infobip/models"
-	"infobip-go-client/pkg/infobip/utils"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -18,14 +18,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestLocationValidReq(t *testing.T) {
+func TestTextValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.LocationMsg{
+	msg := models.TextMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.LocationContent{
-			Latitude:  utils.Float32Ptr(44.9526862),
-			Longitude: utils.Float32Ptr(13.8545217),
-		},
+		Content:   models.TextContent{Text: "hello world"},
 	}
 	rawJSONResp := []byte(`{
 		"to": "441134960001",
@@ -44,12 +41,12 @@ func TestLocationValidReq(t *testing.T) {
 	require.Nil(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendLocationPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendMessagePath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.LocationMsg
+		var receivedMsg models.TextMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -58,10 +55,13 @@ func TestLocationValidReq(t *testing.T) {
 		assert.Nil(t, servErr)
 	}))
 	defer serv.Close()
-	client, err := NewClient(serv.URL, apiKey)
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    serv.URL,
+		APIKey:     apiKey,
+	}}
 
-	msgResp, respDetails, err := client.WhatsApp().SendLocationMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendTextMsg(context.Background(), msg)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.MsgResponse{}, msgResp)
@@ -72,15 +72,18 @@ func TestLocationValidReq(t *testing.T) {
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidLocationMsg(t *testing.T) {
-	msg := models.LocationMsg{
+func TestInvalidTextMsg(t *testing.T) {
+	msg := models.TextMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.LocationContent{Latitude: utils.Float32Ptr(10)},
+		Content:   models.TextContent{Text: ""},
 	}
-	client, err := NewClient("https://something.api.infobip.com", "secret")
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    "https://something.api.infobip.com",
+		APIKey:     "secret",
+	}}
 
-	msgResp, respDetails, err := client.WhatsApp().SendLocationMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendTextMsg(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
@@ -88,7 +91,7 @@ func TestInvalidLocationMsg(t *testing.T) {
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestLocation4xxErrors(t *testing.T) {
+func TestText4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -100,11 +103,9 @@ func TestLocation4xxErrors(t *testing.T) {
 						"messageId": "BAD_REQUEST",
 						"text": "Bad request",
 						"validationErrors": {
-							"content.latitude": [
-								"must be greater than or equal to -90"
-							],
-							"content.longitude": [
-								"must be less than or equal to 180"
+							"content.text": [
+								"size must be between 1 and 4096",
+								"must not be blank"
 							]
 						}
 					}
@@ -135,9 +136,9 @@ func TestLocation4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.LocationMsg{
+	msg := models.TextMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.LocationContent{Latitude: utils.Float32Ptr(10), Longitude: utils.Float32Ptr(10)},
+		Content:   models.TextContent{Text: "hello world"},
 	}
 
 	for _, tc := range tests {
@@ -150,10 +151,13 @@ func TestLocation4xxErrors(t *testing.T) {
 				_, servErr := w.Write(tc.rawJSONResp)
 				assert.Nil(t, servErr)
 			}))
-			client, err := NewClient(serv.URL, "secret")
-			require.Nil(t, err)
+			whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+				HTTPClient: http.Client{},
+				BaseURL:    serv.URL,
+				APIKey:     "secret",
+			}}
 
-			msgResp, respDetails, err := client.WhatsApp().SendLocationMsg(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.SendTextMsg(context.Background(), msg)
 			serv.Close()
 
 			require.Nil(t, err)

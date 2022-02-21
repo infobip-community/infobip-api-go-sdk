@@ -72,7 +72,6 @@ func TestSendTextExample(t *testing.T) {
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.MsgResponse{}, msgResp)
-	fmt.Printf("%+v", msgResp)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
 }
 

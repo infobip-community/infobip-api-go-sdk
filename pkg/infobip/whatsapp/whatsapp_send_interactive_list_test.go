@@ -1,9 +1,10 @@
-package infobip
+package whatsapp
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"infobip-go-client/internal"
 	"infobip-go-client/pkg/infobip/models"
 	"io/ioutil"
 	"net/http"
@@ -17,11 +18,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestVideoValidReq(t *testing.T) {
+func TestInteractiveListValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.VideoMsg{
+	msg := models.InteractiveListMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.VideoContent{MediaURL: "https://www.mypath.com/whatsappvideo.mp4"},
+		Content: models.InteractiveListContent{
+			Body: models.InteractiveListBody{Text: "Some text"},
+			Action: models.InteractiveListAction{
+				Title:    "Choose one",
+				Sections: []models.InteractiveListSection{{Rows: []models.SectionRow{{ID: "1", Title: "row title"}}}},
+			},
+		},
 	}
 	rawJSONResp := []byte(`{
 		"to": "441134960001",
@@ -40,12 +47,12 @@ func TestVideoValidReq(t *testing.T) {
 	require.Nil(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendVideoPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendInteractiveListPath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.VideoMsg
+		var receivedMsg models.InteractiveListMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -54,37 +61,49 @@ func TestVideoValidReq(t *testing.T) {
 		assert.Nil(t, servErr)
 	}))
 	defer serv.Close()
-	client, err := NewClient(serv.URL, apiKey)
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    serv.URL,
+		APIKey:     apiKey,
+	}}
 
-	msgResp, respDetails, err := client.WhatsApp().SendVideoMsg(context.Background(), msg)
+	msgResponse, respDetails, err := whatsApp.SendInteractiveListMsg(context.Background(), msg)
 
 	require.Nil(t, err)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
-	assert.Equal(t, expectedResp, msgResp)
+	assert.NotEqual(t, models.MsgResponse{}, msgResponse)
+	assert.Equal(t, expectedResp, msgResponse)
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidVideoMsg(t *testing.T) {
-	msg := models.VideoMsg{
+func TestInvalidInteractiveListMsg(t *testing.T) {
+	msg := models.InteractiveListMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.VideoContent{MediaURL: "hello world"},
+		Content: models.InteractiveListContent{
+			Body: models.InteractiveListBody{Text: "Some text"},
+			Action: models.InteractiveListAction{
+				Title:    "Choose one",
+				Sections: []models.InteractiveListSection{{Rows: []models.SectionRow{{ID: "1"}}}},
+			},
+		},
 	}
-	client, err := NewClient("https://something.api.infobip.com", "secret")
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    "https://something.api.infobip.com",
+		APIKey:     "secret",
+	}}
 
-	msgResp, respDetails, err := client.WhatsApp().SendVideoMsg(context.Background(), msg)
+	msgResponse, respDetails, err := whatsApp.SendInteractiveListMsg(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
-	assert.Equal(t, models.MsgResponse{}, msgResp)
+	assert.Equal(t, models.MsgResponse{}, msgResponse)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestVideo4xxErrors(t *testing.T) {
+func TestInteractiveList4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -96,9 +115,8 @@ func TestVideo4xxErrors(t *testing.T) {
 						"messageId": "BAD_REQUEST",
 						"text": "Bad request",
 						"validationErrors": {
-							"content.mediaUrl": [
-								"size must be between 1 and 2048",
-								"is not a valid url",
+							"content.header.text": [
+								"size must be between 1 and 60",
 								"must not be blank"
 							]
 						}
@@ -130,9 +148,15 @@ func TestVideo4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.VideoMsg{
+	msg := models.InteractiveListMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.VideoContent{MediaURL: "https://www.mypath.com/whatsappvideo.mp4"},
+		Content: models.InteractiveListContent{
+			Body: models.InteractiveListBody{Text: "Some text"},
+			Action: models.InteractiveListAction{
+				Title:    "Choose one",
+				Sections: []models.InteractiveListSection{{Rows: []models.SectionRow{{ID: "1", Title: "row title"}}}},
+			},
+		},
 	}
 
 	for _, tc := range tests {
@@ -145,10 +169,13 @@ func TestVideo4xxErrors(t *testing.T) {
 				_, servErr := w.Write(tc.rawJSONResp)
 				assert.Nil(t, servErr)
 			}))
-			client, err := NewClient(serv.URL, "secret")
-			require.Nil(t, err)
+			whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+				HTTPClient: http.Client{},
+				BaseURL:    serv.URL,
+				APIKey:     "secret",
+			}}
 
-			msgResp, respDetails, err := client.WhatsApp().SendVideoMsg(context.Background(), msg)
+			messageResponse, respDetails, err := whatsApp.SendInteractiveListMsg(context.Background(), msg)
 			serv.Close()
 
 			require.Nil(t, err)
@@ -156,7 +183,7 @@ func TestVideo4xxErrors(t *testing.T) {
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
-			assert.Equal(t, models.MsgResponse{}, msgResp)
+			assert.Equal(t, models.MsgResponse{}, messageResponse)
 		})
 	}
 }

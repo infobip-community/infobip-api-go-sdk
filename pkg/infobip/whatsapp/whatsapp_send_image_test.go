@@ -1,9 +1,10 @@
-package infobip
+package whatsapp
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"infobip-go-client/internal"
 	"infobip-go-client/pkg/infobip/models"
 	"io/ioutil"
 	"net/http"
@@ -17,11 +18,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTextValidReq(t *testing.T) {
+func TestImageValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.TextMsg{
+	msg := models.ImageMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.TextContent{Text: "hello world"},
+		Content:   models.ImageContent{MediaURL: "https://www.mypath.com/whatsappimage.jpg"},
 	}
 	rawJSONResp := []byte(`{
 		"to": "441134960001",
@@ -40,12 +41,12 @@ func TestTextValidReq(t *testing.T) {
 	require.Nil(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendMessagePath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendImagePath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.TextMsg
+		var receivedMsg models.ImageMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -54,10 +55,13 @@ func TestTextValidReq(t *testing.T) {
 		assert.Nil(t, servErr)
 	}))
 	defer serv.Close()
-	client, err := NewClient(serv.URL, apiKey)
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    serv.URL,
+		APIKey:     apiKey,
+	}}
 
-	msgResp, respDetails, err := client.WhatsApp().SendTextMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendImageMsg(context.Background(), msg)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.MsgResponse{}, msgResp)
@@ -68,15 +72,18 @@ func TestTextValidReq(t *testing.T) {
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidTextMsg(t *testing.T) {
-	msg := models.TextMsg{
+func TestInvalidImageMsg(t *testing.T) {
+	msg := models.ImageMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.TextContent{Text: ""},
+		Content:   models.ImageContent{MediaURL: "hello world"},
 	}
-	client, err := NewClient("https://something.api.infobip.com", "secret")
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    "https://something.api.infobip.com",
+		APIKey:     "secret",
+	}}
 
-	msgResp, respDetails, err := client.WhatsApp().SendTextMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendImageMsg(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
@@ -84,7 +91,7 @@ func TestInvalidTextMsg(t *testing.T) {
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestText4xxErrors(t *testing.T) {
+func TestImage4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -96,8 +103,9 @@ func TestText4xxErrors(t *testing.T) {
 						"messageId": "BAD_REQUEST",
 						"text": "Bad request",
 						"validationErrors": {
-							"content.text": [
-								"size must be between 1 and 4096",
+							"content.mediaUrl": [
+								"size must be between 1 and 2048",
+								"is not a valid url",
 								"must not be blank"
 							]
 						}
@@ -129,9 +137,9 @@ func TestText4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.TextMsg{
+	msg := models.ImageMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.TextContent{Text: "hello world"},
+		Content:   models.ImageContent{MediaURL: "https://www.mypath.com/whatsappimage.jpg"},
 	}
 
 	for _, tc := range tests {
@@ -144,10 +152,13 @@ func TestText4xxErrors(t *testing.T) {
 				_, servErr := w.Write(tc.rawJSONResp)
 				assert.Nil(t, servErr)
 			}))
-			client, err := NewClient(serv.URL, "secret")
-			require.Nil(t, err)
+			whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+				HTTPClient: http.Client{},
+				BaseURL:    serv.URL,
+				APIKey:     "secret",
+			}}
 
-			msgResp, respDetails, err := client.WhatsApp().SendTextMsg(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.SendImageMsg(context.Background(), msg)
 			serv.Close()
 
 			require.Nil(t, err)

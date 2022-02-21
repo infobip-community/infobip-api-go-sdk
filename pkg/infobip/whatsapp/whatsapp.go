@@ -1,8 +1,9 @@
-package infobip
+package whatsapp
 
 import (
 	"context"
 	"fmt"
+	"infobip-go-client/internal"
 	"infobip-go-client/pkg/infobip/models"
 	"net/http"
 )
@@ -31,13 +32,13 @@ type WhatsApp interface {
 	CreateTemplate(context.Context, string, models.TemplateCreate) (models.TemplateResponse, models.ResponseDetails, error)
 }
 
-type whatsAppChannel struct {
-	reqHandler httpHandler
+type Channel struct {
+	ReqHandler internal.HTTPHandler
 }
 
-func newWhatsApp(apiKey string, baseURL string, httpClient http.Client) *whatsAppChannel {
-	return &whatsAppChannel{
-		reqHandler: httpHandler{apiKey: apiKey, baseURL: baseURL, httpClient: httpClient},
+func NewWhatsApp(apiKey string, baseURL string, httpClient http.Client) *Channel {
+	return &Channel{
+		ReqHandler: internal.HTTPHandler{APIKey: apiKey, BaseURL: baseURL, HTTPClient: httpClient},
 	}
 }
 
@@ -56,123 +57,123 @@ const sendInteractiveProductPath = "whatsapp/1/message/interactive/product"
 const sendInteractiveMultiproductPath = "whatsapp/1/message/interactive/multi-product"
 const templatesPath = "whatsapp/1/senders/%s/templates"
 
-func (wap *whatsAppChannel) SendTemplateMsgs(
+func (wap *Channel) SendTemplateMsgs(
 	ctx context.Context,
 	messages models.TemplateMsgs,
 ) (msgResp models.BulkMsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &messages, &msgResp, sendTemplateMessagesPath)
+	respDetails, err = wap.ReqHandler.PostRequest(ctx, &messages, &msgResp, sendTemplateMessagesPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *whatsAppChannel) SendTextMsg(
+func (wap *Channel) SendTextMsg(
 	ctx context.Context,
 	msg models.TextMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &msg, &msgResp, sendMessagePath)
+	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendMessagePath)
 	return msgResp, respDetails, err
 }
 
-func (wap *whatsAppChannel) SendDocumentMsg(
+func (wap *Channel) SendDocumentMsg(
 	ctx context.Context,
 	msg models.DocumentMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &msg, &msgResp, sendDocumentPath)
+	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendDocumentPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *whatsAppChannel) SendImageMsg(
+func (wap *Channel) SendImageMsg(
 	ctx context.Context,
 	msg models.ImageMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &msg, &msgResp, sendImagePath)
+	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendImagePath)
 	return msgResp, respDetails, err
 }
 
-func (wap *whatsAppChannel) SendAudioMsg(
+func (wap *Channel) SendAudioMsg(
 	ctx context.Context,
 	msg models.AudioMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &msg, &msgResp, sendAudioPath)
+	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendAudioPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *whatsAppChannel) SendVideoMsg(
+func (wap *Channel) SendVideoMsg(
 	ctx context.Context,
 	msg models.VideoMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &msg, &msgResp, sendVideoPath)
+	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendVideoPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *whatsAppChannel) SendStickerMsg(
+func (wap *Channel) SendStickerMsg(
 	ctx context.Context,
 	msg models.StickerMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &msg, &msgResp, sendStickerPath)
+	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendStickerPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *whatsAppChannel) SendLocationMsg(
+func (wap *Channel) SendLocationMsg(
 	ctx context.Context,
 	msg models.LocationMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &msg, &msgResp, sendLocationPath)
+	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendLocationPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *whatsAppChannel) SendContactMsg(
+func (wap *Channel) SendContactMsg(
 	ctx context.Context,
 	msg models.ContactMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &msg, &msgResp, sendContactPath)
+	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendContactPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *whatsAppChannel) SendInteractiveButtonsMsg(
+func (wap *Channel) SendInteractiveButtonsMsg(
 	ctx context.Context,
 	msg models.InteractiveButtonsMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &msg, &msgResp, sendInteractiveButtonsPath)
+	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendInteractiveButtonsPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *whatsAppChannel) SendInteractiveListMsg(
+func (wap *Channel) SendInteractiveListMsg(
 	ctx context.Context,
 	msg models.InteractiveListMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &msg, &msgResp, sendInteractiveListPath)
+	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendInteractiveListPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *whatsAppChannel) SendInteractiveProductMsg(
+func (wap *Channel) SendInteractiveProductMsg(
 	ctx context.Context,
 	msg models.InteractiveProductMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &msg, &msgResp, sendInteractiveProductPath)
+	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendInteractiveProductPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *whatsAppChannel) SendInteractiveMultiproductMsg(
+func (wap *Channel) SendInteractiveMultiproductMsg(
 	ctx context.Context,
 	msg models.InteractiveMultiproductMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &msg, &msgResp, sendInteractiveMultiproductPath)
+	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendInteractiveMultiproductPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *whatsAppChannel) GetTemplates(
+func (wap *Channel) GetTemplates(
 	ctx context.Context,
 	sender string,
 ) (resp models.TemplatesResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.getRequest(ctx, &resp, fmt.Sprintf(templatesPath, sender))
+	respDetails, err = wap.ReqHandler.GetRequest(ctx, &resp, fmt.Sprintf(templatesPath, sender))
 	return resp, respDetails, err
 }
 
-func (wap *whatsAppChannel) CreateTemplate(
+func (wap *Channel) CreateTemplate(
 	ctx context.Context,
 	sender string,
 	template models.TemplateCreate,
 ) (resp models.TemplateResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.reqHandler.postRequest(ctx, &template, &resp, fmt.Sprintf(templatesPath, sender))
+	respDetails, err = wap.ReqHandler.PostRequest(ctx, &template, &resp, fmt.Sprintf(templatesPath, sender))
 	return resp, respDetails, err
 }

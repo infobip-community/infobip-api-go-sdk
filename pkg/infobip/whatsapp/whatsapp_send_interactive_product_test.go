@@ -1,9 +1,10 @@
-package infobip
+package whatsapp
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"infobip-go-client/internal"
 	"infobip-go-client/pkg/infobip/models"
 	"io/ioutil"
 	"net/http"
@@ -17,50 +18,40 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTemplateMsgValidReq(t *testing.T) {
+func TestInteractiveProductValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.TemplateMsgs{
-		Messages: []models.TemplateMsg{
-			{
-				MsgCommon: models.MsgCommon{From: "16175551213", To: "16175551212"},
-				Content: models.TemplateMsgContent{
-					TemplateName: "template_name",
-					TemplateData: models.TemplateData{
-						Body: models.TemplateBody{Placeholders: []string{}},
-					},
-					Language: "en_GB",
-				},
+	msg := models.InteractiveProductMsg{
+		MsgCommon: models.GenerateTestMsgCommon(),
+		Content: models.InteractiveProductContent{
+			Action: models.InteractiveProductAction{
+				CatalogID:         "1",
+				ProductRetailerID: "2",
 			},
 		},
 	}
 	rawJSONResp := []byte(`{
-		"messages": [
-			{
-				"to": "441134960001",
-				"messageCount": 1,
-				"messageId": "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-				"status": {
-					"groupId": 1,
-					"groupName": "PENDING",
-					"id": 7,
-					"name": "PENDING_ENROUTE",
-					"description": "Message sent to next instance"
-				}
-			}
-		],
-		"bulkId": "2034072219640523073"
+		"to": "441134960001",
+		"messageCount": 1,
+		"messageId": "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
+		"status": {
+			"groupId": 1,
+			"groupName": "PENDING",
+			"id": 7,
+			"name": "PENDING_ENROUTE",
+			"description": "Message sent to next instance"
+		}
 	}`)
-	var expectedResp models.BulkMsgResponse
+	var expectedResp models.MsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.Nil(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendTemplateMessagesPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendInteractiveProductPath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.TemplateMsgs
+		var receivedMsg models.InteractiveProductMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -69,13 +60,16 @@ func TestTemplateMsgValidReq(t *testing.T) {
 		assert.Nil(t, servErr)
 	}))
 	defer serv.Close()
-	client, err := NewClient(serv.URL, apiKey)
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    serv.URL,
+		APIKey:     apiKey,
+	}}
 
-	msgResp, respDetails, err := client.WhatsApp().SendTemplateMsgs(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendInteractiveProductMsg(context.Background(), msg)
 
 	require.Nil(t, err)
-	assert.NotEqual(t, models.BulkMsgResponse{}, msgResp)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 	assert.Equal(t, expectedResp, msgResp)
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
@@ -83,33 +77,30 @@ func TestTemplateMsgValidReq(t *testing.T) {
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidTemplateMsg(t *testing.T) {
-	msg := models.TemplateMsgs{
-		Messages: []models.TemplateMsg{
-			{
-				MsgCommon: models.MsgCommon{From: "16175551213", To: "16175551212"},
-				Content: models.TemplateMsgContent{
-					TemplateName: "INVALID",
-					TemplateData: models.TemplateData{
-						Body: models.TemplateBody{Placeholders: []string{}},
-					},
-					Language: "en_GB",
-				},
+func TestInvalidInteractiveProductMsg(t *testing.T) {
+	msg := models.InteractiveProductMsg{
+		MsgCommon: models.GenerateTestMsgCommon(),
+		Content: models.InteractiveProductContent{
+			Action: models.InteractiveProductAction{
+				ProductRetailerID: "2",
 			},
 		},
 	}
-	client, err := NewClient("https://something.api.infobip.com", "secret")
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    "https://something.api.infobip.com",
+		APIKey:     "secret",
+	}}
 
-	msgResp, respDetails, err := client.WhatsApp().SendTemplateMsgs(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendInteractiveProductMsg(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
-	assert.Equal(t, models.BulkMsgResponse{}, msgResp)
+	assert.Equal(t, models.MsgResponse{}, msgResp)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestTemplateMsg4xxErrors(t *testing.T) {
+func TestInteractiveProduct4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -121,8 +112,9 @@ func TestTemplateMsg4xxErrors(t *testing.T) {
 						"messageId": "BAD_REQUEST",
 						"text": "Bad request",
 						"validationErrors": {
-							"content.templateData.header.placeholder": [
-								"cannot have new-line/tab characters or more than 4 consecutive spaces"	
+							"content.footer.text": [
+								"size must be between 1 and 60",
+								"must not be blank"
 							]
 						}
 					}
@@ -153,17 +145,12 @@ func TestTemplateMsg4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.TemplateMsgs{
-		Messages: []models.TemplateMsg{
-			{
-				MsgCommon: models.MsgCommon{From: "16175551213", To: "16175551212"},
-				Content: models.TemplateMsgContent{
-					TemplateName: "template_name",
-					TemplateData: models.TemplateData{
-						Body: models.TemplateBody{Placeholders: []string{}},
-					},
-					Language: "en_GB",
-				},
+	msg := models.InteractiveProductMsg{
+		MsgCommon: models.GenerateTestMsgCommon(),
+		Content: models.InteractiveProductContent{
+			Action: models.InteractiveProductAction{
+				CatalogID:         "1",
+				ProductRetailerID: "2",
 			},
 		},
 	}
@@ -178,10 +165,13 @@ func TestTemplateMsg4xxErrors(t *testing.T) {
 				_, servErr := w.Write(tc.rawJSONResp)
 				assert.Nil(t, servErr)
 			}))
+			whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+				HTTPClient: http.Client{},
+				BaseURL:    serv.URL,
+				APIKey:     "secret",
+			}}
 
-			client, err := NewClient(serv.URL, "secret")
-			require.Nil(t, err)
-			msgResp, respDetails, err := client.WhatsApp().SendTemplateMsgs(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.SendInteractiveProductMsg(context.Background(), msg)
 			serv.Close()
 
 			require.Nil(t, err)
@@ -189,7 +179,7 @@ func TestTemplateMsg4xxErrors(t *testing.T) {
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
-			assert.Equal(t, models.BulkMsgResponse{}, msgResp)
+			assert.Equal(t, models.MsgResponse{}, msgResp)
 		})
 	}
 }

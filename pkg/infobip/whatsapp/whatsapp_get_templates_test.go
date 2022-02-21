@@ -1,9 +1,10 @@
-package infobip
+package whatsapp
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"infobip-go-client/internal"
 	"infobip-go-client/pkg/infobip/models"
 	"net/http"
 	"net/http/httptest"
@@ -52,10 +53,13 @@ func TestGetTemplatesValidReq(t *testing.T) {
 	}))
 	defer serv.Close()
 
-	client, err := NewClient(serv.URL, apiKey)
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    serv.URL,
+		APIKey:     apiKey,
+	}}
 
-	messageResponse, respDetails, err := client.WhatsApp().GetTemplates(context.Background(), sender)
+	messageResponse, respDetails, err := whatsApp.GetTemplates(context.Background(), sender)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.TemplatesResponse{}, messageResponse)
@@ -94,7 +98,6 @@ func TestGetTemplates4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	apiKey := "secret"
 
 	for _, tc := range tests {
 		t.Run(strconv.Itoa(tc.statusCode), func(t *testing.T) {
@@ -106,10 +109,13 @@ func TestGetTemplates4xxErrors(t *testing.T) {
 				_, servErr := w.Write(tc.rawJSONResp)
 				assert.Nil(t, servErr)
 			}))
-			client, err := NewClient(serv.URL, apiKey)
-			require.Nil(t, err)
+			whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+				HTTPClient: http.Client{},
+				BaseURL:    serv.URL,
+				APIKey:     "secret",
+			}}
 
-			messageResponse, respDetails, err := client.WhatsApp().GetTemplates(context.Background(), "111111111111")
+			messageResponse, respDetails, err := whatsApp.GetTemplates(context.Background(), "111111111111")
 			serv.Close()
 
 			require.Nil(t, err)
