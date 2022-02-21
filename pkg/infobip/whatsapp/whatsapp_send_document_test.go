@@ -1,9 +1,10 @@
-package infobip
+package whatsapp
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"infobip-go-client/internal"
 	"infobip-go-client/pkg/infobip/models"
 	"io/ioutil"
 	"net/http"
@@ -17,11 +18,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestStickerValidReq(t *testing.T) {
+func TestDocValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.StickerMsg{
+	msg := models.DocumentMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.StickerContent{MediaURL: "https://www.mypath.com/whatsappsticker.webp"},
+		Content:   models.DocumentContent{MediaURL: "https://www.mypath.com/whatsappdoc.txt"},
 	}
 	rawJSONResp := []byte(`{
 		"to": "441134960001",
@@ -40,12 +41,12 @@ func TestStickerValidReq(t *testing.T) {
 	require.Nil(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendStickerPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendDocumentPath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.StickerMsg
+		var receivedMsg models.DocumentMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -54,10 +55,13 @@ func TestStickerValidReq(t *testing.T) {
 		assert.Nil(t, servErr)
 	}))
 	defer serv.Close()
-	client, err := NewClient(serv.URL, apiKey)
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    serv.URL,
+		APIKey:     apiKey,
+	}}
 
-	msgResp, respDetails, err := client.WhatsApp().SendStickerMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendDocumentMsg(context.Background(), msg)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.MsgResponse{}, msgResp)
@@ -68,23 +72,26 @@ func TestStickerValidReq(t *testing.T) {
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidStickerMsg(t *testing.T) {
-	msg := models.StickerMsg{
+func TestInvalidDoc(t *testing.T) {
+	msg := models.DocumentMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.StickerContent{MediaURL: "hello world"},
+		Content:   models.DocumentContent{MediaURL: "hello world"},
 	}
-	client, err := NewClient("https://something.api.infobip.com", "secret")
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    "https://something.api.infobip.com",
+		APIKey:     "secret",
+	}}
 
-	msgResp, respDetails, err := client.WhatsApp().SendStickerMsg(context.Background(), msg)
-
+	msgResp, respDetails, err := whatsApp.SendDocumentMsg(context.Background(), msg)
 	require.NotNil(t, err)
+
 	assert.IsType(t, err, validator.ValidationErrors{})
 	assert.Equal(t, models.MsgResponse{}, msgResp)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestSticker4xxErrors(t *testing.T) {
+func TestDoc4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -130,9 +137,9 @@ func TestSticker4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.StickerMsg{
+	msg := models.DocumentMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.StickerContent{MediaURL: "https://www.mypath.com/whatsappsticker.webp"},
+		Content:   models.DocumentContent{MediaURL: "https://www.mypath.com/whatsappdoc.txt"},
 	}
 
 	for _, tc := range tests {
@@ -145,10 +152,13 @@ func TestSticker4xxErrors(t *testing.T) {
 				_, servErr := w.Write(tc.rawJSONResp)
 				assert.Nil(t, servErr)
 			}))
-			client, err := NewClient(serv.URL, "secret")
-			require.Nil(t, err)
+			whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+				HTTPClient: http.Client{},
+				BaseURL:    serv.URL,
+				APIKey:     "secret",
+			}}
 
-			msgResp, respDetails, err := client.WhatsApp().SendStickerMsg(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.SendDocumentMsg(context.Background(), msg)
 			serv.Close()
 
 			require.Nil(t, err)

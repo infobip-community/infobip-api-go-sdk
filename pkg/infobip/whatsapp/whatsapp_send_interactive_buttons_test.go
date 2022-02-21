@@ -1,9 +1,10 @@
-package infobip
+package whatsapp
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"infobip-go-client/internal"
 	"infobip-go-client/pkg/infobip/models"
 	"io/ioutil"
 	"net/http"
@@ -17,15 +18,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestInteractiveListValidReq(t *testing.T) {
+func TestInteractiveButtonsValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.InteractiveListMsg{
+	msg := models.InteractiveButtonsMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.InteractiveListContent{
-			Body: models.InteractiveListBody{Text: "Some text"},
-			Action: models.InteractiveListAction{
-				Title:    "Choose one",
-				Sections: []models.InteractiveListSection{{Rows: []models.SectionRow{{ID: "1", Title: "row title"}}}},
+		Content: models.InteractiveButtonsContent{
+			Body: models.InteractiveButtonsBody{Text: "Some text"},
+			Action: models.InteractiveButtons{
+				Buttons: []models.InteractiveButton{
+					{Type: "REPLY", ID: "1", Title: "Yes"},
+					{Type: "REPLY", ID: "2", Title: "No"},
+				},
 			},
 		},
 	}
@@ -46,12 +49,12 @@ func TestInteractiveListValidReq(t *testing.T) {
 	require.Nil(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendInteractiveListPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendInteractiveButtonsPath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.InteractiveListMsg
+		var receivedMsg models.InteractiveButtonsMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -60,43 +63,51 @@ func TestInteractiveListValidReq(t *testing.T) {
 		assert.Nil(t, servErr)
 	}))
 	defer serv.Close()
-	client, err := NewClient(serv.URL, apiKey)
-	require.Nil(t, err)
 
-	msgResponse, respDetails, err := client.WhatsApp().SendInteractiveListMsg(context.Background(), msg)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    serv.URL,
+		APIKey:     apiKey,
+	}}
+	messageResponse, respDetails, err := whatsApp.SendInteractiveButtonsMsg(context.Background(), msg)
 
 	require.Nil(t, err)
-	assert.NotEqual(t, models.MsgResponse{}, msgResponse)
-	assert.Equal(t, expectedResp, msgResponse)
+	assert.NotEqual(t, models.MsgResponse{}, messageResponse)
+	assert.Equal(t, expectedResp, messageResponse)
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidInteractiveListMsg(t *testing.T) {
-	msg := models.InteractiveListMsg{
+func TestInvalidInteractiveButtonsMsg(t *testing.T) {
+	msg := models.InteractiveButtonsMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.InteractiveListContent{
-			Body: models.InteractiveListBody{Text: "Some text"},
-			Action: models.InteractiveListAction{
-				Title:    "Choose one",
-				Sections: []models.InteractiveListSection{{Rows: []models.SectionRow{{ID: "1"}}}},
+		Content: models.InteractiveButtonsContent{
+			Body: models.InteractiveButtonsBody{Text: "Some text"},
+			Action: models.InteractiveButtons{
+				Buttons: []models.InteractiveButton{
+					{Type: "invalid", ID: "1", Title: "Yes"},
+					{Type: "REPLY", ID: "2", Title: "No"},
+				},
 			},
 		},
 	}
-	client, err := NewClient("https://something.api.infobip.com", "secret")
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    "https://something.api.infobip.com",
+		APIKey:     "secret",
+	}}
 
-	msgResponse, respDetails, err := client.WhatsApp().SendInteractiveListMsg(context.Background(), msg)
+	messageResponse, respDetails, err := whatsApp.SendInteractiveButtonsMsg(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
-	assert.Equal(t, models.MsgResponse{}, msgResponse)
+	assert.Equal(t, models.MsgResponse{}, messageResponse)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestInteractiveList4xxErrors(t *testing.T) {
+func TestInteractiveButtons4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -108,8 +119,9 @@ func TestInteractiveList4xxErrors(t *testing.T) {
 						"messageId": "BAD_REQUEST",
 						"text": "Bad request",
 						"validationErrors": {
-							"content.header.text": [
-								"size must be between 1 and 60",
+							"content.header.mediaUrl": [
+								"size must be between 1 and 2048",
+								"is not a valid url",
 								"must not be blank"
 							]
 						}
@@ -141,13 +153,15 @@ func TestInteractiveList4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.InteractiveListMsg{
+	msg := models.InteractiveButtonsMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.InteractiveListContent{
-			Body: models.InteractiveListBody{Text: "Some text"},
-			Action: models.InteractiveListAction{
-				Title:    "Choose one",
-				Sections: []models.InteractiveListSection{{Rows: []models.SectionRow{{ID: "1", Title: "row title"}}}},
+		Content: models.InteractiveButtonsContent{
+			Body: models.InteractiveButtonsBody{Text: "Some text"},
+			Action: models.InteractiveButtons{
+				Buttons: []models.InteractiveButton{
+					{Type: "REPLY", ID: "1", Title: "Yes"},
+					{Type: "REPLY", ID: "2", Title: "No"},
+				},
 			},
 		},
 	}
@@ -162,10 +176,13 @@ func TestInteractiveList4xxErrors(t *testing.T) {
 				_, servErr := w.Write(tc.rawJSONResp)
 				assert.Nil(t, servErr)
 			}))
-			client, err := NewClient(serv.URL, "secret")
-			require.Nil(t, err)
+			whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+				HTTPClient: http.Client{},
+				BaseURL:    serv.URL,
+				APIKey:     "secret",
+			}}
 
-			messageResponse, respDetails, err := client.WhatsApp().SendInteractiveListMsg(context.Background(), msg)
+			messageResponse, respDetails, err := whatsApp.SendInteractiveButtonsMsg(context.Background(), msg)
 			serv.Close()
 
 			require.Nil(t, err)

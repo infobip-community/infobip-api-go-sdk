@@ -1,9 +1,10 @@
-package infobip
+package whatsapp
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"infobip-go-client/internal"
 	"infobip-go-client/pkg/infobip/models"
 	"io/ioutil"
 	"net/http"
@@ -17,78 +18,96 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestContactValidReq(t *testing.T) {
+func TestCreateTemplateValidReq(t *testing.T) {
+	sender := "16175551213"
 	apiKey := "secret"
-	msg := models.ContactMsg{
-		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.ContactContent{
-			Contacts: []models.Contact{{Name: models.ContactName{FirstName: "John", FormattedName: "Mr. John Smith"}}},
+	template := models.TemplateCreate{
+		Name:     "template_name",
+		Language: "en",
+		Category: "ACCOUNT_UPDATE",
+		Structure: models.TemplateStructure{
+			Body: "body {{1}} content",
+			Type: "TEXT",
 		},
 	}
 	rawJSONResp := []byte(`{
-		"to": "441134960001",
-		"messageCount": 1,
-		"messageId": "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-		"status": {
-			"groupId": 1,
-			"groupName": "PENDING",
-			"id": 7,
-			"name": "PENDING_ENROUTE",
-			"description": "Message sent to next instance"
+		"id": "111",
+		"businessAccountId": 222,
+		"name": "exampleName",
+		"language": "en",
+		"status": "APPROVED",
+		"category": "ACCOUNT_UPDATE",
+		"structure": {
+			"header": {"format": "IMAGE"},
+			"body": "example {{1}} body",
+			"footer": "exampleFooter",
+			"type": "MEDIA"
 		}
 	}`)
-	var expectedResp models.MsgResponse
+	var expectedResp models.TemplateResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.Nil(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendContactPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, fmt.Sprintf(templatesPath, sender)))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.ContactMsg
+		var receivedMsg models.TemplateCreate
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
-		assert.Equal(t, receivedMsg, msg)
+		assert.Equal(t, receivedMsg, template)
 
+		w.WriteHeader(http.StatusCreated)
 		_, servErr = w.Write(rawJSONResp)
 		assert.Nil(t, servErr)
 	}))
 	defer serv.Close()
-	client, err := NewClient(serv.URL, apiKey)
-	require.Nil(t, err)
 
-	messageResponse, respDetails, err := client.WhatsApp().SendContactMsg(context.Background(), msg)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    serv.URL,
+		APIKey:     apiKey,
+	}}
+
+	messageResponse, respDetails, err := whatsApp.CreateTemplate(context.Background(), sender, template)
 
 	require.Nil(t, err)
-	assert.NotEqual(t, models.MsgResponse{}, messageResponse)
+	assert.NotEqual(t, models.TemplateResponse{}, messageResponse)
 	assert.Equal(t, expectedResp, messageResponse)
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+	assert.Equal(t, http.StatusCreated, respDetails.HTTPResponse.StatusCode)
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidContactMsg(t *testing.T) {
-	msg := models.ContactMsg{
-		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.ContactContent{
-			Contacts: []models.Contact{{Name: models.ContactName{FormattedName: "Mr. John Smith"}}},
+func TestInvalidCreateTemplate(t *testing.T) {
+	template := models.TemplateCreate{
+		Name:     "template_name",
+		Language: "en",
+		Category: "invalid",
+		Structure: models.TemplateStructure{
+			Body: "body {{1}} content",
+			Type: "TEXT",
 		},
 	}
-	client, err := NewClient("https://something.api.infobip.com", "secret")
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    "https://something.api.infobip.com",
+		APIKey:     "secret",
+	}}
 
-	messageResponse, respDetails, err := client.WhatsApp().SendContactMsg(context.Background(), msg)
+	messageResponse, respDetails, err := whatsApp.CreateTemplate(context.Background(), "16175551213", template)
+
 	require.NotNil(t, err)
-
 	assert.IsType(t, err, validator.ValidationErrors{})
-	assert.Equal(t, models.MsgResponse{}, messageResponse)
+	assert.Equal(t, models.TemplateResponse{}, messageResponse)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestContact4xxErrors(t *testing.T) {
+func TestCreateTemplate4xxErrors(t *testing.T) {
+	sender := "16175551213"
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -98,12 +117,7 @@ func TestContact4xxErrors(t *testing.T) {
 				"requestError": {
 					"serviceException": {
 						"messageId": "BAD_REQUEST",
-						"text": "Bad request",
-						"validationErrors": {
-							"content.contacts[0].birthday": [
-								"must be in the YYYY-MM-DD format"
-							]
-						}
+						"text": "Bad request"
 					}
 				}
 			}`),
@@ -132,10 +146,13 @@ func TestContact4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.ContactMsg{
-		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.ContactContent{
-			Contacts: []models.Contact{{Name: models.ContactName{FirstName: "John", FormattedName: "Mr. John Smith"}}},
+	template := models.TemplateCreate{
+		Name:     "template_name",
+		Language: "en",
+		Category: "ACCOUNT_UPDATE",
+		Structure: models.TemplateStructure{
+			Body: "body {{1}} content",
+			Type: "TEXT",
 		},
 	}
 
@@ -149,10 +166,13 @@ func TestContact4xxErrors(t *testing.T) {
 				_, servErr := w.Write(tc.rawJSONResp)
 				assert.Nil(t, servErr)
 			}))
-			client, err := NewClient(serv.URL, "secret")
-			require.Nil(t, err)
+			whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+				HTTPClient: http.Client{},
+				BaseURL:    serv.URL,
+				APIKey:     "secret",
+			}}
 
-			messageResponse, respDetails, err := client.WhatsApp().SendContactMsg(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.CreateTemplate(context.Background(), sender, template)
 			serv.Close()
 
 			require.Nil(t, err)
@@ -160,7 +180,7 @@ func TestContact4xxErrors(t *testing.T) {
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
-			assert.Equal(t, models.MsgResponse{}, messageResponse)
+			assert.Equal(t, models.TemplateResponse{}, msgResp)
 		})
 	}
 }

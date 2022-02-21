@@ -1,9 +1,10 @@
-package infobip
+package whatsapp
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"infobip-go-client/internal"
 	"infobip-go-client/pkg/infobip/models"
 	"io/ioutil"
 	"net/http"
@@ -17,16 +18,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestInteractiveProductValidReq(t *testing.T) {
+func TestStickerValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.InteractiveProductMsg{
+	msg := models.StickerMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.InteractiveProductContent{
-			Action: models.InteractiveProductAction{
-				CatalogID:         "1",
-				ProductRetailerID: "2",
-			},
-		},
+		Content:   models.StickerContent{MediaURL: "https://www.mypath.com/whatsappsticker.webp"},
 	}
 	rawJSONResp := []byte(`{
 		"to": "441134960001",
@@ -45,12 +41,12 @@ func TestInteractiveProductValidReq(t *testing.T) {
 	require.Nil(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendInteractiveProductPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendStickerPath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.InteractiveProductMsg
+		var receivedMsg models.StickerMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -59,10 +55,13 @@ func TestInteractiveProductValidReq(t *testing.T) {
 		assert.Nil(t, servErr)
 	}))
 	defer serv.Close()
-	client, err := NewClient(serv.URL, apiKey)
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    serv.URL,
+		APIKey:     apiKey,
+	}}
 
-	msgResp, respDetails, err := client.WhatsApp().SendInteractiveProductMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendStickerMsg(context.Background(), msg)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.MsgResponse{}, msgResp)
@@ -73,19 +72,18 @@ func TestInteractiveProductValidReq(t *testing.T) {
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidInteractiveProductMsg(t *testing.T) {
-	msg := models.InteractiveProductMsg{
+func TestInvalidStickerMsg(t *testing.T) {
+	msg := models.StickerMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.InteractiveProductContent{
-			Action: models.InteractiveProductAction{
-				ProductRetailerID: "2",
-			},
-		},
+		Content:   models.StickerContent{MediaURL: "hello world"},
 	}
-	client, err := NewClient("https://something.api.infobip.com", "secret")
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    "https://something.api.infobip.com",
+		APIKey:     "secret",
+	}}
 
-	msgResp, respDetails, err := client.WhatsApp().SendInteractiveProductMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendStickerMsg(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
@@ -93,7 +91,7 @@ func TestInvalidInteractiveProductMsg(t *testing.T) {
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestInteractiveProduct4xxErrors(t *testing.T) {
+func TestSticker4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -105,8 +103,9 @@ func TestInteractiveProduct4xxErrors(t *testing.T) {
 						"messageId": "BAD_REQUEST",
 						"text": "Bad request",
 						"validationErrors": {
-							"content.footer.text": [
-								"size must be between 1 and 60",
+							"content.mediaUrl": [
+								"size must be between 1 and 2048",
+								"is not a valid url",
 								"must not be blank"
 							]
 						}
@@ -138,14 +137,9 @@ func TestInteractiveProduct4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.InteractiveProductMsg{
+	msg := models.StickerMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.InteractiveProductContent{
-			Action: models.InteractiveProductAction{
-				CatalogID:         "1",
-				ProductRetailerID: "2",
-			},
-		},
+		Content:   models.StickerContent{MediaURL: "https://www.mypath.com/whatsappsticker.webp"},
 	}
 
 	for _, tc := range tests {
@@ -158,10 +152,13 @@ func TestInteractiveProduct4xxErrors(t *testing.T) {
 				_, servErr := w.Write(tc.rawJSONResp)
 				assert.Nil(t, servErr)
 			}))
-			client, err := NewClient(serv.URL, "secret")
-			require.Nil(t, err)
+			whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+				HTTPClient: http.Client{},
+				BaseURL:    serv.URL,
+				APIKey:     "secret",
+			}}
 
-			msgResp, respDetails, err := client.WhatsApp().SendInteractiveProductMsg(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.SendStickerMsg(context.Background(), msg)
 			serv.Close()
 
 			require.Nil(t, err)

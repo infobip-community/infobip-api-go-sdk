@@ -269,7 +269,6 @@ linters:
     - funlen
     - forbidigo
     - gochecknoglobals
-    - gochecknoinits
     - gocognit
     - goconst
     - gocritic
@@ -311,6 +310,7 @@ linters:
     #- exhaustivestruct # too strict - finds structs that have uninitialized fields #
     #- forcetypeassert # errcheck is used instead
     #- gci # is not used - sorts imports
+    #- gochecknoinits # is not used - init is used to setup and reuse cached validation
     #- godox # is not used - complains about TODOs in comments
     #- goerr113 # too strict - checks the errors handling expressions
     #- gofmt # replaced with goimports

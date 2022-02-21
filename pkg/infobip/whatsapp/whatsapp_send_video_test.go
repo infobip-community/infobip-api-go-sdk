@@ -1,9 +1,10 @@
-package infobip
+package whatsapp
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"infobip-go-client/internal"
 	"infobip-go-client/pkg/infobip/models"
 	"io/ioutil"
 	"net/http"
@@ -17,11 +18,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestImageValidReq(t *testing.T) {
+func TestVideoValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.ImageMsg{
+	msg := models.VideoMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.ImageContent{MediaURL: "https://www.mypath.com/whatsappimage.jpg"},
+		Content:   models.VideoContent{MediaURL: "https://www.mypath.com/whatsappvideo.mp4"},
 	}
 	rawJSONResp := []byte(`{
 		"to": "441134960001",
@@ -40,12 +41,12 @@ func TestImageValidReq(t *testing.T) {
 	require.Nil(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendImagePath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendVideoPath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.ImageMsg
+		var receivedMsg models.VideoMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -54,10 +55,13 @@ func TestImageValidReq(t *testing.T) {
 		assert.Nil(t, servErr)
 	}))
 	defer serv.Close()
-	client, err := NewClient(serv.URL, apiKey)
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    serv.URL,
+		APIKey:     apiKey,
+	}}
 
-	msgResp, respDetails, err := client.WhatsApp().SendImageMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendVideoMsg(context.Background(), msg)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.MsgResponse{}, msgResp)
@@ -68,15 +72,18 @@ func TestImageValidReq(t *testing.T) {
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidImageMsg(t *testing.T) {
-	msg := models.ImageMsg{
+func TestInvalidVideoMsg(t *testing.T) {
+	msg := models.VideoMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.ImageContent{MediaURL: "hello world"},
+		Content:   models.VideoContent{MediaURL: "hello world"},
 	}
-	client, err := NewClient("https://something.api.infobip.com", "secret")
-	require.Nil(t, err)
+	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    "https://something.api.infobip.com",
+		APIKey:     "secret",
+	}}
 
-	msgResp, respDetails, err := client.WhatsApp().SendImageMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendVideoMsg(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
@@ -84,7 +91,7 @@ func TestInvalidImageMsg(t *testing.T) {
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestImage4xxErrors(t *testing.T) {
+func TestVideo4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -130,9 +137,9 @@ func TestImage4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.ImageMsg{
+	msg := models.VideoMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.ImageContent{MediaURL: "https://www.mypath.com/whatsappimage.jpg"},
+		Content:   models.VideoContent{MediaURL: "https://www.mypath.com/whatsappvideo.mp4"},
 	}
 
 	for _, tc := range tests {
@@ -145,10 +152,13 @@ func TestImage4xxErrors(t *testing.T) {
 				_, servErr := w.Write(tc.rawJSONResp)
 				assert.Nil(t, servErr)
 			}))
-			client, err := NewClient(serv.URL, "secret")
-			require.Nil(t, err)
+			whatsApp := Channel{ReqHandler: internal.HTTPHandler{
+				HTTPClient: http.Client{},
+				BaseURL:    serv.URL,
+				APIKey:     "secret",
+			}}
 
-			msgResp, respDetails, err := client.WhatsApp().SendImageMsg(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.SendVideoMsg(context.Background(), msg)
 			serv.Close()
 
 			require.Nil(t, err)

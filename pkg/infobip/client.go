@@ -4,7 +4,7 @@
 package infobip
 
 import (
-	"infobip-go-client/pkg/infobip/models"
+	"infobip-go-client/pkg/infobip/whatsapp"
 	"net/http"
 	"net/url"
 )
@@ -31,8 +31,6 @@ func NewClient(baseURL string, apiKey string, options ...func(*Client)) (Client,
 		opt(&c)
 	}
 
-	models.SetupValidation()
-
 	return c, nil
 }
 
@@ -46,8 +44,8 @@ func validateURL(baseURL string) (string, error) {
 	return baseURL, err
 }
 
-func (c *Client) WhatsApp() WhatsApp {
-	return newWhatsApp(c.apiKey, c.baseURL, c.httpClient)
+func (c *Client) WhatsApp() whatsapp.WhatsApp {
+	return whatsapp.NewWhatsApp(c.apiKey, c.baseURL, c.httpClient)
 }
 
 func WithHTTPClient(httpClient http.Client) func(*Client) {

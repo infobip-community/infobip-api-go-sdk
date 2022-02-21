@@ -1,4 +1,4 @@
-package infobip
+package internal
 
 import (
 	"bytes"
@@ -12,11 +12,11 @@ import (
 	"net/url"
 )
 
-// httpHandler provides methods for handling http requests.
-type httpHandler struct {
-	apiKey     string
-	baseURL    string
-	httpClient http.Client
+// HTTPHandler provides methods for handling http requests.
+type HTTPHandler struct {
+	APIKey     string
+	BaseURL    string
+	HTTPClient http.Client
 }
 
 // request is a wrapper around the net/http request method, while
@@ -25,7 +25,7 @@ type httpHandler struct {
 //
 // The body is immediately parsed and closed and
 // the output is returned to the caller.
-func (h *httpHandler) request(
+func (h *HTTPHandler) request(
 	ctx context.Context,
 	method string,
 	resourcePath string,
@@ -43,7 +43,7 @@ func (h *httpHandler) request(
 		buf = bytes.NewBuffer(parsedBody)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, method, fmt.Sprintf("%s/%s", h.baseURL, resourcePath), buf)
+	req, err := http.NewRequestWithContext(ctx, method, fmt.Sprintf("%s/%s", h.BaseURL, resourcePath), buf)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -51,7 +51,7 @@ func (h *httpHandler) request(
 	req.Header = h.generateHeaders(method)
 	req.URL.RawQuery = generateQueryParams(params)
 
-	resp, err = h.httpClient.Do(req)
+	resp, err = h.HTTPClient.Do(req)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -65,7 +65,7 @@ func (h *httpHandler) request(
 	return resp, parsedBody, err
 }
 
-func (h *httpHandler) getRequest(
+func (h *HTTPHandler) GetRequest(
 	ctx context.Context,
 	respResource interface{},
 	reqPath string,
@@ -91,7 +91,7 @@ func (h *httpHandler) getRequest(
 	return respDetails, err
 }
 
-func (h *httpHandler) postRequest(
+func (h *HTTPHandler) PostRequest(
 	ctx context.Context,
 	postResource models.Validatable,
 	respResource interface{},
@@ -124,10 +124,10 @@ func (h *httpHandler) postRequest(
 
 // generateHeaders returns a http.Header object depending on the passed method.
 // Common headers that http.Client automatically generates, e.g. "Host", are omitted.
-func (h *httpHandler) generateHeaders(method string) http.Header {
+func (h *HTTPHandler) generateHeaders(method string) http.Header {
 	header := http.Header{}
 
-	header.Add("Authorization", fmt.Sprintf("App %s", h.apiKey))
+	header.Add("Authorization", fmt.Sprintf("App %s", h.APIKey))
 	header.Add("Accept", "application/json")
 
 	if method == http.MethodPost {

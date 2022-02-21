@@ -2,6 +2,7 @@ package infobip
 
 import (
 	"fmt"
+	"infobip-go-client/pkg/infobip/whatsapp"
 	"net/http"
 	"testing"
 	"time"
@@ -18,9 +19,9 @@ func TestDefaultClient(t *testing.T) {
 	assert.Equal(t, http.Client{}, client.httpClient)
 
 	whatsApp := client.WhatsApp()
-	assert.Equal(t, http.Client{}, whatsApp.(*whatsAppChannel).reqHandler.httpClient)
-	assert.Equal(t, apiKey, whatsApp.(*whatsAppChannel).reqHandler.apiKey)
-	assert.Equal(t, baseURL, whatsApp.(*whatsAppChannel).reqHandler.baseURL)
+	assert.Equal(t, http.Client{}, whatsApp.(*whatsapp.Channel).ReqHandler.HTTPClient)
+	assert.Equal(t, apiKey, whatsApp.(*whatsapp.Channel).ReqHandler.APIKey)
+	assert.Equal(t, baseURL, whatsApp.(*whatsapp.Channel).ReqHandler.BaseURL)
 }
 
 func TestClientWithOptions(t *testing.T) {
@@ -33,8 +34,8 @@ func TestClientWithOptions(t *testing.T) {
 	assert.Equal(t, customClient.Timeout, client.httpClient.Timeout)
 
 	whatsApp := client.WhatsApp()
-	assert.Equal(t, customClient, whatsApp.(*whatsAppChannel).reqHandler.httpClient)
-	assert.Equal(t, customClient.Timeout, whatsApp.(*whatsAppChannel).reqHandler.httpClient.Timeout)
+	assert.Equal(t, customClient, whatsApp.(*whatsapp.Channel).ReqHandler.HTTPClient)
+	assert.Equal(t, customClient.Timeout, whatsApp.(*whatsapp.Channel).ReqHandler.HTTPClient.Timeout)
 }
 
 func TestClientMissingScheme(t *testing.T) {
