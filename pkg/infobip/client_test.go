@@ -2,10 +2,11 @@ package infobip
 
 import (
 	"fmt"
-	"infobip-go-client/pkg/infobip/whatsapp"
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/pgrubacc/infobip-go-client/pkg/infobip/whatsapp"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

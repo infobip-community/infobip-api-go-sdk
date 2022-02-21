@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"infobip-go-client/internal"
-	"infobip-go-client/pkg/infobip/models"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/pgrubacc/infobip-go-client/internal"
+	"github.com/pgrubacc/infobip-go-client/pkg/infobip/models"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

@@ -4,9 +4,10 @@
 package infobip
 
 import (
-	"infobip-go-client/pkg/infobip/whatsapp"
 	"net/http"
 	"net/url"
+
+	"github.com/pgrubacc/infobip-go-client/pkg/infobip/whatsapp"
 )
 
 // Client is an aggregation of channels which are used

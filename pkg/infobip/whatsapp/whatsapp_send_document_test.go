@@ -4,14 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"infobip-go-client/internal"
-	"infobip-go-client/pkg/infobip/models"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/pgrubacc/infobip-go-client/internal"
+	"github.com/pgrubacc/infobip-go-client/pkg/infobip/models"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"
