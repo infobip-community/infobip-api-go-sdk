@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"infobip-go-client/pkg/infobip/models"
 	"io/ioutil"
 	"math"
 	"net/http"
@@ -182,41 +181,6 @@ func TestReqInvalidHost(t *testing.T) {
 
 	require.NotNil(t, err)
 	assert.Nil(t, resp)
-}
-
-func TestGetReqErr(t *testing.T) {
-	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	}))
-	defer serv.Close()
-
-	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: "nonexistent"}
-	respResource := models.MsgResponse{}
-	respDetails, err := handler.GetRequest(context.Background(), &respResource, "some/path")
-
-	require.NotNil(t, err)
-	assert.NotNil(t, respDetails)
-	assert.Equal(t, models.MsgResponse{}, models.MsgResponse{})
-}
-
-func TestPostReqErr(t *testing.T) {
-	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	}))
-	defer serv.Close()
-
-	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: "nonexistent"}
-	msg := models.TextMsg{
-		MsgCommon: models.MsgCommon{
-			From: "+16175551213",
-			To:   "+16175551212",
-		},
-		Content: models.TextContent{Text: "hello world"},
-	}
-	respResource := models.MsgResponse{}
-	respDetails, err := handler.PostRequest(context.Background(), &msg, &respResource, "some/path")
-
-	require.NotNil(t, err)
-	assert.NotNil(t, respDetails)
-	assert.Equal(t, models.MsgResponse{}, models.MsgResponse{})
 }
 
 func TestGenerateHeaders(t *testing.T) {

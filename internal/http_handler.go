@@ -5,11 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"infobip-go-client/pkg/infobip/models"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+
+	"github.com/pgrubacc/infobip-go-client/pkg/infobip/models"
 )
 
 // HTTPHandler provides methods for handling http requests.
@@ -83,7 +84,7 @@ func (h *HTTPHandler) GetRequest(
 	}
 	respDetails.HTTPResponse = *resp
 
-	if statusCodeIs2xx(resp.StatusCode) {
+	if resp.StatusCode == http.StatusOK {
 		err = json.Unmarshal(parsedBody, &respResource)
 	} else {
 		_ = json.Unmarshal(parsedBody, &respDetails.ErrorResponse)
@@ -114,7 +115,7 @@ func (h *HTTPHandler) PostRequest(
 	}
 	respDetails.HTTPResponse = *resp
 
-	if statusCodeIs2xx(resp.StatusCode) {
+	if resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusOK {
 		err = json.Unmarshal(parsedBody, &respResource)
 	} else {
 		_ = json.Unmarshal(parsedBody, &respDetails.ErrorResponse)
@@ -146,8 +147,4 @@ func generateQueryParams(params map[string]string) string {
 	}
 
 	return q.Encode()
-}
-
-func statusCodeIs2xx(code int) bool {
-	return code >= http.StatusOK && code <= http.StatusMultipleChoices
 }

@@ -3,10 +3,11 @@ package examples
 import (
 	"context"
 	"fmt"
-	"infobip-go-client/pkg/infobip"
-	"infobip-go-client/pkg/infobip/models"
-	"infobip-go-client/pkg/infobip/utils"
 	"testing"
+
+	"github.com/pgrubacc/infobip-go-client/pkg/infobip"
+	"github.com/pgrubacc/infobip-go-client/pkg/infobip/models"
+	"github.com/pgrubacc/infobip-go-client/pkg/infobip/utils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

@@ -2,9 +2,10 @@ package models
 
 import (
 	"fmt"
-	"infobip-go-client/pkg/infobip/utils"
 	"strings"
 	"testing"
+
+	"github.com/pgrubacc/infobip-go-client/pkg/infobip/utils"
 
 	"github.com/stretchr/testify/require"
 )
