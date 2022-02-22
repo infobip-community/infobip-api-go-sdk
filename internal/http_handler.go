@@ -13,7 +13,6 @@ import (
 	"github.com/pgrubacc/infobip-go-client/pkg/infobip/models"
 )
 
-// HTTPHandler provides methods for handling http requests.
 type HTTPHandler struct {
 	APIKey     string
 	BaseURL    string
@@ -24,8 +23,7 @@ type HTTPHandler struct {
 // also appending mandatory headers, formatting query parameters
 // along with handling and parsing the response status and body.
 //
-// The body is immediately parsed and closed and
-// the output is returned to the caller.
+// The body is immediately parsed and closed.
 func (h *HTTPHandler) request(
 	ctx context.Context,
 	method string,
@@ -123,8 +121,6 @@ func (h *HTTPHandler) PostRequest(
 	return respDetails, err
 }
 
-// generateHeaders returns a http.Header object depending on the passed method.
-// Common headers that http.Client automatically generates, e.g. "Host", are omitted.
 func (h *HTTPHandler) generateHeaders(method string) http.Header {
 	header := http.Header{}
 
@@ -138,8 +134,6 @@ func (h *HTTPHandler) generateHeaders(method string) http.Header {
 	return header
 }
 
-// generateQueryParams parses the map of query parameters and returns
-// them in the URL encoded format.
 func generateQueryParams(params map[string]string) string {
 	q := url.Values{}
 	for k, v := range params {

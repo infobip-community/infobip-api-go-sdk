@@ -12,6 +12,8 @@ func init() {
 	SetupValidation()
 }
 
+// SetupValidation configures struct-level validations for all payload models. This method must be
+// called in order for validation to work, and it is invoked automatically when models are imported.
 func SetupValidation() {
 	if validate != nil {
 		return
@@ -20,6 +22,8 @@ func SetupValidation() {
 	setupWhatsAppValidations()
 }
 
+// Validatable should be implemented by all models which represent request payloads.
+// It will be called before a request is made.
 type Validatable interface {
 	Validate() error
 }

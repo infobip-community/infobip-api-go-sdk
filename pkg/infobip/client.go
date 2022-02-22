@@ -10,17 +10,15 @@ import (
 	"github.com/pgrubacc/infobip-go-client/pkg/infobip/whatsapp"
 )
 
-// Client is an aggregation of channels which are used
-// to interact with different API resources.
+// Client is the entrypoint to all Infobip channels.
 type Client struct {
 	apiKey     string
 	baseURL    string
 	httpClient http.Client
 }
 
-// NewClient returns a client object using the provided
-// http.Client object and host. If a client is not provided,
-// a default one is created.
+// NewClient returns a client object using the provided baseURL and apiKey.
+// If a client is not provided using options, a default one is created.
 func NewClient(baseURL string, apiKey string, options ...func(*Client)) (Client, error) {
 	baseURL, err := validateURL(baseURL)
 	if err != nil {
@@ -45,12 +43,12 @@ func validateURL(baseURL string) (string, error) {
 	return baseURL, err
 }
 
-func (c *Client) WhatsApp() whatsapp.WhatsApp {
-	return whatsapp.NewWhatsApp(c.apiKey, c.baseURL, c.httpClient)
-}
-
 func WithHTTPClient(httpClient http.Client) func(*Client) {
 	return func(c *Client) {
 		c.httpClient = httpClient
 	}
+}
+
+func (c *Client) WhatsApp() whatsapp.WhatsApp {
+	return whatsapp.NewWhatsApp(c.apiKey, c.baseURL, c.httpClient)
 }
