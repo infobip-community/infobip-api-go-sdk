@@ -45,12 +45,12 @@ func TestTemplateMessagesExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := client.WhatsApp.SendTemplateMsgs(context.Background(), message)
-	fmt.Printf("%+v\n", msgResp)
+	resp, respDetails, err := client.WhatsApp.SendTemplateMsgs(context.Background(), message)
+	fmt.Printf("%+v\n", resp)
 
 	require.Nil(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.BulkMsgResponse{}, resp)
 }
 
 func TestSendTextExample(t *testing.T) {
@@ -70,8 +70,8 @@ func TestSendTextExample(t *testing.T) {
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 }
 
 func TestSendDocumentExample(t *testing.T) {

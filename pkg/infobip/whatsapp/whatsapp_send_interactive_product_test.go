@@ -72,7 +72,6 @@ func TestInteractiveProductValidReq(t *testing.T) {
 	require.Nil(t, err)
 	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 	assert.Equal(t, expectedResp, msgResp)
-	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)

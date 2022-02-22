@@ -3,8 +3,6 @@
 infobip-go-client is a Go client library for accessing the [Infobip API](https://www.infobip.com/docs/api).
 
 Right now, the only supported channel is WhatsApp, with others coming in the near future.
-The current version is v0 which means backwards compatibility is not 100% guaranteed. Once
-we've implemented all other channels, we will release a stable v1 version.
 
 Currently, infobip-go-client requires Go version 1.13 or greater.
 We'll do our best not to break older versions of Go unless it's absolutely necessary, but due to tooling constraints,
@@ -44,17 +42,17 @@ access different channels of the Infobip API. For example:
 ```go
 client, err := infobip.NewClient(baseURL, apiKey)
 
-// Send a WhatsApp image message
-message := models.ImageMsg{
+// Send a WhatsApp text message
+message := models.TextMsg{
     MsgCommon: models.MsgCommon{
         From: "111111111111",
         To:   "222222222222",
     },
-    Content: models.ImageContent{
-        MediaURL: "https://myurl.com/image.jpg",
-    },
+    Content: models.TextContent{
+		Text: "This message was sent from the Infobip API using the Go API client."
+	},
 }
-msgResp, respDetails, err := client.WhatsApp.SendImageMsg(context.Background(), message)
+msgResp, respDetails, err := client.WhatsApp.SendTextMsg(context.Background(), message)
 ```
 
 Requests return the resource returned by the server (if applicable), response details and an error.
