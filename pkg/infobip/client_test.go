@@ -19,7 +19,7 @@ func TestDefaultClient(t *testing.T) {
 	require.Nil(t, err)
 	assert.Equal(t, http.Client{}, client.httpClient)
 
-	whatsApp := client.WhatsApp()
+	whatsApp := client.WhatsApp
 	assert.Equal(t, http.Client{}, whatsApp.(*whatsapp.Channel).ReqHandler.HTTPClient)
 	assert.Equal(t, apiKey, whatsApp.(*whatsapp.Channel).ReqHandler.APIKey)
 	assert.Equal(t, baseURL, whatsApp.(*whatsapp.Channel).ReqHandler.BaseURL)
@@ -34,7 +34,7 @@ func TestClientWithOptions(t *testing.T) {
 	assert.Equal(t, customClient, client.httpClient)
 	assert.Equal(t, customClient.Timeout, client.httpClient.Timeout)
 
-	whatsApp := client.WhatsApp()
+	whatsApp := client.WhatsApp
 	assert.Equal(t, customClient, whatsApp.(*whatsapp.Channel).ReqHandler.HTTPClient)
 	assert.Equal(t, customClient.Timeout, whatsApp.(*whatsapp.Channel).ReqHandler.HTTPClient.Timeout)
 }

@@ -3,7 +3,6 @@ package whatsapp
 import (
 	"context"
 	"fmt"
-	"net/http"
 
 	"github.com/pgrubacc/infobip-go-client/internal"
 	"github.com/pgrubacc/infobip-go-client/pkg/infobip/models"
@@ -35,12 +34,6 @@ type WhatsApp interface {
 
 type Channel struct {
 	ReqHandler internal.HTTPHandler
-}
-
-func NewWhatsApp(apiKey string, baseURL string, httpClient http.Client) *Channel {
-	return &Channel{
-		ReqHandler: internal.HTTPHandler{APIKey: apiKey, BaseURL: baseURL, HTTPClient: httpClient},
-	}
 }
 
 const sendTemplateMessagesPath = "whatsapp/1/message/template"

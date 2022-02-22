@@ -20,7 +20,6 @@ func TestTemplateMessagesExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
-	whatsApp := client.WhatsApp()
 	message := models.TemplateMsgs{
 		Messages: []models.TemplateMsg{
 			{
@@ -46,7 +45,7 @@ func TestTemplateMessagesExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendTemplateMsgs(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendTemplateMsgs(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
@@ -59,7 +58,6 @@ func TestSendTextExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
-	whatsApp := client.WhatsApp()
 	message := models.TextMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
@@ -68,7 +66,7 @@ func TestSendTextExample(t *testing.T) {
 		Content: models.TextContent{Text: "This message was sent from the Infobip API using the Go API client."},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendTextMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendTextMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
@@ -81,7 +79,6 @@ func TestSendDocumentExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
-	whatsApp := client.WhatsApp()
 	message := models.DocumentMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
@@ -90,7 +87,7 @@ func TestSendDocumentExample(t *testing.T) {
 		Content: models.DocumentContent{MediaURL: "https://myurl.com/doc1.doc"},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendDocumentMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendDocumentMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
@@ -103,7 +100,6 @@ func TestSendImageExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
-	whatsApp := client.WhatsApp()
 	message := models.ImageMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
@@ -114,7 +110,7 @@ func TestSendImageExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendImageMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendImageMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
@@ -127,7 +123,6 @@ func TestAudioExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
-	whatsApp := client.WhatsApp()
 	message := models.AudioMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
@@ -136,7 +131,7 @@ func TestAudioExample(t *testing.T) {
 		Content: models.AudioContent{MediaURL: "https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.aac"},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendAudioMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendAudioMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
@@ -149,7 +144,6 @@ func TestVideoExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
-	whatsApp := client.WhatsApp()
 	message := models.VideoMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
@@ -158,7 +152,7 @@ func TestVideoExample(t *testing.T) {
 		Content: models.VideoContent{MediaURL: "https://download.samplelib.com/mp4/sample-5s.mp4"},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendVideoMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendVideoMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
@@ -171,7 +165,6 @@ func TestStickerExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
-	whatsApp := client.WhatsApp()
 	message := models.StickerMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
@@ -180,7 +173,7 @@ func TestStickerExample(t *testing.T) {
 		Content: models.StickerContent{MediaURL: "https://myurl.com/sticker.webp"},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendStickerMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendStickerMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
@@ -193,7 +186,6 @@ func TestLocationExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
-	whatsApp := client.WhatsApp()
 	message := models.LocationMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
@@ -207,7 +199,7 @@ func TestLocationExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendLocationMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendLocationMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
@@ -220,7 +212,6 @@ func TestContactExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
-	whatsApp := client.WhatsApp()
 	message := models.ContactMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
@@ -231,7 +222,7 @@ func TestContactExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendContactMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendContactMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
@@ -244,7 +235,6 @@ func TestInteractiveButtonsExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
-	whatsApp := client.WhatsApp()
 	message := models.InteractiveButtonsMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
@@ -265,7 +255,7 @@ func TestInteractiveButtonsExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendInteractiveButtonsMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendInteractiveButtonsMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
@@ -278,7 +268,6 @@ func TestInteractiveListExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
-	whatsApp := client.WhatsApp()
 	message := models.InteractiveListMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
@@ -301,7 +290,7 @@ func TestInteractiveListExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendInteractiveListMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendInteractiveListMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
@@ -314,7 +303,6 @@ func TestInteractiveProductExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
-	whatsApp := client.WhatsApp()
 	message := models.InteractiveProductMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
@@ -328,7 +316,7 @@ func TestInteractiveProductExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendInteractiveProductMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendInteractiveProductMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
@@ -341,7 +329,6 @@ func TestInteractiveMultiproductExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
-	whatsApp := client.WhatsApp()
 	message := models.InteractiveMultiproductMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
@@ -359,7 +346,7 @@ func TestInteractiveMultiproductExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := whatsApp.SendInteractiveMultiproductMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendInteractiveMultiproductMsg(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
@@ -374,8 +361,7 @@ func TestGetTemplatesExample(t *testing.T) {
 
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
-	whatsApp := client.WhatsApp()
-	msgResp, respDetails, err := whatsApp.GetTemplates(context.Background(), sender)
+	msgResp, respDetails, err := client.WhatsApp.GetTemplates(context.Background(), sender)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
@@ -390,7 +376,6 @@ func TestCreateTemplateExample(t *testing.T) {
 
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
-	whatsApp := client.WhatsApp()
 	template := models.TemplateCreate{
 		Name:     "template_name_mytest",
 		Language: "en",
@@ -401,7 +386,7 @@ func TestCreateTemplateExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := whatsApp.CreateTemplate(context.Background(), sender, template)
+	msgResp, respDetails, err := client.WhatsApp.CreateTemplate(context.Background(), sender, template)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.Nil(t, err)
