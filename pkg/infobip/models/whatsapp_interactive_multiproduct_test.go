@@ -122,7 +122,7 @@ func TestTextInteractiveMultiproductConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Header Text",
+			name: "invalid Header Text length",
 			content: InteractiveMultiproductContent{
 				Header: InteractiveMultiproductHeader{Type: "TEXT", Text: strings.Repeat("a", 61)},
 				Body:   InteractiveMultiproductBody{Text: "Some Text"},
@@ -147,7 +147,7 @@ func TestTextInteractiveMultiproductConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Body Text",
+			name: "invalid Body Text length",
 			content: InteractiveMultiproductContent{
 				Header: InteractiveMultiproductHeader{Type: "TEXT", Text: "Some text"},
 				Body:   InteractiveMultiproductBody{Text: strings.Repeat("a", 1025)},
@@ -212,7 +212,7 @@ func TestTextInteractiveMultiproductConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Action Section title",
+			name: "invalid Action Section title length",
 			content: InteractiveMultiproductContent{
 				Header: InteractiveMultiproductHeader{Type: "TEXT", Text: "Some text"},
 				Body:   InteractiveMultiproductBody{Text: "Some text"},
@@ -279,7 +279,7 @@ func TestTextInteractiveMultiproductConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Footer text",
+			name: "invalid Footer text length",
 			content: InteractiveMultiproductContent{
 				Header: InteractiveMultiproductHeader{Type: "TEXT", Text: "Some text"},
 				Body:   InteractiveMultiproductBody{Text: "Some text"},

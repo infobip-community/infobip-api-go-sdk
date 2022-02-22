@@ -13,7 +13,8 @@ func TestValidVideoMessage(t *testing.T) {
 		name     string
 		instance VideoMsg
 	}{
-		{name: "minimum input",
+		{
+			name: "minimum input",
 			instance: VideoMsg{
 				MsgCommon: MsgCommon{
 					From: "16175551213",
@@ -52,19 +53,19 @@ func TestVideoMessageConstraints(t *testing.T) {
 			content: VideoContent{},
 		},
 		{
-			name:    "missing Content MediaURL",
+			name:    "missing MediaURL",
 			content: VideoContent{Caption: "asd"},
 		},
 		{
-			name:    "Content MediaURL too long",
+			name:    "invalid MediaURL length",
 			content: VideoContent{MediaURL: fmt.Sprintf("https://www.g%sgle.com", strings.Repeat("o", 2040))},
 		},
 		{
-			name:    "Content invalid MediaURL",
+			name:    "invalid MediaURL format",
 			content: VideoContent{MediaURL: "asd"},
 		},
 		{
-			name: "Content Caption too long",
+			name: "invalid Caption length",
 			content: VideoContent{
 				MediaURL: "https://www.mypath.com/whatsapp.jpg",
 				Caption:  strings.Repeat("a", 3001),

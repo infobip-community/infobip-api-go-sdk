@@ -95,7 +95,7 @@ func TestTextInteractiveProductConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Body Text",
+			name: "invalid Body Text length",
 			content: InteractiveProductContent{
 				Action: InteractiveProductAction{
 					CatalogID:         "1",
@@ -115,7 +115,7 @@ func TestTextInteractiveProductConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Footer Text",
+			name: "invalid Footer Text length",
 			content: InteractiveProductContent{
 				Action: InteractiveProductAction{
 					CatalogID:         "1",

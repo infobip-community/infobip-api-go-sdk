@@ -51,11 +51,11 @@ func TestTextMessageConstraints(t *testing.T) {
 			content: TextContent{},
 		},
 		{
-			name:    "missing Content text",
+			name:    "missing text",
 			content: TextContent{PreviewURL: false},
 		},
 		{
-			name:    "Content text too long",
+			name:    "invalid Text",
 			content: TextContent{Text: strings.Repeat("a", 4097)},
 		},
 		{
