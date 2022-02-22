@@ -48,15 +48,15 @@ func TestStickerMessageConstraints(t *testing.T) {
 		content StickerContent
 	}{
 		{
-			name:    "missing Content MediaURL",
+			name:    "missing MediaURL",
 			content: StickerContent{},
 		},
 		{
-			name:    "Content MediaURL too long",
+			name:    "invalid MediaURL length",
 			content: StickerContent{MediaURL: fmt.Sprintf("https://www.g%sgle.com", strings.Repeat("o", 2040))},
 		},
 		{
-			name:    "Content invalid MediaURL",
+			name:    "invalid MediaURL format",
 			content: StickerContent{MediaURL: "asd"},
 		},
 	}

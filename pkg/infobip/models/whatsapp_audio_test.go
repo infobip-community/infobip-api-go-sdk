@@ -13,7 +13,8 @@ func TestValidAudioMessage(t *testing.T) {
 		name     string
 		instance AudioMsg
 	}{
-		{name: "minimum input",
+		{
+			name: "minimum input",
 			instance: AudioMsg{
 				MsgCommon: MsgCommon{
 					From: "16175551213",
@@ -47,15 +48,15 @@ func TestAudioMessageConstraints(t *testing.T) {
 		content AudioContent
 	}{
 		{
-			name:    "missing Content MediaURL",
+			name:    "missing MediaURL",
 			content: AudioContent{},
 		},
 		{
-			name:    "Content MediaURL too long",
+			name:    "invalid MediaURL length",
 			content: AudioContent{MediaURL: fmt.Sprintf("https://www.g%sgle.com", strings.Repeat("o", 2040))},
 		},
 		{
-			name:    "Content invalid MediaURL",
+			name:    "invalid MediaURL format",
 			content: AudioContent{MediaURL: "asd"},
 		},
 	}

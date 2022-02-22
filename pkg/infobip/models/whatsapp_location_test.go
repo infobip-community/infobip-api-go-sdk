@@ -79,27 +79,27 @@ func TestTextLocationConstraints(t *testing.T) {
 			content: LocationContent{},
 		},
 		{
-			name:    "missing Content Latitude",
+			name:    "missing Latitude",
 			content: LocationContent{Longitude: utils.Float32Ptr(10.5)},
 		},
 		{
-			name:    "invalid Content Latitude",
+			name:    "invalid Latitude",
 			content: LocationContent{Latitude: utils.Float32Ptr(91), Longitude: utils.Float32Ptr(10.5)},
 		},
 		{
-			name:    "missing Content Longitude",
+			name:    "missing Longitude",
 			content: LocationContent{Latitude: utils.Float32Ptr(10.5)},
 		},
 		{
-			name:    "invalid Content Longitude",
+			name:    "invalid Longitude",
 			content: LocationContent{Latitude: utils.Float32Ptr(10.5), Longitude: utils.Float32Ptr(181)},
 		},
 		{
-			name:    "Content Name too long",
+			name:    "invalid Name length",
 			content: LocationContent{Name: strings.Repeat("a", 1001)},
 		},
 		{
-			name:    "Content Address too long",
+			name:    "invalid Address length",
 			content: LocationContent{Address: strings.Repeat("a", 1001)},
 		},
 	}

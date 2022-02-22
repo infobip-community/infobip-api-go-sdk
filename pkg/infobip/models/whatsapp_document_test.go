@@ -53,26 +53,26 @@ func TestDocumentMessageConstraints(t *testing.T) {
 			content: DocumentContent{},
 		},
 		{
-			name:    "missing Content MediaURL",
+			name:    "missing MediaURL",
 			content: DocumentContent{Filename: "asd"},
 		},
 		{
-			name:    "Content MediaURL too long",
+			name:    "invalid MediaURL",
 			content: DocumentContent{MediaURL: fmt.Sprintf("https://www.g%sgle.com", strings.Repeat("o", 2040))},
 		},
 		{
-			name:    "Content invalid MediaURL",
+			name:    "invalid MediaURL",
 			content: DocumentContent{MediaURL: "asd"},
 		},
 		{
-			name: "Content Caption too long",
+			name: "invalid Caption",
 			content: DocumentContent{
 				MediaURL: "https://www.mypath.com/my_doc.txt",
 				Caption:  strings.Repeat("a", 3001),
 			},
 		},
 		{
-			name: "Content Filename too long",
+			name: "invalid Filename",
 			content: DocumentContent{
 				MediaURL: "https://www.mypath.com/my_doc.txt",
 				Filename: strings.Repeat("a", 241),

@@ -105,34 +105,34 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 			content: InteractiveButtonsContent{},
 		},
 		{
-			name: "missing Content Body",
+			name: "missing Body",
 			content: InteractiveButtonsContent{
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{Type: "REPLY", ID: "1", Title: "Yes"}}},
 			},
 		},
 		{
-			name: "missing Content Body Text",
+			name: "missing Body Text",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{Type: "REPLY", ID: "1", Title: "Yes"}}},
 			},
 		},
 		{
-			name: "invalid Content Body Text",
+			name: "invalid Body Text length",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{Text: strings.Repeat("a", 1025)},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{Type: "REPLY", ID: "1", Title: "Yes"}}},
 			},
 		},
 		{
-			name: "missing Content Action Buttons",
+			name: "missing Action Buttons",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{},
 			},
 		},
 		{
-			name: "Content Action Buttons longer than 3",
+			name: "Action Buttons longer than 3",
 			content: InteractiveButtonsContent{
 				Body: InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{
@@ -146,28 +146,28 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "missing Content Action Button type",
+			name: "missing Action Button type",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{ID: "3", Title: "Yes"}}},
 			},
 		},
 		{
-			name: "invalid Content Action Button type",
+			name: "invalid Action Button type",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{Type: "invalid", ID: "3", Title: "Yes"}}},
 			},
 		},
 		{
-			name: "missing Content Action Button ID",
+			name: "missing Action Button ID",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{Type: "REPLY", Title: "Yes"}}},
 			},
 		},
 		{
-			name: "invalid Content Action Button ID",
+			name: "invalid Action Button ID length",
 			content: InteractiveButtonsContent{
 				Body: InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{
@@ -178,14 +178,14 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "missing Content Action Button Title",
+			name: "missing Action Button Title",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{ID: "1", Type: "REPLY"}}},
 			},
 		},
 		{
-			name: "invalid Content Action Button Title",
+			name: "invalid Action Button Title length",
 			content: InteractiveButtonsContent{
 				Body: InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{
@@ -196,7 +196,7 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "missing Content Header Type",
+			name: "missing Header Type",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{ID: "1", Type: "REPLY", Title: "YES"}}},
@@ -204,7 +204,7 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Content Header Type",
+			name: "invalid Header Type",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{ID: "1", Type: "REPLY", Title: "YES"}}},
@@ -212,7 +212,7 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "missing Text field for Content Header Type TEXT",
+			name: "missing Text for Header Type TEXT",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{ID: "1", Type: "REPLY", Title: "YES"}}},
@@ -220,7 +220,7 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Text field for Content Header Type TEXT",
+			name: "invalid Text for Header Type TEXT",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{ID: "1", Type: "REPLY", Title: "YES"}}},
@@ -228,7 +228,7 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "missing MediaURL field for Content Header Type VIDEO",
+			name: "missing MediaURL for Header Type VIDEO",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{ID: "1", Type: "REPLY", Title: "YES"}}},
@@ -236,7 +236,7 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid MediaURL field for Content Header Type VIDEO",
+			name: "invalid MediaURL format for Header Type VIDEO",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{ID: "1", Type: "REPLY", Title: "YES"}}},
@@ -244,7 +244,7 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid MediaURL field for Content Header Type VIDEO",
+			name: "invalid MediaURL length for Header Type VIDEO",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{ID: "1", Type: "REPLY", Title: "YES"}}},
@@ -255,7 +255,7 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "missing MediaURL field for Content Header Type IMAGE",
+			name: "missing MediaURL for Header Type IMAGE",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{ID: "1", Type: "REPLY", Title: "YES"}}},
@@ -263,7 +263,7 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid MediaURL field for Content Header Type IMAGE",
+			name: "invalid MediaURL length for Header Type IMAGE",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{ID: "1", Type: "REPLY", Title: "YES"}}},
@@ -274,7 +274,7 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "missing MediaURL field for Content Header Type DOCUMENT",
+			name: "missing MediaURL for Header Type DOCUMENT",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{ID: "1", Type: "REPLY", Title: "YES"}}},
@@ -282,7 +282,7 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid MediaURL field for Content Header Type DOCUMENT",
+			name: "invalid MediaURL length for Header Type DOCUMENT",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{ID: "1", Type: "REPLY", Title: "YES"}}},
@@ -293,7 +293,7 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Filename field for Content Header Type DOCUMENT",
+			name: "invalid Filename length for Header Type DOCUMENT",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{ID: "1", Type: "REPLY", Title: "YES"}}},
@@ -305,7 +305,7 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "missing Text field for Content Footer",
+			name: "missing Text field for Footer",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{ID: "1", Type: "REPLY", Title: "YES"}}},
@@ -313,7 +313,7 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Text field for Content Footer",
+			name: "invalid Text length for Footer",
 			content: InteractiveButtonsContent{
 				Body:   InteractiveButtonsBody{"Some text"},
 				Action: InteractiveButtons{Buttons: []InteractiveButton{{ID: "1", Type: "REPLY", Title: "YES"}}},

@@ -90,7 +90,7 @@ func TestInteractiveListConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Body Text",
+			name: "invalid Body Text length",
 			content: InteractiveListContent{
 				Body: InteractiveListBody{Text: strings.Repeat("a", 1025)},
 				Action: InteractiveListAction{
@@ -115,7 +115,7 @@ func TestInteractiveListConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Action Title",
+			name: "invalid Action Title length",
 			content: InteractiveListContent{
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
@@ -156,7 +156,7 @@ func TestInteractiveListConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Action Section Title",
+			name: "invalid Action Section Title length",
 			content: InteractiveListContent{
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
@@ -265,7 +265,7 @@ func TestInteractiveListConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Action Section Row ID",
+			name: "invalid Action Section Row ID length",
 			content: InteractiveListContent{
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
@@ -318,7 +318,7 @@ func TestInteractiveListConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Action Section Row Title",
+			name: "invalid Action Section Row Title length",
 			content: InteractiveListContent{
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
@@ -330,7 +330,7 @@ func TestInteractiveListConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Action Section Row Description",
+			name: "invalid Action Section Row Description length",
 			content: InteractiveListContent{
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
@@ -381,7 +381,7 @@ func TestInteractiveListConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Header Text",
+			name: "invalid Header Text length",
 			content: InteractiveListContent{
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{
@@ -407,7 +407,7 @@ func TestInteractiveListConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Footer Text",
+			name: "invalid Footer Text length",
 			content: InteractiveListContent{
 				Body: InteractiveListBody{"Some text"},
 				Action: InteractiveListAction{

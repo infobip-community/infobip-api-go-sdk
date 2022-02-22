@@ -95,19 +95,19 @@ func TestContactMessageConstraints(t *testing.T) {
 			content: ContactContent{},
 		},
 		{
-			name: "missing Content FirstName",
+			name: "missing Contact FirstName",
 			content: ContactContent{
 				Contacts: []Contact{{Name: ContactName{FormattedName: "Mr. John Smith"}}},
 			},
 		},
 		{
-			name: "missing Content FormattedName",
+			name: "missing Contact FormattedName",
 			content: ContactContent{
 				Contacts: []Contact{{Name: ContactName{FirstName: "John"}}},
 			},
 		},
 		{
-			name: "invalid Content Address Type",
+			name: "invalid Contact Address Type",
 			content: ContactContent{
 				Contacts: []Contact{
 					{
@@ -118,7 +118,7 @@ func TestContactMessageConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Content Birthday",
+			name: "invalid Contact Birthday",
 			content: ContactContent{
 				Contacts: []Contact{
 					{
@@ -129,7 +129,7 @@ func TestContactMessageConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Content Email",
+			name: "invalid Contact Email",
 			content: ContactContent{
 				Contacts: []Contact{
 					{
@@ -140,7 +140,7 @@ func TestContactMessageConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Content Email type",
+			name: "invalid Contact Email type",
 			content: ContactContent{
 				Contacts: []Contact{
 					{
@@ -151,7 +151,7 @@ func TestContactMessageConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Content Phone Type",
+			name: "invalid Contact Phone Type",
 			content: ContactContent{
 				Contacts: []Contact{
 					{
@@ -162,7 +162,7 @@ func TestContactMessageConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Content URL Type",
+			name: "invalid Contact URL Type",
 			content: ContactContent{
 				Contacts: []Contact{
 					{
@@ -173,7 +173,7 @@ func TestContactMessageConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Content URL",
+			name: "invalid Contact URL",
 			content: ContactContent{
 				Contacts: []Contact{
 					{

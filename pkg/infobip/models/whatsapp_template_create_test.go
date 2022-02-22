@@ -249,7 +249,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Structure Header Text for type TEXT",
+			name: "invalid Structure Header Text length for type TEXT",
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
@@ -273,7 +273,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Structure Footer",
+			name: "invalid Structure Footer length",
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
@@ -329,7 +329,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Structure Button text",
+			name: "invalid Structure Button text length",
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",

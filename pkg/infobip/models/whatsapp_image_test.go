@@ -53,19 +53,19 @@ func TestImageMessageConstraints(t *testing.T) {
 			content: ImageContent{},
 		},
 		{
-			name:    "missing Content MediaURL",
+			name:    "missing MediaURL",
 			content: ImageContent{Caption: "asd"},
 		},
 		{
-			name:    "Content MediaURL too long",
+			name:    "invalid MediaURL length",
 			content: ImageContent{MediaURL: fmt.Sprintf("https://www.g%sgle.com", strings.Repeat("o", 2040))},
 		},
 		{
-			name:    "Content invalid MediaURL",
+			name:    "invalid MediaURL format",
 			content: ImageContent{MediaURL: "asd"},
 		},
 		{
-			name: "Content Caption too long",
+			name: "invalid Caption length",
 			content: ImageContent{
 				MediaURL: "https://www.mypath.com/whatsapp.jpg",
 				Caption:  strings.Repeat("a", 3001),
