@@ -69,7 +69,6 @@ func TestContactValidReq(t *testing.T) {
 	require.Nil(t, err)
 	assert.NotEqual(t, models.MsgResponse{}, messageResponse)
 	assert.Equal(t, expectedResp, messageResponse)
-	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)

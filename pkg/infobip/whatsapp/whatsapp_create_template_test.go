@@ -77,7 +77,6 @@ func TestCreateTemplateValidReq(t *testing.T) {
 	require.Nil(t, err)
 	assert.NotEqual(t, models.TemplateResponse{}, messageResponse)
 	assert.Equal(t, expectedResp, messageResponse)
-	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusCreated, respDetails.HTTPResponse.StatusCode)
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
