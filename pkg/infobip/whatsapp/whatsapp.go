@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/pgrubacc/infobip-go-client/internal"
-	"github.com/pgrubacc/infobip-go-client/pkg/infobip/models"
+	"github.com/infobip-community/infobip-api-go-sdk/internal"
+	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/models"
 )
 
 // WhatsApp provides methods to interact with the Infobip WhatsApp API.

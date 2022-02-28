@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/pgrubacc/infobip-go-client/pkg/infobip/models"
+	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/models"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

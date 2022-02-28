@@ -1,19 +1,19 @@
-# infobip-go-client
+# infobip-api-go-sdk
 
-infobip-go-client is a Go client library for accessing the [Infobip API](https://www.infobip.com/docs/api).
+infobip-api-go-sdk is a Go client library for accessing the [Infobip API](https://www.infobip.com/docs/api).
 
 Right now, the only supported channel is WhatsApp, with others coming in the near future.
 
-Currently, infobip-go-client requires Go version 1.13 or greater.
+Currently, infobip-api-go-sdk requires Go version 1.13 or greater.
 We'll do our best not to break older versions of Go unless it's absolutely necessary, but due to tooling constraints,
 we don't always test older versions.
 
 ## Installation ##
 
-infobip-go-client is compatible with modern Go modules. With Go installed, running the following:
+infobip-api-go-sdk is compatible with modern Go modules. With Go installed, running the following:
 
 ```bash
-go get "github.com/pgrubacc/infobip-go-client"
+go get "github.com/infobip-community/infobip-api-go-sdk"
 ```
 
 will add the client to the current module, along with all of its dependencies.
@@ -21,7 +21,7 @@ will add the client to the current module, along with all of its dependencies.
 ## Usage ##
 
 ```go
-import "github.com/pgrubacc/infobip-go-client/pkg/infobip"
+import "github.com/infobip-community/infobip-api-go-sdk/pkg/infobip"
 ```
 
 Construct a new Infobip client:
@@ -71,14 +71,14 @@ NOTE: Using the [context](https://godoc.org/context) package, the user can pass 
 to the underlying requests that the client makes. If you don't want to use this feature, then using `context.Background()`
 should be sufficient.
 
-For more sample code snippets, the [examples](https://github.com/pgrubacc/infobip-go-client/tree/main/examples) directory
+For more sample code snippets, the [examples](https://github.com/infobip-community/infobip-api-go-sdk/tree/main/examples) directory
 contains tests intended to be used for live testing all endpoints. The prerequisite for running an individual test is changing
 the apiKey and baseURL variables, along with certain message fields, depending on the endpoint (e.g. From/To for WhatsApp).
 
 
 ### Authentication ###
 
-Currently, infobip-go-client only supports API Key authentication, and the key needs to be passed during client creation.
+Currently, infobip-api-go-sdk only supports API Key authentication, and the key needs to be passed during client creation.
 This will most likely change with future versions, once more authentication methods are included.
 
 ## License ##

@@ -1,4 +1,4 @@
-module github.com/pgrubacc/infobip-go-client
+module github.com/infobip-community/infobip-api-go-sdk
 
 go 1.17
 

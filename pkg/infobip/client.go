@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/pgrubacc/infobip-go-client/internal"
+	"github.com/infobip-community/infobip-api-go-sdk/internal"
 
-	"github.com/pgrubacc/infobip-go-client/pkg/infobip/whatsapp"
+	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/whatsapp"
 )
 
 // Client is the entrypoint to all Infobip channels.

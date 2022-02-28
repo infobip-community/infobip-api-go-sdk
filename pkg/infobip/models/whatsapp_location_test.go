@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/pgrubacc/infobip-go-client/pkg/infobip/utils"
+	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/utils"
 
 	"github.com/stretchr/testify/require"
 )
