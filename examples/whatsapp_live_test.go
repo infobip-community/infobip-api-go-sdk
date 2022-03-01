@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/pgrubacc/infobip-go-client/pkg/infobip"
-	"github.com/pgrubacc/infobip-go-client/pkg/infobip/models"
-	"github.com/pgrubacc/infobip-go-client/pkg/infobip/utils"
+	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip"
+	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/models"
+	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/utils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

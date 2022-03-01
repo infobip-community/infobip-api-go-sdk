@@ -11,8 +11,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/pgrubacc/infobip-go-client/internal"
-	"github.com/pgrubacc/infobip-go-client/pkg/infobip/models"
+	"github.com/infobip-community/infobip-api-go-sdk/internal"
+	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/models"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"

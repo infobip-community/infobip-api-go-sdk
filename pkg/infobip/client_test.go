@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pgrubacc/infobip-go-client/pkg/infobip/whatsapp"
+	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/whatsapp"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
