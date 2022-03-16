@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -28,21 +27,10 @@ func (h *HTTPHandler) request(
 	ctx context.Context,
 	method string,
 	resourcePath string,
-	body interface{},
+	body io.Reader,
 	params map[string]string,
 ) (resp *http.Response, respBody []byte, err error) {
-	var buf io.Reader
-
-	if body != nil {
-		var parsedBody []byte
-		parsedBody, err = json.Marshal(body)
-		if err != nil {
-			return nil, nil, err
-		}
-		buf = bytes.NewBuffer(parsedBody)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, method, fmt.Sprintf("%s/%s", h.BaseURL, resourcePath), buf)
+	req, err := http.NewRequestWithContext(ctx, method, fmt.Sprintf("%s/%s", h.BaseURL, resourcePath), body)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -100,11 +88,15 @@ func (h *HTTPHandler) PostRequest(
 	if err != nil {
 		return respDetails, err
 	}
+	payload, err := postResource.Marshal()
+	if err != nil {
+		return respDetails, err
+	}
 	resp, parsedBody, err := h.request( //nolint: bodyclose // closed in the method below
 		ctx,
 		http.MethodPost,
 		reqPath,
-		postResource,
+		payload,
 		nil,
 	)
 	if err != nil {

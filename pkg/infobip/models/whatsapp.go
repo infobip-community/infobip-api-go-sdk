@@ -1,6 +1,7 @@
 package models
 
 import (
+	"bytes"
 	"fmt"
 	"time"
 	"unicode"
@@ -92,6 +93,10 @@ func (t *TemplateCreate) Validate() error {
 	return validate.Struct(t)
 }
 
+func (t *TemplateCreate) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(t)
+}
+
 func templateCreateValidation(sl validator.StructLevel) {
 	template, _ := sl.Current().Interface().(TemplateCreate)
 	validateTemplateName(sl, template)
@@ -179,6 +184,10 @@ type TemplateMsgs struct {
 
 func (t *TemplateMsgs) Validate() error {
 	return validate.Struct(t)
+}
+
+func (t *TemplateMsgs) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(t)
 }
 
 func templateMsgValidation(sl validator.StructLevel) {
@@ -309,6 +318,10 @@ func (t *TextMsg) Validate() error {
 	return validate.Struct(t)
 }
 
+func (t *TextMsg) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(t)
+}
+
 func textMsgValidation(sl validator.StructLevel) {
 	msg, _ := sl.Current().Interface().(TextMsg)
 	previewURLValidation(sl, msg)
@@ -336,6 +349,10 @@ func (t *DocumentMsg) Validate() error {
 	return validate.Struct(t)
 }
 
+func (t *DocumentMsg) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(t)
+}
+
 type DocumentContent struct {
 	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
 	Caption  string `json:"caption,omitempty" validate:"lte=3000"`
@@ -349,6 +366,10 @@ type ImageMsg struct {
 
 func (t *ImageMsg) Validate() error {
 	return validate.Struct(t)
+}
+
+func (t *ImageMsg) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(t)
 }
 
 type ImageContent struct {
@@ -365,6 +386,10 @@ func (t *AudioMsg) Validate() error {
 	return validate.Struct(t)
 }
 
+func (t *AudioMsg) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(t)
+}
+
 type AudioContent struct {
 	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
 }
@@ -376,6 +401,10 @@ type VideoMsg struct {
 
 func (t *VideoMsg) Validate() error {
 	return validate.Struct(t)
+}
+
+func (t *VideoMsg) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(t)
 }
 
 type VideoContent struct {
@@ -392,6 +421,10 @@ func (t *StickerMsg) Validate() error {
 	return validate.Struct(t)
 }
 
+func (t *StickerMsg) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(t)
+}
+
 type StickerContent struct {
 	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
 }
@@ -403,6 +436,10 @@ type LocationMsg struct {
 
 func (t *LocationMsg) Validate() error {
 	return validate.Struct(t)
+}
+
+func (t *LocationMsg) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(t)
 }
 
 type LocationContent struct {
@@ -419,6 +456,10 @@ type ContactMsg struct {
 
 func (t *ContactMsg) Validate() error {
 	return validate.Struct(t)
+}
+
+func (t *ContactMsg) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(t)
 }
 
 func contactValidation(sl validator.StructLevel) {
@@ -496,6 +537,10 @@ func (t *InteractiveButtonsMsg) Validate() error {
 	return validate.Struct(t)
 }
 
+func (t *InteractiveButtonsMsg) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(t)
+}
+
 func interactiveButtonsMsgValidation(sl validator.StructLevel) {
 	msg, _ := sl.Current().Interface().(InteractiveButtonsMsg)
 	validateInteractiveButtonsHeader(sl, msg)
@@ -558,6 +603,10 @@ type InteractiveListMsg struct {
 
 func (t *InteractiveListMsg) Validate() error {
 	return validate.Struct(t)
+}
+
+func (t *InteractiveListMsg) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(t)
 }
 
 func interactiveListMsgValidation(sl validator.StructLevel) {
@@ -668,6 +717,10 @@ func (t *InteractiveProductMsg) Validate() error {
 	return validate.Struct(t)
 }
 
+func (t *InteractiveProductMsg) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(t)
+}
+
 type InteractiveProductContent struct {
 	Action InteractiveProductAction  `json:"action" validate:"required"`
 	Body   *InteractiveProductBody   `json:"body,omitempty"`
@@ -694,6 +747,10 @@ type InteractiveMultiproductMsg struct {
 
 func (t *InteractiveMultiproductMsg) Validate() error {
 	return validate.Struct(t)
+}
+
+func (t *InteractiveMultiproductMsg) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(t)
 }
 
 func multiproductMsgValidation(sl validator.StructLevel) {
