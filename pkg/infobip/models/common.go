@@ -1,6 +1,8 @@
 package models
 
 import (
+	"bytes"
+	"encoding/json"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
@@ -26,6 +28,15 @@ func SetupValidation() {
 // It will be called before a request is made.
 type Validatable interface {
 	Validate() error
+	Marshal() (*bytes.Buffer, error)
+}
+
+func marshalJSON(t interface{}) (*bytes.Buffer, error) {
+	payload, err := json.Marshal(t)
+	if err != nil {
+		return nil, err
+	}
+	return bytes.NewBuffer(payload), nil
 }
 
 type ResponseDetails struct {

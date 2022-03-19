@@ -1,11 +1,12 @@
 package internal
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
-	"math"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -15,19 +16,24 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type TestRespBody struct {
+	StringField string  `json:"testField,omitempty"`
+	FloatField  float64 `json:"floatField,omitempty"`
+}
+
+func (t *TestRespBody) Marshal() ([]byte, error) {
+	return json.Marshal(t)
+}
+
 func TestReqValidInput(t *testing.T) {
 	type test struct {
 		handler     HTTPHandler
 		method      string
 		path        string
-		body        interface{}
+		body        *TestRespBody
 		servResp    string
 		httpClient  http.Client
 		queryParams map[string]string
-	}
-
-	type TestRespBody struct {
-		TestField string `json:"testField,omitempty"`
 	}
 
 	path := "some/path"
@@ -41,33 +47,35 @@ func TestReqValidInput(t *testing.T) {
 			queryParams: queryParams,
 			method:      http.MethodGet,
 			servResp:    servResp,
+			body:        nil,
 		},
 		{
 			path:        path,
 			queryParams: queryParams,
 			method:      http.MethodPost,
 			servResp:    servResp,
-			body:        TestRespBody{TestField: "test"},
+			body:        &TestRespBody{StringField: "test"},
 		},
 		{
 			path:        fmt.Sprintf("%s/1", path),
 			queryParams: queryParams,
 			method:      http.MethodPatch,
 			servResp:    servResp,
-			body:        TestRespBody{TestField: "test"},
+			body:        &TestRespBody{StringField: "test"},
 		},
 		{
 			path:        fmt.Sprintf("%s/1", path),
 			queryParams: queryParams,
 			method:      http.MethodPut,
 			servResp:    servResp,
-			body:        TestRespBody{TestField: "test"},
+			body:        &TestRespBody{StringField: "test"},
 		},
 		{
 			path:        fmt.Sprintf("%s/1", path),
 			queryParams: queryParams,
 			method:      http.MethodDelete,
 			servResp:    servResp,
+			body:        nil,
 		},
 		{
 			path:   path,
@@ -102,7 +110,20 @@ func TestReqValidInput(t *testing.T) {
 			tc.handler.HTTPClient = tc.httpClient
 			tc.handler.APIKey = apiKey
 
-			resp, body, err := tc.handler.request(context.Background(), tc.method, tc.path, tc.body, tc.queryParams)
+			var payloadBuf io.Reader
+			if tc.body != nil {
+				payload, err := json.Marshal(tc.body)
+				require.Nil(t, err)
+				payloadBuf = bytes.NewBuffer(payload)
+			}
+
+			resp, body, err := tc.handler.request(
+				context.Background(),
+				tc.method,
+				tc.path,
+				payloadBuf,
+				tc.queryParams,
+			)
 
 			require.Nil(t, err)
 			assert.NotNil(t, resp)
@@ -155,19 +176,6 @@ func TestReqInvalidResBody(t *testing.T) {
 	require.NotNil(t, err)
 	assert.Contains(t, err.Error(), "unexpected EOF")
 	assert.NotNil(t, resp)
-}
-
-func TestReqInvalidPayload(t *testing.T) {
-	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	}))
-	defer serv.Close()
-
-	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
-	resp, _, err := handler.request(context.Background(), http.MethodPost, "some/path", math.Inf(1), nil)
-
-	require.NotNil(t, err)
-	assert.Contains(t, err.Error(), "json: unsupported value")
-	assert.Nil(t, resp)
 }
 
 func TestReqInvalidHost(t *testing.T) {
