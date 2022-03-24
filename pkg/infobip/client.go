@@ -8,7 +8,7 @@ import (
 	"net/url"
 
 	"github.com/infobip-community/infobip-api-go-sdk/internal"
-
+	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/mms"
 	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/whatsapp"
 )
 
@@ -18,6 +18,7 @@ type Client struct {
 	baseURL    string
 	httpClient http.Client
 	WhatsApp   whatsapp.WhatsApp
+	MMS        mms.MMS
 }
 
 // NewClient returns a client object using the provided baseURL and apiKey.
@@ -34,6 +35,9 @@ func NewClient(baseURL string, apiKey string, options ...func(*Client)) (Client,
 	}
 
 	c.WhatsApp = &whatsapp.Channel{
+		ReqHandler: internal.HTTPHandler{APIKey: apiKey, BaseURL: baseURL, HTTPClient: c.httpClient},
+	}
+	c.MMS = &mms.Channel{
 		ReqHandler: internal.HTTPHandler{APIKey: apiKey, BaseURL: baseURL, HTTPClient: c.httpClient},
 	}
 

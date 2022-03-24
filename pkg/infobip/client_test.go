@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/mms"
 	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/whatsapp"
 
 	"github.com/stretchr/testify/assert"
@@ -23,6 +24,11 @@ func TestDefaultClient(t *testing.T) {
 	assert.Equal(t, http.Client{}, whatsApp.(*whatsapp.Channel).ReqHandler.HTTPClient)
 	assert.Equal(t, apiKey, whatsApp.(*whatsapp.Channel).ReqHandler.APIKey)
 	assert.Equal(t, baseURL, whatsApp.(*whatsapp.Channel).ReqHandler.BaseURL)
+
+	mmsChannel := client.MMS
+	assert.Equal(t, http.Client{}, mmsChannel.(*mms.Channel).ReqHandler.HTTPClient)
+	assert.Equal(t, apiKey, mmsChannel.(*mms.Channel).ReqHandler.APIKey)
+	assert.Equal(t, baseURL, mmsChannel.(*mms.Channel).ReqHandler.BaseURL)
 }
 
 func TestClientWithOptions(t *testing.T) {
@@ -37,6 +43,10 @@ func TestClientWithOptions(t *testing.T) {
 	whatsApp := client.WhatsApp
 	assert.Equal(t, customClient, whatsApp.(*whatsapp.Channel).ReqHandler.HTTPClient)
 	assert.Equal(t, customClient.Timeout, whatsApp.(*whatsapp.Channel).ReqHandler.HTTPClient.Timeout)
+
+	mmsChannel := client.MMS
+	assert.Equal(t, customClient, mmsChannel.(*mms.Channel).ReqHandler.HTTPClient)
+	assert.Equal(t, customClient.Timeout, mmsChannel.(*mms.Channel).ReqHandler.HTTPClient.Timeout)
 }
 
 func TestClientMissingScheme(t *testing.T) {

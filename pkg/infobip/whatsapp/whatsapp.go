@@ -55,7 +55,7 @@ func (wap *Channel) SendTemplateMsgs(
 	ctx context.Context,
 	messages models.TemplateMsgs,
 ) (msgResp models.BulkMsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.ReqHandler.PostRequest(ctx, &messages, &msgResp, sendTemplateMessagesPath)
+	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &messages, &msgResp, sendTemplateMessagesPath)
 	return msgResp, respDetails, err
 }
 
@@ -63,7 +63,7 @@ func (wap *Channel) SendTextMsg(
 	ctx context.Context,
 	msg models.TextMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendMessagePath)
+	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendMessagePath)
 	return msgResp, respDetails, err
 }
 
@@ -71,7 +71,7 @@ func (wap *Channel) SendDocumentMsg(
 	ctx context.Context,
 	msg models.DocumentMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendDocumentPath)
+	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendDocumentPath)
 	return msgResp, respDetails, err
 }
 
@@ -79,7 +79,7 @@ func (wap *Channel) SendImageMsg(
 	ctx context.Context,
 	msg models.ImageMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendImagePath)
+	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendImagePath)
 	return msgResp, respDetails, err
 }
 
@@ -87,7 +87,7 @@ func (wap *Channel) SendAudioMsg(
 	ctx context.Context,
 	msg models.AudioMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendAudioPath)
+	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendAudioPath)
 	return msgResp, respDetails, err
 }
 
@@ -95,7 +95,7 @@ func (wap *Channel) SendVideoMsg(
 	ctx context.Context,
 	msg models.VideoMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendVideoPath)
+	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendVideoPath)
 	return msgResp, respDetails, err
 }
 
@@ -103,7 +103,7 @@ func (wap *Channel) SendStickerMsg(
 	ctx context.Context,
 	msg models.StickerMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendStickerPath)
+	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendStickerPath)
 	return msgResp, respDetails, err
 }
 
@@ -111,7 +111,7 @@ func (wap *Channel) SendLocationMsg(
 	ctx context.Context,
 	msg models.LocationMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendLocationPath)
+	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendLocationPath)
 	return msgResp, respDetails, err
 }
 
@@ -119,7 +119,7 @@ func (wap *Channel) SendContactMsg(
 	ctx context.Context,
 	msg models.ContactMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendContactPath)
+	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendContactPath)
 	return msgResp, respDetails, err
 }
 
@@ -127,7 +127,7 @@ func (wap *Channel) SendInteractiveButtonsMsg(
 	ctx context.Context,
 	msg models.InteractiveButtonsMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendInteractiveButtonsPath)
+	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendInteractiveButtonsPath)
 	return msgResp, respDetails, err
 }
 
@@ -135,7 +135,7 @@ func (wap *Channel) SendInteractiveListMsg(
 	ctx context.Context,
 	msg models.InteractiveListMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendInteractiveListPath)
+	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendInteractiveListPath)
 	return msgResp, respDetails, err
 }
 
@@ -143,7 +143,7 @@ func (wap *Channel) SendInteractiveProductMsg(
 	ctx context.Context,
 	msg models.InteractiveProductMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendInteractiveProductPath)
+	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendInteractiveProductPath)
 	return msgResp, respDetails, err
 }
 
@@ -151,7 +151,7 @@ func (wap *Channel) SendInteractiveMultiproductMsg(
 	ctx context.Context,
 	msg models.InteractiveMultiproductMsg,
 ) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.ReqHandler.PostRequest(ctx, &msg, &msgResp, sendInteractiveMultiproductPath)
+	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendInteractiveMultiproductPath)
 	return msgResp, respDetails, err
 }
 
@@ -168,6 +168,6 @@ func (wap *Channel) CreateTemplate(
 	sender string,
 	template models.TemplateCreate,
 ) (resp models.TemplateResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.ReqHandler.PostRequest(ctx, &template, &resp, fmt.Sprintf(templatesPath, sender))
+	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &template, &resp, fmt.Sprintf(templatesPath, sender))
 	return resp, respDetails, err
 }
