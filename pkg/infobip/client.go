@@ -4,6 +4,7 @@
 package infobip
 
 import (
+	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/email"
 	"net/http"
 	"net/url"
 
@@ -18,6 +19,7 @@ type Client struct {
 	baseURL    string
 	httpClient http.Client
 	WhatsApp   whatsapp.WhatsApp
+	Email      email.Email
 }
 
 // NewClient returns a client object using the provided baseURL and apiKey.
