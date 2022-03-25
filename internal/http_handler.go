@@ -24,13 +24,14 @@ func (h *HTTPHandler) createReq(
 	method string,
 	resourcePath string,
 	body io.Reader,
+	queryParams map[string]string,
 ) (*http.Request, error) {
 	req, err := http.NewRequestWithContext(ctx, method, fmt.Sprintf("%s/%s", h.BaseURL, resourcePath), body)
 	if err != nil {
 		return nil, err
 	}
 	req.Header = h.generateCommonHeaders()
-
+	req.URL.RawQuery = generateQueryParams(queryParams)
 	return req, nil
 }
 
@@ -55,8 +56,9 @@ func (h *HTTPHandler) GetRequest(
 	ctx context.Context,
 	respResource interface{},
 	reqPath string,
+	queryParams map[string]string,
 ) (respDetails models.ResponseDetails, err error) {
-	req, err := h.createReq(ctx, http.MethodGet, reqPath, nil)
+	req, err := h.createReq(ctx, http.MethodGet, reqPath, nil, queryParams)
 	if err != nil {
 		return respDetails, err
 	}
@@ -123,7 +125,7 @@ func (h *HTTPHandler) postRequest(
 	reqPath string,
 	contentType string,
 ) (respDetails models.ResponseDetails, err error) {
-	req, err := h.createReq(ctx, http.MethodPost, reqPath, payload)
+	req, err := h.createReq(ctx, http.MethodPost, reqPath, payload, nil)
 	if err != nil {
 		return respDetails, err
 	}
@@ -158,7 +160,9 @@ func (h *HTTPHandler) generateCommonHeaders() http.Header {
 func generateQueryParams(params map[string]string) string {
 	q := url.Values{}
 	for k, v := range params {
-		q.Add(k, v)
+		if v != "" {
+			q.Add(k, v)
+		}
 	}
 
 	return q.Encode()

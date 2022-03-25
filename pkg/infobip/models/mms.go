@@ -170,3 +170,33 @@ func (t *MMSMsg) Marshal() (*bytes.Buffer, error) {
 func (t *MMSMsg) GetMultipartBoundary() string {
 	return t.boundary
 }
+
+type OutboundMsgDeliveryReportsOpts struct {
+	BulkID    string
+	MessageID string
+	Limit     string
+}
+
+type OutboundMMSDeliveryReportsResponse struct {
+	Results []MMSDeliveryResult `json:"results"`
+}
+
+type MMSDeliveryResult struct {
+	BulkID       string    `json:"bulkId"`
+	MessageID    string    `json:"messageId"`
+	To           string    `json:"to"`
+	From         string    `json:"from"`
+	SentAt       string    `json:"sentAt"`
+	DoneAt       string    `json:"doneAt"`
+	MMSCount     int32     `json:"mmsCount"`
+	MCCMNC       string    `json:"mccMnc"`
+	CallbackData string    `json:"callbackData"`
+	Price        MMSPrice  `json:"price"`
+	Status       MMSStatus `json:"status"`
+	Error        MMSStatus `json:"error"`
+}
+
+type MMSPrice struct {
+	PricePerMessage int    `json:"pricePerMessage"`
+	Currency        string `json:"currency"`
+}

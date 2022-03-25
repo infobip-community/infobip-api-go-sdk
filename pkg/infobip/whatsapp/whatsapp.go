@@ -159,7 +159,7 @@ func (wap *Channel) GetTemplates(
 	ctx context.Context,
 	sender string,
 ) (resp models.TemplatesResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = wap.ReqHandler.GetRequest(ctx, &resp, fmt.Sprintf(templatesPath, sender))
+	respDetails, err = wap.ReqHandler.GetRequest(ctx, &resp, fmt.Sprintf(templatesPath, sender), nil)
 	return resp, respDetails, err
 }
 
