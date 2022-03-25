@@ -79,7 +79,7 @@ func TestValidContactMessage(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.instance.Validate()
-			require.Nil(t, err)
+			require.NoError(t, err)
 		})
 	}
 }

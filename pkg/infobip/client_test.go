@@ -17,7 +17,7 @@ func TestDefaultClient(t *testing.T) {
 	apiKey := "secret"
 	baseURL := "https:/something.api.infobip.com"
 	client, err := NewClient(baseURL, apiKey)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, http.Client{}, client.httpClient)
 
 	whatsApp := client.WhatsApp
@@ -36,7 +36,7 @@ func TestClientWithOptions(t *testing.T) {
 	baseURL := "https://k31ke1.api.infobip.com"
 	customClient := http.Client{Timeout: 3 * time.Second}
 	client, err := NewClient(baseURL, apiKey, WithHTTPClient(customClient))
-	require.Nil(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, customClient, client.httpClient)
 	assert.Equal(t, customClient.Timeout, client.httpClient.Timeout)
 
@@ -53,7 +53,7 @@ func TestClientMissingScheme(t *testing.T) {
 	apiKey := "secret"
 	baseURL := "test.com"
 	client, err := NewClient(baseURL, apiKey)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, fmt.Sprintf("https://%s", baseURL), client.baseURL)
 }
 

@@ -34,11 +34,6 @@ func (h *HTTPHandler) createReq(
 	return req, nil
 }
 
-// executeReq is a wrapper around the net/http executeReq method, while
-// also appending mandatory headers, formatting query parameters
-// along with handling and parsing the response status and body.
-//
-// The body is immediately parsed and closed.
 func (h *HTTPHandler) executeReq(
 	req *http.Request,
 ) (resp *http.Response, respBody []byte, err error) {

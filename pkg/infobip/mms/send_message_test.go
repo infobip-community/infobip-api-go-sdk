@@ -77,7 +77,7 @@ func TestSendMsgValidReq(t *testing.T) {
 	}`)
 	var expectedResp models.MMSResponse
 	err = json.Unmarshal(rawJSONResp, &expectedResp)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.True(t, strings.HasSuffix(r.URL.Path, sendMessagePath))
@@ -88,14 +88,14 @@ func TestSendMsgValidReq(t *testing.T) {
 		require.NoError(t, err)
 		var expectedHead []byte
 		expectedHead, err = json.Marshal(msg.Head)
-		require.Nil(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, string(expectedHead), r.MultipartForm.Value["head"][0])
 		assert.Contains(t, tmpFile.Name(), r.MultipartForm.File["media"][0].Filename)
 		assert.Equal(t, int64(len(content)), r.MultipartForm.File["media"][0].Size)
 		assert.Equal(t, msg.Text, r.MultipartForm.Value["text"][0])
 		var expectedExternallyHostedMedia []byte
 		expectedExternallyHostedMedia, err = json.Marshal(msg.ExternallyHostedMedia)
-		require.Nil(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, string(expectedExternallyHostedMedia), r.MultipartForm.Value["externallyHostedMedia"][0])
 		assert.Equal(t, msg.SMIL, r.MultipartForm.Value["smil"][0])
 
@@ -111,7 +111,7 @@ func TestSendMsgValidReq(t *testing.T) {
 
 	msgResp, respDetails, err := mms.SendMsg(context.Background(), msg)
 
-	require.Nil(t, err)
+	require.NoError(t, err)
 	assert.NotEqual(t, models.MMSResponse{}, msgResp)
 	assert.Equal(t, expectedResp, msgResp)
 	assert.NotNil(t, respDetails)
@@ -164,7 +164,7 @@ func TestSendMsgErrors(t *testing.T) {
 		t.Run(strconv.Itoa(tc.statusCode), func(t *testing.T) {
 			var expectedResp models.MMSResponse
 			err := json.Unmarshal(tc.rawJSONResp, &expectedResp)
-			require.Nil(t, err)
+			require.NoError(t, err)
 			serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tc.statusCode)
 				_, servErr := w.Write(tc.rawJSONResp)
@@ -179,7 +179,7 @@ func TestSendMsgErrors(t *testing.T) {
 			msgResp, respDetails, err := mms.SendMsg(context.Background(), msg)
 			serv.Close()
 
-			require.Nil(t, err)
+			require.NoError(t, err)
 			assert.NotEqual(t, http.Response{}, respDetails.HTTPResponse)
 			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
 			assert.Equal(t, expectedResp, msgResp)

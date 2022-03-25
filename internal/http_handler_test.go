@@ -84,15 +84,15 @@ func TestReqValidInput(t *testing.T) {
 				var err error
 				if tc.body != nil {
 					expectedBody, err = json.Marshal(tc.body)
-					require.Nil(t, err)
+					require.NoError(t, err)
 				}
 				parsedBody, err := ioutil.ReadAll(r.Body)
-				require.Nil(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, expectedBody, parsedBody)
 
 				w.WriteHeader(http.StatusOK)
 				_, err = w.Write([]byte(tc.servResp))
-				require.Nil(t, err)
+				require.NoError(t, err)
 			}))
 			defer serv.Close()
 
@@ -104,7 +104,7 @@ func TestReqValidInput(t *testing.T) {
 			var payloadBuf io.Reader
 			if tc.body != nil {
 				payload, err := json.Marshal(tc.body)
-				require.Nil(t, err)
+				require.NoError(t, err)
 				payloadBuf = bytes.NewBuffer(payload)
 			}
 
@@ -112,7 +112,7 @@ func TestReqValidInput(t *testing.T) {
 			require.NoError(t, err)
 
 			resp, body, err := tc.handler.executeReq(req)
-			require.Nil(t, err)
+			require.NoError(t, err)
 			assert.NotNil(t, resp)
 			assert.Equal(t, []byte(tc.servResp), body)
 		})
