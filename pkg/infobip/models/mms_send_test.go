@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/utils"
 	"github.com/stretchr/testify/require"
 )
 
@@ -33,7 +34,7 @@ func TestValidMMSMsg(t *testing.T) {
 					CallbackData:          "data",
 					NotifyURL:             "https://www.google.com",
 					SendAt:                "2006-01-02T15:04:05.123Z",
-					IntermediateReport:    true,
+					IntermediateReport:    utils.BoolPtr(true),
 					DeliveryTimeWindow: &DeliveryTimeWindow{
 						Days: []string{"MONDAY", "TUESDAY"},
 						From: &MMSTime{Minute: 1, Hour: 1},
