@@ -19,50 +19,35 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTemplateMsgValidReq(t *testing.T) {
+func TestAudioValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.TemplateMsgs{
-		Messages: []models.TemplateMsg{
-			{
-				MsgCommon: models.MsgCommon{From: "16175551213", To: "16175551212"},
-				Content: models.TemplateMsgContent{
-					TemplateName: "template_name",
-					TemplateData: models.TemplateData{
-						Body: models.TemplateBody{Placeholders: []string{}},
-					},
-					Language: "en_GB",
-				},
-			},
-		},
+	msg := models.AudioMsg{
+		MsgCommon: models.GenerateTestMsgCommon(),
+		Content:   models.AudioContent{MediaURL: "https://www.mypath.com/whatsappaudio.mp3"},
 	}
 	rawJSONResp := []byte(`{
-		"messages": [
-			{
-				"to": "441134960001",
-				"messageCount": 1,
-				"messageId": "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-				"status": {
-					"groupId": 1,
-					"groupName": "PENDING",
-					"id": 7,
-					"name": "PENDING_ENROUTE",
-					"description": "Message sent to next instance"
-				}
-			}
-		],
-		"bulkId": "2034072219640523073"
+		"to": "441134960001",
+		"messageCount": 1,
+		"messageId": "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
+		"status": {
+			"groupId": 1,
+			"groupName": "PENDING",
+			"id": 7,
+			"name": "PENDING_ENROUTE",
+			"description": "Message sent to next instance"
+		}
 	}`)
-	var expectedResp models.BulkMsgResponse
+	var expectedResp models.MsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendTemplateMessagesPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendAudioPath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.TemplateMsgs
+		var receivedMsg models.AudioMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -77,30 +62,20 @@ func TestTemplateMsgValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendTemplateMsgs(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendAudioMsg(context.Background(), msg)
 
-	require.Nil(t, err)
-	assert.NotEqual(t, models.BulkMsgResponse{}, msgResp)
+	require.NoError(t, err)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 	assert.Equal(t, expectedResp, msgResp)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidTemplateMsg(t *testing.T) {
-	msg := models.TemplateMsgs{
-		Messages: []models.TemplateMsg{
-			{
-				MsgCommon: models.MsgCommon{From: "16175551213", To: "16175551212"},
-				Content: models.TemplateMsgContent{
-					TemplateName: "INVALID",
-					TemplateData: models.TemplateData{
-						Body: models.TemplateBody{Placeholders: []string{}},
-					},
-					Language: "en_GB",
-				},
-			},
-		},
+func TestInvalidAudioMsg(t *testing.T) {
+	msg := models.AudioMsg{
+		MsgCommon: models.GenerateTestMsgCommon(),
+		Content:   models.AudioContent{MediaURL: "hello world"},
 	}
 	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
 		HTTPClient: http.Client{},
@@ -108,15 +83,15 @@ func TestInvalidTemplateMsg(t *testing.T) {
 		APIKey:     "secret",
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendTemplateMsgs(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendAudioMsg(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
-	assert.Equal(t, models.BulkMsgResponse{}, msgResp)
+	assert.Equal(t, models.MsgResponse{}, msgResp)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestTemplateMsg4xxErrors(t *testing.T) {
+func TestAudio4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -128,8 +103,10 @@ func TestTemplateMsg4xxErrors(t *testing.T) {
 						"messageId": "BAD_REQUEST",
 						"text": "Bad request",
 						"validationErrors": {
-							"content.templateData.header.placeholder": [
-								"cannot have new-line/tab characters or more than 4 consecutive spaces"	
+							"content.mediaUrl": [
+								"size must be between 1 and 2048",
+								"is not a valid url",
+								"must not be blank"
 							]
 						}
 					}
@@ -160,26 +137,16 @@ func TestTemplateMsg4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.TemplateMsgs{
-		Messages: []models.TemplateMsg{
-			{
-				MsgCommon: models.MsgCommon{From: "16175551213", To: "16175551212"},
-				Content: models.TemplateMsgContent{
-					TemplateName: "template_name",
-					TemplateData: models.TemplateData{
-						Body: models.TemplateBody{Placeholders: []string{}},
-					},
-					Language: "en_GB",
-				},
-			},
-		},
+	msg := models.AudioMsg{
+		MsgCommon: models.GenerateTestMsgCommon(),
+		Content:   models.AudioContent{MediaURL: "https://www.mypath.com/whatsappaudio.mp3"},
 	}
 
 	for _, tc := range tests {
 		t.Run(strconv.Itoa(tc.statusCode), func(t *testing.T) {
 			var expectedResp models.ErrorDetails
 			err := json.Unmarshal(tc.rawJSONResp, &expectedResp)
-			require.Nil(t, err)
+			require.NoError(t, err)
 			serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tc.statusCode)
 				_, servErr := w.Write(tc.rawJSONResp)
@@ -191,15 +158,15 @@ func TestTemplateMsg4xxErrors(t *testing.T) {
 				APIKey:     "secret",
 			}}
 
-			msgResp, respDetails, err := whatsApp.SendTemplateMsgs(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.SendAudioMsg(context.Background(), msg)
 			serv.Close()
 
-			require.Nil(t, err)
+			require.NoError(t, err)
 			assert.NotEqual(t, http.Response{}, respDetails.HTTPResponse)
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
-			assert.Equal(t, models.BulkMsgResponse{}, msgResp)
+			assert.Equal(t, models.MsgResponse{}, msgResp)
 		})
 	}
 }

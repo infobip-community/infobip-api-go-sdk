@@ -13,21 +13,17 @@ import (
 
 	"github.com/infobip-community/infobip-api-go-sdk/internal"
 	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/models"
-	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/utils"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestLocationValidReq(t *testing.T) {
+func TestDocValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.LocationMsg{
+	msg := models.DocumentMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.LocationContent{
-			Latitude:  utils.Float32Ptr(44.9526862),
-			Longitude: utils.Float32Ptr(13.8545217),
-		},
+		Content:   models.DocumentContent{MediaURL: "https://www.mypath.com/whatsappdoc.txt"},
 	}
 	rawJSONResp := []byte(`{
 		"to": "441134960001",
@@ -43,15 +39,15 @@ func TestLocationValidReq(t *testing.T) {
 	}`)
 	var expectedResp models.MsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendLocationPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendDocumentPath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.LocationMsg
+		var receivedMsg models.DocumentMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -66,9 +62,9 @@ func TestLocationValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendLocationMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendDocumentMsg(context.Background(), msg)
 
-	require.Nil(t, err)
+	require.NoError(t, err)
 	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 	assert.Equal(t, expectedResp, msgResp)
 	assert.NotNil(t, respDetails)
@@ -76,10 +72,10 @@ func TestLocationValidReq(t *testing.T) {
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidLocationMsg(t *testing.T) {
-	msg := models.LocationMsg{
+func TestInvalidDoc(t *testing.T) {
+	msg := models.DocumentMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.LocationContent{Latitude: utils.Float32Ptr(10)},
+		Content:   models.DocumentContent{MediaURL: "hello world"},
 	}
 	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
 		HTTPClient: http.Client{},
@@ -87,15 +83,15 @@ func TestInvalidLocationMsg(t *testing.T) {
 		APIKey:     "secret",
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendLocationMsg(context.Background(), msg)
-
+	msgResp, respDetails, err := whatsApp.SendDocumentMsg(context.Background(), msg)
 	require.NotNil(t, err)
+
 	assert.IsType(t, err, validator.ValidationErrors{})
 	assert.Equal(t, models.MsgResponse{}, msgResp)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestLocation4xxErrors(t *testing.T) {
+func TestDoc4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -107,11 +103,10 @@ func TestLocation4xxErrors(t *testing.T) {
 						"messageId": "BAD_REQUEST",
 						"text": "Bad request",
 						"validationErrors": {
-							"content.latitude": [
-								"must be greater than or equal to -90"
-							],
-							"content.longitude": [
-								"must be less than or equal to 180"
+							"content.mediaUrl": [
+								"size must be between 1 and 2048",
+								"is not a valid url",
+								"must not be blank"
 							]
 						}
 					}
@@ -142,16 +137,16 @@ func TestLocation4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.LocationMsg{
+	msg := models.DocumentMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.LocationContent{Latitude: utils.Float32Ptr(10), Longitude: utils.Float32Ptr(10)},
+		Content:   models.DocumentContent{MediaURL: "https://www.mypath.com/whatsappdoc.txt"},
 	}
 
 	for _, tc := range tests {
 		t.Run(strconv.Itoa(tc.statusCode), func(t *testing.T) {
 			var expectedResp models.ErrorDetails
 			err := json.Unmarshal(tc.rawJSONResp, &expectedResp)
-			require.Nil(t, err)
+			require.NoError(t, err)
 			serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tc.statusCode)
 				_, servErr := w.Write(tc.rawJSONResp)
@@ -163,10 +158,10 @@ func TestLocation4xxErrors(t *testing.T) {
 				APIKey:     "secret",
 			}}
 
-			msgResp, respDetails, err := whatsApp.SendLocationMsg(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.SendDocumentMsg(context.Background(), msg)
 			serv.Close()
 
-			require.Nil(t, err)
+			require.NoError(t, err)
 			assert.NotEqual(t, http.Response{}, respDetails.HTTPResponse)
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)

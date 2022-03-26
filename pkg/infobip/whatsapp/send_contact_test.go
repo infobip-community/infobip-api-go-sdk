@@ -19,18 +19,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestInteractiveButtonsValidReq(t *testing.T) {
+func TestContactValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.InteractiveButtonsMsg{
+	msg := models.ContactMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.InteractiveButtonsContent{
-			Body: models.InteractiveButtonsBody{Text: "Some text"},
-			Action: models.InteractiveButtons{
-				Buttons: []models.InteractiveButton{
-					{Type: "REPLY", ID: "1", Title: "Yes"},
-					{Type: "REPLY", ID: "2", Title: "No"},
-				},
-			},
+		Content: models.ContactContent{
+			Contacts: []models.Contact{{Name: models.ContactName{FirstName: "John", FormattedName: "Mr. John Smith"}}},
 		},
 	}
 	rawJSONResp := []byte(`{
@@ -47,15 +41,15 @@ func TestInteractiveButtonsValidReq(t *testing.T) {
 	}`)
 	var expectedResp models.MsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendInteractiveButtonsPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendContactPath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.InteractiveButtonsMsg
+		var receivedMsg models.ContactMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -64,15 +58,15 @@ func TestInteractiveButtonsValidReq(t *testing.T) {
 		assert.Nil(t, servErr)
 	}))
 	defer serv.Close()
-
 	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
 		HTTPClient: http.Client{},
 		BaseURL:    serv.URL,
 		APIKey:     apiKey,
 	}}
-	messageResponse, respDetails, err := whatsApp.SendInteractiveButtonsMsg(context.Background(), msg)
 
-	require.Nil(t, err)
+	messageResponse, respDetails, err := whatsApp.SendContactMsg(context.Background(), msg)
+
+	require.NoError(t, err)
 	assert.NotEqual(t, models.MsgResponse{}, messageResponse)
 	assert.Equal(t, expectedResp, messageResponse)
 	assert.NotNil(t, respDetails)
@@ -80,17 +74,11 @@ func TestInteractiveButtonsValidReq(t *testing.T) {
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidInteractiveButtonsMsg(t *testing.T) {
-	msg := models.InteractiveButtonsMsg{
+func TestInvalidContactMsg(t *testing.T) {
+	msg := models.ContactMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.InteractiveButtonsContent{
-			Body: models.InteractiveButtonsBody{Text: "Some text"},
-			Action: models.InteractiveButtons{
-				Buttons: []models.InteractiveButton{
-					{Type: "invalid", ID: "1", Title: "Yes"},
-					{Type: "REPLY", ID: "2", Title: "No"},
-				},
-			},
+		Content: models.ContactContent{
+			Contacts: []models.Contact{{Name: models.ContactName{FormattedName: "Mr. John Smith"}}},
 		},
 	}
 	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
@@ -99,15 +87,15 @@ func TestInvalidInteractiveButtonsMsg(t *testing.T) {
 		APIKey:     "secret",
 	}}
 
-	messageResponse, respDetails, err := whatsApp.SendInteractiveButtonsMsg(context.Background(), msg)
-
+	messageResponse, respDetails, err := whatsApp.SendContactMsg(context.Background(), msg)
 	require.NotNil(t, err)
+
 	assert.IsType(t, err, validator.ValidationErrors{})
 	assert.Equal(t, models.MsgResponse{}, messageResponse)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestInteractiveButtons4xxErrors(t *testing.T) {
+func TestContact4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -119,10 +107,8 @@ func TestInteractiveButtons4xxErrors(t *testing.T) {
 						"messageId": "BAD_REQUEST",
 						"text": "Bad request",
 						"validationErrors": {
-							"content.header.mediaUrl": [
-								"size must be between 1 and 2048",
-								"is not a valid url",
-								"must not be blank"
+							"content.contacts[0].birthday": [
+								"must be in the YYYY-MM-DD format"
 							]
 						}
 					}
@@ -153,16 +139,10 @@ func TestInteractiveButtons4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.InteractiveButtonsMsg{
+	msg := models.ContactMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.InteractiveButtonsContent{
-			Body: models.InteractiveButtonsBody{Text: "Some text"},
-			Action: models.InteractiveButtons{
-				Buttons: []models.InteractiveButton{
-					{Type: "REPLY", ID: "1", Title: "Yes"},
-					{Type: "REPLY", ID: "2", Title: "No"},
-				},
-			},
+		Content: models.ContactContent{
+			Contacts: []models.Contact{{Name: models.ContactName{FirstName: "John", FormattedName: "Mr. John Smith"}}},
 		},
 	}
 
@@ -170,7 +150,7 @@ func TestInteractiveButtons4xxErrors(t *testing.T) {
 		t.Run(strconv.Itoa(tc.statusCode), func(t *testing.T) {
 			var expectedResp models.ErrorDetails
 			err := json.Unmarshal(tc.rawJSONResp, &expectedResp)
-			require.Nil(t, err)
+			require.NoError(t, err)
 			serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tc.statusCode)
 				_, servErr := w.Write(tc.rawJSONResp)
@@ -182,10 +162,10 @@ func TestInteractiveButtons4xxErrors(t *testing.T) {
 				APIKey:     "secret",
 			}}
 
-			messageResponse, respDetails, err := whatsApp.SendInteractiveButtonsMsg(context.Background(), msg)
+			messageResponse, respDetails, err := whatsApp.SendContactMsg(context.Background(), msg)
 			serv.Close()
 
-			require.Nil(t, err)
+			require.NoError(t, err)
 			assert.NotEqual(t, http.Response{}, respDetails.HTTPResponse)
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)

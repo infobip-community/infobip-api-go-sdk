@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -18,26 +19,24 @@ type HTTPHandler struct {
 	HTTPClient http.Client
 }
 
-// request is a wrapper around the net/http request method, while
-// also appending mandatory headers, formatting query parameters
-// along with handling and parsing the response status and body.
-//
-// The body is immediately parsed and closed.
-func (h *HTTPHandler) request(
+func (h *HTTPHandler) createReq(
 	ctx context.Context,
 	method string,
 	resourcePath string,
 	body io.Reader,
-	params map[string]string,
-) (resp *http.Response, respBody []byte, err error) {
+) (*http.Request, error) {
 	req, err := http.NewRequestWithContext(ctx, method, fmt.Sprintf("%s/%s", h.BaseURL, resourcePath), body)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
+	req.Header = h.generateCommonHeaders()
 
-	req.Header = h.generateHeaders(method)
-	req.URL.RawQuery = generateQueryParams(params)
+	return req, nil
+}
 
+func (h *HTTPHandler) executeReq(
+	req *http.Request,
+) (resp *http.Response, respBody []byte, err error) {
 	resp, err = h.HTTPClient.Do(req)
 	if err != nil {
 		return nil, nil, err
@@ -57,13 +56,12 @@ func (h *HTTPHandler) GetRequest(
 	respResource interface{},
 	reqPath string,
 ) (respDetails models.ResponseDetails, err error) {
-	resp, parsedBody, err := h.request( //nolint: bodyclose // closed in the method below
-		ctx,
-		http.MethodGet,
-		reqPath,
-		nil,
-		nil,
-	)
+	req, err := h.createReq(ctx, http.MethodGet, reqPath, nil)
+	if err != nil {
+		return respDetails, err
+	}
+
+	resp, parsedBody, err := h.executeReq(req) //nolint: bodyclose // closed in the method itself
 	if err != nil {
 		_ = json.Unmarshal(parsedBody, &respDetails.ErrorResponse)
 		return respDetails, err
@@ -78,7 +76,7 @@ func (h *HTTPHandler) GetRequest(
 	return respDetails, err
 }
 
-func (h *HTTPHandler) PostRequest(
+func (h *HTTPHandler) PostJSONReq(
 	ctx context.Context,
 	postResource models.Validatable,
 	respResource interface{},
@@ -92,13 +90,46 @@ func (h *HTTPHandler) PostRequest(
 	if err != nil {
 		return respDetails, err
 	}
-	resp, parsedBody, err := h.request( //nolint: bodyclose // closed in the method below
+	return h.postRequest(ctx, payload, respResource, reqPath, "application/json")
+}
+
+func (h *HTTPHandler) PostMultipartReq(
+	ctx context.Context,
+	postResource models.MultipartValidatable,
+	respResource interface{},
+	reqPath string,
+) (respDetails models.ResponseDetails, err error) {
+	err = postResource.Validate()
+	if err != nil {
+		return respDetails, err
+	}
+	payload, err := postResource.Marshal()
+	if err != nil {
+		return respDetails, err
+	}
+	return h.postRequest(
 		ctx,
-		http.MethodPost,
-		reqPath,
 		payload,
-		nil,
+		respResource,
+		reqPath,
+		fmt.Sprintf("multipart/form-data; boundary=%s", postResource.GetMultipartBoundary()),
 	)
+}
+
+func (h *HTTPHandler) postRequest(
+	ctx context.Context,
+	payload *bytes.Buffer,
+	respResource interface{},
+	reqPath string,
+	contentType string,
+) (respDetails models.ResponseDetails, err error) {
+	req, err := h.createReq(ctx, http.MethodPost, reqPath, payload)
+	if err != nil {
+		return respDetails, err
+	}
+	req.Header.Set("Content-Type", contentType)
+
+	resp, parsedBody, err := h.executeReq(req) //nolint: bodyclose // closed in the method itself
 	if err != nil {
 		_ = json.Unmarshal(parsedBody, &respDetails.ErrorResponse)
 		return respDetails, err
@@ -109,20 +140,18 @@ func (h *HTTPHandler) PostRequest(
 		err = json.Unmarshal(parsedBody, &respResource)
 	} else {
 		_ = json.Unmarshal(parsedBody, &respDetails.ErrorResponse)
+		// MMS 4xx/5xx responses use the same response as 2xx responses
+		if _, ok := respResource.(*models.MMSResponse); ok {
+			_ = json.Unmarshal(parsedBody, &respResource)
+		}
 	}
 	return respDetails, err
 }
 
-func (h *HTTPHandler) generateHeaders(method string) http.Header {
+func (h *HTTPHandler) generateCommonHeaders() http.Header {
 	header := http.Header{}
-
 	header.Add("Authorization", fmt.Sprintf("App %s", h.APIKey))
 	header.Add("Accept", "application/json")
-
-	if method == http.MethodPost {
-		header.Add("Content-Type", "application/json")
-	}
-
 	return header
 }
 

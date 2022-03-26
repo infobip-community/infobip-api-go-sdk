@@ -13,21 +13,20 @@ import (
 
 	"github.com/infobip-community/infobip-api-go-sdk/internal"
 	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/models"
+	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/utils"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestInteractiveProductValidReq(t *testing.T) {
+func TestLocationValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.InteractiveProductMsg{
+	msg := models.LocationMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.InteractiveProductContent{
-			Action: models.InteractiveProductAction{
-				CatalogID:         "1",
-				ProductRetailerID: "2",
-			},
+		Content: models.LocationContent{
+			Latitude:  utils.Float32Ptr(44.9526862),
+			Longitude: utils.Float32Ptr(13.8545217),
 		},
 	}
 	rawJSONResp := []byte(`{
@@ -44,15 +43,15 @@ func TestInteractiveProductValidReq(t *testing.T) {
 	}`)
 	var expectedResp models.MsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendInteractiveProductPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendLocationPath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.InteractiveProductMsg
+		var receivedMsg models.LocationMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -67,9 +66,9 @@ func TestInteractiveProductValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendInteractiveProductMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendLocationMsg(context.Background(), msg)
 
-	require.Nil(t, err)
+	require.NoError(t, err)
 	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 	assert.Equal(t, expectedResp, msgResp)
 	assert.NotNil(t, respDetails)
@@ -77,14 +76,10 @@ func TestInteractiveProductValidReq(t *testing.T) {
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidInteractiveProductMsg(t *testing.T) {
-	msg := models.InteractiveProductMsg{
+func TestInvalidLocationMsg(t *testing.T) {
+	msg := models.LocationMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.InteractiveProductContent{
-			Action: models.InteractiveProductAction{
-				ProductRetailerID: "2",
-			},
-		},
+		Content:   models.LocationContent{Latitude: utils.Float32Ptr(10)},
 	}
 	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
 		HTTPClient: http.Client{},
@@ -92,7 +87,7 @@ func TestInvalidInteractiveProductMsg(t *testing.T) {
 		APIKey:     "secret",
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendInteractiveProductMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendLocationMsg(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
@@ -100,7 +95,7 @@ func TestInvalidInteractiveProductMsg(t *testing.T) {
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestInteractiveProduct4xxErrors(t *testing.T) {
+func TestLocation4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -112,9 +107,11 @@ func TestInteractiveProduct4xxErrors(t *testing.T) {
 						"messageId": "BAD_REQUEST",
 						"text": "Bad request",
 						"validationErrors": {
-							"content.footer.text": [
-								"size must be between 1 and 60",
-								"must not be blank"
+							"content.latitude": [
+								"must be greater than or equal to -90"
+							],
+							"content.longitude": [
+								"must be less than or equal to 180"
 							]
 						}
 					}
@@ -145,21 +142,16 @@ func TestInteractiveProduct4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.InteractiveProductMsg{
+	msg := models.LocationMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.InteractiveProductContent{
-			Action: models.InteractiveProductAction{
-				CatalogID:         "1",
-				ProductRetailerID: "2",
-			},
-		},
+		Content:   models.LocationContent{Latitude: utils.Float32Ptr(10), Longitude: utils.Float32Ptr(10)},
 	}
 
 	for _, tc := range tests {
 		t.Run(strconv.Itoa(tc.statusCode), func(t *testing.T) {
 			var expectedResp models.ErrorDetails
 			err := json.Unmarshal(tc.rawJSONResp, &expectedResp)
-			require.Nil(t, err)
+			require.NoError(t, err)
 			serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tc.statusCode)
 				_, servErr := w.Write(tc.rawJSONResp)
@@ -171,10 +163,10 @@ func TestInteractiveProduct4xxErrors(t *testing.T) {
 				APIKey:     "secret",
 			}}
 
-			msgResp, respDetails, err := whatsApp.SendInteractiveProductMsg(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.SendLocationMsg(context.Background(), msg)
 			serv.Close()
 
-			require.Nil(t, err)
+			require.NoError(t, err)
 			assert.NotEqual(t, http.Response{}, respDetails.HTTPResponse)
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)

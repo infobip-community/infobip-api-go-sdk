@@ -19,12 +19,15 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestContactValidReq(t *testing.T) {
+func TestInteractiveProductValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.ContactMsg{
+	msg := models.InteractiveProductMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.ContactContent{
-			Contacts: []models.Contact{{Name: models.ContactName{FirstName: "John", FormattedName: "Mr. John Smith"}}},
+		Content: models.InteractiveProductContent{
+			Action: models.InteractiveProductAction{
+				CatalogID:         "1",
+				ProductRetailerID: "2",
+			},
 		},
 	}
 	rawJSONResp := []byte(`{
@@ -41,15 +44,15 @@ func TestContactValidReq(t *testing.T) {
 	}`)
 	var expectedResp models.MsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendContactPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendInteractiveProductPath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.ContactMsg
+		var receivedMsg models.InteractiveProductMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -64,21 +67,23 @@ func TestContactValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	messageResponse, respDetails, err := whatsApp.SendContactMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendInteractiveProductMsg(context.Background(), msg)
 
-	require.Nil(t, err)
-	assert.NotEqual(t, models.MsgResponse{}, messageResponse)
-	assert.Equal(t, expectedResp, messageResponse)
+	require.NoError(t, err)
+	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.Equal(t, expectedResp, msgResp)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidContactMsg(t *testing.T) {
-	msg := models.ContactMsg{
+func TestInvalidInteractiveProductMsg(t *testing.T) {
+	msg := models.InteractiveProductMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.ContactContent{
-			Contacts: []models.Contact{{Name: models.ContactName{FormattedName: "Mr. John Smith"}}},
+		Content: models.InteractiveProductContent{
+			Action: models.InteractiveProductAction{
+				ProductRetailerID: "2",
+			},
 		},
 	}
 	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
@@ -87,15 +92,15 @@ func TestInvalidContactMsg(t *testing.T) {
 		APIKey:     "secret",
 	}}
 
-	messageResponse, respDetails, err := whatsApp.SendContactMsg(context.Background(), msg)
-	require.NotNil(t, err)
+	msgResp, respDetails, err := whatsApp.SendInteractiveProductMsg(context.Background(), msg)
 
+	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
-	assert.Equal(t, models.MsgResponse{}, messageResponse)
+	assert.Equal(t, models.MsgResponse{}, msgResp)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestContact4xxErrors(t *testing.T) {
+func TestInteractiveProduct4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -107,8 +112,9 @@ func TestContact4xxErrors(t *testing.T) {
 						"messageId": "BAD_REQUEST",
 						"text": "Bad request",
 						"validationErrors": {
-							"content.contacts[0].birthday": [
-								"must be in the YYYY-MM-DD format"
+							"content.footer.text": [
+								"size must be between 1 and 60",
+								"must not be blank"
 							]
 						}
 					}
@@ -139,10 +145,13 @@ func TestContact4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.ContactMsg{
+	msg := models.InteractiveProductMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content: models.ContactContent{
-			Contacts: []models.Contact{{Name: models.ContactName{FirstName: "John", FormattedName: "Mr. John Smith"}}},
+		Content: models.InteractiveProductContent{
+			Action: models.InteractiveProductAction{
+				CatalogID:         "1",
+				ProductRetailerID: "2",
+			},
 		},
 	}
 
@@ -150,7 +159,7 @@ func TestContact4xxErrors(t *testing.T) {
 		t.Run(strconv.Itoa(tc.statusCode), func(t *testing.T) {
 			var expectedResp models.ErrorDetails
 			err := json.Unmarshal(tc.rawJSONResp, &expectedResp)
-			require.Nil(t, err)
+			require.NoError(t, err)
 			serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tc.statusCode)
 				_, servErr := w.Write(tc.rawJSONResp)
@@ -162,15 +171,15 @@ func TestContact4xxErrors(t *testing.T) {
 				APIKey:     "secret",
 			}}
 
-			messageResponse, respDetails, err := whatsApp.SendContactMsg(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.SendInteractiveProductMsg(context.Background(), msg)
 			serv.Close()
 
-			require.Nil(t, err)
+			require.NoError(t, err)
 			assert.NotEqual(t, http.Response{}, respDetails.HTTPResponse)
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
-			assert.Equal(t, models.MsgResponse{}, messageResponse)
+			assert.Equal(t, models.MsgResponse{}, msgResp)
 		})
 	}
 }

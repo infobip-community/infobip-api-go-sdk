@@ -22,7 +22,7 @@ func TestGetReqOK(t *testing.T) {
 	rawJSONResp := []byte(`{"id": 1,"name": "John"}`)
 	var expectedResp exampleResp
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
@@ -35,10 +35,10 @@ func TestGetReqOK(t *testing.T) {
 	respResource := exampleResp{}
 	respDetails, err := handler.GetRequest(context.Background(), &respResource, "some/path")
 
-	require.Nil(t, err)
+	require.NoError(t, err)
 	assert.NotEqual(t, exampleResp{}, respResource)
 	assert.Equal(t, expectedResp, respResource)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
@@ -55,7 +55,7 @@ func TestGetReq4xx(t *testing.T) {
 	}`)
 	var expectedResp models.ErrorDetails
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
@@ -69,7 +69,7 @@ func TestGetReq4xx(t *testing.T) {
 	respResource := exampleResp{}
 	respDetails, err := handler.GetRequest(context.Background(), &respResource, "some/path")
 
-	require.Nil(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, exampleResp{}, respResource)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusUnauthorized, respDetails.HTTPResponse.StatusCode)

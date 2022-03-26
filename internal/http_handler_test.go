@@ -26,56 +26,47 @@ func (t *TestRespBody) Marshal() ([]byte, error) {
 }
 
 func TestReqValidInput(t *testing.T) {
-	type test struct {
-		handler     HTTPHandler
-		method      string
-		path        string
-		body        *TestRespBody
-		servResp    string
-		httpClient  http.Client
-		queryParams map[string]string
-	}
-
 	path := "some/path"
-	queryParams := map[string]string{"key": "value", "key2": "value2"}
 	servResp := `{"data": "test"}`
 	apiKey := "secret"
 
-	tests := []test{
+	tests := []struct {
+		handler    HTTPHandler
+		method     string
+		path       string
+		body       *TestRespBody
+		servResp   string
+		httpClient http.Client
+	}{
 		{
-			path:        path,
-			queryParams: queryParams,
-			method:      http.MethodGet,
-			servResp:    servResp,
-			body:        nil,
+			path:     path,
+			method:   http.MethodGet,
+			servResp: servResp,
+			body:     nil,
 		},
 		{
-			path:        path,
-			queryParams: queryParams,
-			method:      http.MethodPost,
-			servResp:    servResp,
-			body:        &TestRespBody{StringField: "test"},
+			path:     path,
+			method:   http.MethodPost,
+			servResp: servResp,
+			body:     &TestRespBody{StringField: "test"},
 		},
 		{
-			path:        fmt.Sprintf("%s/1", path),
-			queryParams: queryParams,
-			method:      http.MethodPatch,
-			servResp:    servResp,
-			body:        &TestRespBody{StringField: "test"},
+			path:     fmt.Sprintf("%s/1", path),
+			method:   http.MethodPatch,
+			servResp: servResp,
+			body:     &TestRespBody{StringField: "test"},
 		},
 		{
-			path:        fmt.Sprintf("%s/1", path),
-			queryParams: queryParams,
-			method:      http.MethodPut,
-			servResp:    servResp,
-			body:        &TestRespBody{StringField: "test"},
+			path:     fmt.Sprintf("%s/1", path),
+			method:   http.MethodPut,
+			servResp: servResp,
+			body:     &TestRespBody{StringField: "test"},
 		},
 		{
-			path:        fmt.Sprintf("%s/1", path),
-			queryParams: queryParams,
-			method:      http.MethodDelete,
-			servResp:    servResp,
-			body:        nil,
+			path:     fmt.Sprintf("%s/1", path),
+			method:   http.MethodDelete,
+			servResp: servResp,
+			body:     nil,
 		},
 		{
 			path:   path,
@@ -93,15 +84,15 @@ func TestReqValidInput(t *testing.T) {
 				var err error
 				if tc.body != nil {
 					expectedBody, err = json.Marshal(tc.body)
-					require.Nil(t, err)
+					require.NoError(t, err)
 				}
 				parsedBody, err := ioutil.ReadAll(r.Body)
-				require.Nil(t, err)
+				require.NoError(t, err)
 				assert.Equal(t, expectedBody, parsedBody)
 
 				w.WriteHeader(http.StatusOK)
 				_, err = w.Write([]byte(tc.servResp))
-				require.Nil(t, err)
+				require.NoError(t, err)
 			}))
 			defer serv.Close()
 
@@ -113,19 +104,15 @@ func TestReqValidInput(t *testing.T) {
 			var payloadBuf io.Reader
 			if tc.body != nil {
 				payload, err := json.Marshal(tc.body)
-				require.Nil(t, err)
+				require.NoError(t, err)
 				payloadBuf = bytes.NewBuffer(payload)
 			}
 
-			resp, body, err := tc.handler.request(
-				context.Background(),
-				tc.method,
-				tc.path,
-				payloadBuf,
-				tc.queryParams,
-			)
+			req, err := tc.handler.createReq(context.Background(), tc.method, tc.path, payloadBuf)
+			require.NoError(t, err)
 
-			require.Nil(t, err)
+			resp, body, err := tc.handler.executeReq(req)
+			require.NoError(t, err)
 			assert.NotNil(t, resp)
 			assert.Equal(t, []byte(tc.servResp), body)
 		})
@@ -144,8 +131,10 @@ func TestReqContext(t *testing.T) {
 	go func() {
 		cancel()
 	}()
-	resp, _, err := handler.request(ctx, http.MethodGet, "some/path", nil, nil)
+	req, err := handler.createReq(ctx, http.MethodGet, "some/path", nil)
+	require.NoError(t, err)
 
+	resp, _, err := handler.executeReq(req)
 	require.NotNil(t, err)
 	assert.Nil(t, resp)
 }
@@ -157,11 +146,8 @@ func TestReqInvalidMethod(t *testing.T) {
 	defer serv.Close()
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
-	resp, _, err := handler.request(context.Background(), "ČĆŽŽ", "some/path", nil, nil)
-
-	require.NotNil(t, err)
-	assert.Contains(t, err.Error(), "invalid method")
-	assert.Nil(t, resp)
+	_, err := handler.createReq(context.Background(), "ČĆŽŽ", "some/path", nil)
+	require.Error(t, err)
 }
 
 func TestReqInvalidResBody(t *testing.T) {
@@ -171,7 +157,9 @@ func TestReqInvalidResBody(t *testing.T) {
 	defer serv.Close()
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
-	resp, _, err := handler.request(context.Background(), http.MethodGet, "some/path", nil, nil)
+	req, err := handler.createReq(context.Background(), http.MethodGet, "some/path", nil)
+	require.NoError(t, err)
+	resp, _, err := handler.executeReq(req)
 
 	require.NotNil(t, err)
 	assert.Contains(t, err.Error(), "unexpected EOF")
@@ -185,39 +173,20 @@ func TestReqInvalidHost(t *testing.T) {
 	defer serv.Close()
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: "nonexistent"}
-	resp, _, err := handler.request(context.Background(), http.MethodGet, "some/path", nil, nil)
+	req, err := handler.createReq(context.Background(), http.MethodGet, "some/path", nil)
+	require.NoError(t, err)
 
+	resp, _, err := handler.executeReq(req)
 	require.NotNil(t, err)
 	assert.Nil(t, resp)
 }
 
-func TestGenerateHeaders(t *testing.T) {
-	type test struct {
-		method              string
-		expectedContentType string
-	}
-
-	apiKey := "secret"
-	handler := HTTPHandler{APIKey: apiKey}
-	tests := []test{{method: "GET"}, {method: "POST", expectedContentType: "application/json"}}
-	for _, tc := range tests {
-		t.Run(tc.method, func(t *testing.T) {
-			headers := handler.generateHeaders(tc.method)
-			assert.NotNil(t, headers)
-			assert.Equal(t, fmt.Sprintf("App %s", apiKey), headers.Get("Authorization"))
-			assert.Equal(t, tc.expectedContentType, headers.Get("Content-Type"))
-		})
-	}
-}
-
 func TestGenerateQueryParams(t *testing.T) {
-	type test struct {
+	tests := []struct {
 		scenario string
 		params   map[string]string
 		expected string
-	}
-
-	tests := []test{
+	}{
 		{
 			scenario: "params passed",
 			params:   map[string]string{"key1": "value1", "key2": "value2"},

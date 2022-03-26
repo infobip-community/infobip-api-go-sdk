@@ -19,11 +19,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestStickerValidReq(t *testing.T) {
+func TestTextValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.StickerMsg{
+	msg := models.TextMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.StickerContent{MediaURL: "https://www.mypath.com/whatsappsticker.webp"},
+		Content:   models.TextContent{Text: "hello world"},
 	}
 	rawJSONResp := []byte(`{
 		"to": "441134960001",
@@ -39,15 +39,15 @@ func TestStickerValidReq(t *testing.T) {
 	}`)
 	var expectedResp models.MsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendStickerPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendMessagePath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.StickerMsg
+		var receivedMsg models.TextMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -62,9 +62,9 @@ func TestStickerValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendStickerMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendTextMsg(context.Background(), msg)
 
-	require.Nil(t, err)
+	require.NoError(t, err)
 	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 	assert.Equal(t, expectedResp, msgResp)
 	assert.NotNil(t, respDetails)
@@ -72,10 +72,10 @@ func TestStickerValidReq(t *testing.T) {
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidStickerMsg(t *testing.T) {
-	msg := models.StickerMsg{
+func TestInvalidTextMsg(t *testing.T) {
+	msg := models.TextMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.StickerContent{MediaURL: "hello world"},
+		Content:   models.TextContent{Text: ""},
 	}
 	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
 		HTTPClient: http.Client{},
@@ -83,7 +83,7 @@ func TestInvalidStickerMsg(t *testing.T) {
 		APIKey:     "secret",
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendStickerMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendTextMsg(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
@@ -91,7 +91,7 @@ func TestInvalidStickerMsg(t *testing.T) {
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestSticker4xxErrors(t *testing.T) {
+func TestText4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -103,9 +103,8 @@ func TestSticker4xxErrors(t *testing.T) {
 						"messageId": "BAD_REQUEST",
 						"text": "Bad request",
 						"validationErrors": {
-							"content.mediaUrl": [
-								"size must be between 1 and 2048",
-								"is not a valid url",
+							"content.text": [
+								"size must be between 1 and 4096",
 								"must not be blank"
 							]
 						}
@@ -137,16 +136,16 @@ func TestSticker4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.StickerMsg{
+	msg := models.TextMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.StickerContent{MediaURL: "https://www.mypath.com/whatsappsticker.webp"},
+		Content:   models.TextContent{Text: "hello world"},
 	}
 
 	for _, tc := range tests {
 		t.Run(strconv.Itoa(tc.statusCode), func(t *testing.T) {
 			var expectedResp models.ErrorDetails
 			err := json.Unmarshal(tc.rawJSONResp, &expectedResp)
-			require.Nil(t, err)
+			require.NoError(t, err)
 			serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tc.statusCode)
 				_, servErr := w.Write(tc.rawJSONResp)
@@ -158,10 +157,10 @@ func TestSticker4xxErrors(t *testing.T) {
 				APIKey:     "secret",
 			}}
 
-			msgResp, respDetails, err := whatsApp.SendStickerMsg(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.SendTextMsg(context.Background(), msg)
 			serv.Close()
 
-			require.Nil(t, err)
+			require.NoError(t, err)
 			assert.NotEqual(t, http.Response{}, respDetails.HTTPResponse)
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)

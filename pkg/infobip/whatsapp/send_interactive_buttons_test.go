@@ -19,11 +19,19 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTextValidReq(t *testing.T) {
+func TestInteractiveButtonsValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.TextMsg{
+	msg := models.InteractiveButtonsMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.TextContent{Text: "hello world"},
+		Content: models.InteractiveButtonsContent{
+			Body: models.InteractiveButtonsBody{Text: "Some text"},
+			Action: models.InteractiveButtons{
+				Buttons: []models.InteractiveButton{
+					{Type: "REPLY", ID: "1", Title: "Yes"},
+					{Type: "REPLY", ID: "2", Title: "No"},
+				},
+			},
+		},
 	}
 	rawJSONResp := []byte(`{
 		"to": "441134960001",
@@ -39,15 +47,15 @@ func TestTextValidReq(t *testing.T) {
 	}`)
 	var expectedResp models.MsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendMessagePath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendInteractiveButtonsPath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.TextMsg
+		var receivedMsg models.InteractiveButtonsMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -56,26 +64,34 @@ func TestTextValidReq(t *testing.T) {
 		assert.Nil(t, servErr)
 	}))
 	defer serv.Close()
+
 	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
 		HTTPClient: http.Client{},
 		BaseURL:    serv.URL,
 		APIKey:     apiKey,
 	}}
+	messageResponse, respDetails, err := whatsApp.SendInteractiveButtonsMsg(context.Background(), msg)
 
-	msgResp, respDetails, err := whatsApp.SendTextMsg(context.Background(), msg)
-
-	require.Nil(t, err)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
-	assert.Equal(t, expectedResp, msgResp)
+	require.NoError(t, err)
+	assert.NotEqual(t, models.MsgResponse{}, messageResponse)
+	assert.Equal(t, expectedResp, messageResponse)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidTextMsg(t *testing.T) {
-	msg := models.TextMsg{
+func TestInvalidInteractiveButtonsMsg(t *testing.T) {
+	msg := models.InteractiveButtonsMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.TextContent{Text: ""},
+		Content: models.InteractiveButtonsContent{
+			Body: models.InteractiveButtonsBody{Text: "Some text"},
+			Action: models.InteractiveButtons{
+				Buttons: []models.InteractiveButton{
+					{Type: "invalid", ID: "1", Title: "Yes"},
+					{Type: "REPLY", ID: "2", Title: "No"},
+				},
+			},
+		},
 	}
 	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
 		HTTPClient: http.Client{},
@@ -83,15 +99,15 @@ func TestInvalidTextMsg(t *testing.T) {
 		APIKey:     "secret",
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendTextMsg(context.Background(), msg)
+	messageResponse, respDetails, err := whatsApp.SendInteractiveButtonsMsg(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
-	assert.Equal(t, models.MsgResponse{}, msgResp)
+	assert.Equal(t, models.MsgResponse{}, messageResponse)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestText4xxErrors(t *testing.T) {
+func TestInteractiveButtons4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -103,8 +119,9 @@ func TestText4xxErrors(t *testing.T) {
 						"messageId": "BAD_REQUEST",
 						"text": "Bad request",
 						"validationErrors": {
-							"content.text": [
-								"size must be between 1 and 4096",
+							"content.header.mediaUrl": [
+								"size must be between 1 and 2048",
+								"is not a valid url",
 								"must not be blank"
 							]
 						}
@@ -136,16 +153,24 @@ func TestText4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.TextMsg{
+	msg := models.InteractiveButtonsMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.TextContent{Text: "hello world"},
+		Content: models.InteractiveButtonsContent{
+			Body: models.InteractiveButtonsBody{Text: "Some text"},
+			Action: models.InteractiveButtons{
+				Buttons: []models.InteractiveButton{
+					{Type: "REPLY", ID: "1", Title: "Yes"},
+					{Type: "REPLY", ID: "2", Title: "No"},
+				},
+			},
+		},
 	}
 
 	for _, tc := range tests {
 		t.Run(strconv.Itoa(tc.statusCode), func(t *testing.T) {
 			var expectedResp models.ErrorDetails
 			err := json.Unmarshal(tc.rawJSONResp, &expectedResp)
-			require.Nil(t, err)
+			require.NoError(t, err)
 			serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tc.statusCode)
 				_, servErr := w.Write(tc.rawJSONResp)
@@ -157,15 +182,15 @@ func TestText4xxErrors(t *testing.T) {
 				APIKey:     "secret",
 			}}
 
-			msgResp, respDetails, err := whatsApp.SendTextMsg(context.Background(), msg)
+			messageResponse, respDetails, err := whatsApp.SendInteractiveButtonsMsg(context.Background(), msg)
 			serv.Close()
 
-			require.Nil(t, err)
+			require.NoError(t, err)
 			assert.NotEqual(t, http.Response{}, respDetails.HTTPResponse)
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
-			assert.Equal(t, models.MsgResponse{}, msgResp)
+			assert.Equal(t, models.MsgResponse{}, messageResponse)
 		})
 	}
 }

@@ -35,9 +35,10 @@ func TestPostReqOK(t *testing.T) {
 	}`)
 	var expectedResp models.MsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, r.Header.Get("Content-Type"), "application/json")
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
@@ -54,12 +55,12 @@ func TestPostReqOK(t *testing.T) {
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
 	respResource := models.MsgResponse{}
-	respDetails, err := handler.PostRequest(context.Background(), &msg, &respResource, "some/path")
+	respDetails, err := handler.PostJSONReq(context.Background(), &msg, &respResource, "some/path")
 
-	require.Nil(t, err)
+	require.NoError(t, err)
 	assert.NotEqual(t, models.MsgResponse{}, respResource)
 	assert.Equal(t, expectedResp, respResource)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusCreated, respDetails.HTTPResponse.StatusCode)
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
@@ -80,7 +81,7 @@ func TestPostReq4xx(t *testing.T) {
 	}`)
 	var expectedResp models.ErrorDetails
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -91,9 +92,9 @@ func TestPostReq4xx(t *testing.T) {
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
 	respResource := models.MsgResponse{}
-	respDetails, err := handler.PostRequest(context.Background(), &msg, &respResource, "some/path")
+	respDetails, err := handler.PostJSONReq(context.Background(), &msg, &respResource, "some/path")
 
-	require.Nil(t, err)
+	require.NoError(t, err)
 	assert.NotEqual(t, http.Response{}, respDetails.HTTPResponse)
 	assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 	assert.Equal(t, expectedResp, respDetails.ErrorResponse)
@@ -115,7 +116,7 @@ func TestPostReqErr(t *testing.T) {
 		Content: models.TextContent{Text: "hello world"},
 	}
 	respResource := models.MsgResponse{}
-	respDetails, err := handler.PostRequest(context.Background(), &msg, &respResource, "some/path")
+	respDetails, err := handler.PostJSONReq(context.Background(), &msg, &respResource, "some/path")
 
 	require.NotNil(t, err)
 	assert.NotNil(t, respDetails)
@@ -146,7 +147,7 @@ func TestPostInvalidPayload(t *testing.T) {
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
 	msg := InvaliTestdMsg{FloatField: math.Inf(1)}
 	respResource := models.MsgResponse{}
-	respDetails, err := handler.PostRequest(context.Background(), &msg, &respResource, "some/path")
+	respDetails, err := handler.PostJSONReq(context.Background(), &msg, &respResource, "some/path")
 
 	require.NotNil(t, err)
 	assert.NotNil(t, respDetails)

@@ -19,11 +19,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestVideoValidReq(t *testing.T) {
+func TestImageValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.VideoMsg{
+	msg := models.ImageMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.VideoContent{MediaURL: "https://www.mypath.com/whatsappvideo.mp4"},
+		Content:   models.ImageContent{MediaURL: "https://www.mypath.com/whatsappimage.jpg"},
 	}
 	rawJSONResp := []byte(`{
 		"to": "441134960001",
@@ -39,15 +39,15 @@ func TestVideoValidReq(t *testing.T) {
 	}`)
 	var expectedResp models.MsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendVideoPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendImagePath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.VideoMsg
+		var receivedMsg models.ImageMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -62,9 +62,9 @@ func TestVideoValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendVideoMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendImageMsg(context.Background(), msg)
 
-	require.Nil(t, err)
+	require.NoError(t, err)
 	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 	assert.Equal(t, expectedResp, msgResp)
 	assert.NotNil(t, respDetails)
@@ -72,10 +72,10 @@ func TestVideoValidReq(t *testing.T) {
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 }
 
-func TestInvalidVideoMsg(t *testing.T) {
-	msg := models.VideoMsg{
+func TestInvalidImageMsg(t *testing.T) {
+	msg := models.ImageMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.VideoContent{MediaURL: "hello world"},
+		Content:   models.ImageContent{MediaURL: "hello world"},
 	}
 	whatsApp := Channel{ReqHandler: internal.HTTPHandler{
 		HTTPClient: http.Client{},
@@ -83,7 +83,7 @@ func TestInvalidVideoMsg(t *testing.T) {
 		APIKey:     "secret",
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendVideoMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendImageMsg(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
@@ -91,7 +91,7 @@ func TestInvalidVideoMsg(t *testing.T) {
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
-func TestVideo4xxErrors(t *testing.T) {
+func TestImage4xxErrors(t *testing.T) {
 	tests := []struct {
 		rawJSONResp []byte
 		statusCode  int
@@ -137,16 +137,16 @@ func TestVideo4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.VideoMsg{
+	msg := models.ImageMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
-		Content:   models.VideoContent{MediaURL: "https://www.mypath.com/whatsappvideo.mp4"},
+		Content:   models.ImageContent{MediaURL: "https://www.mypath.com/whatsappimage.jpg"},
 	}
 
 	for _, tc := range tests {
 		t.Run(strconv.Itoa(tc.statusCode), func(t *testing.T) {
 			var expectedResp models.ErrorDetails
 			err := json.Unmarshal(tc.rawJSONResp, &expectedResp)
-			require.Nil(t, err)
+			require.NoError(t, err)
 			serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tc.statusCode)
 				_, servErr := w.Write(tc.rawJSONResp)
@@ -158,10 +158,10 @@ func TestVideo4xxErrors(t *testing.T) {
 				APIKey:     "secret",
 			}}
 
-			msgResp, respDetails, err := whatsApp.SendVideoMsg(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.SendImageMsg(context.Background(), msg)
 			serv.Close()
 
-			require.Nil(t, err)
+			require.NoError(t, err)
 			assert.NotEqual(t, http.Response{}, respDetails.HTTPResponse)
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)

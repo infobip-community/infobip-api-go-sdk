@@ -42,7 +42,7 @@ func TestGetTemplatesValidReq(t *testing.T) {
 	}`)
 	var expectedResp models.TemplatesResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
@@ -62,7 +62,7 @@ func TestGetTemplatesValidReq(t *testing.T) {
 
 	messageResponse, respDetails, err := whatsApp.GetTemplates(context.Background(), sender)
 
-	require.Nil(t, err)
+	require.NoError(t, err)
 	assert.NotEqual(t, models.TemplatesResponse{}, messageResponse)
 	assert.Equal(t, expectedResp, messageResponse)
 	assert.NotNil(t, respDetails)
@@ -103,7 +103,7 @@ func TestGetTemplates4xxErrors(t *testing.T) {
 		t.Run(strconv.Itoa(tc.statusCode), func(t *testing.T) {
 			var expectedResp models.ErrorDetails
 			err := json.Unmarshal(tc.rawJSONResp, &expectedResp)
-			require.Nil(t, err)
+			require.NoError(t, err)
 			serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(tc.statusCode)
 				_, servErr := w.Write(tc.rawJSONResp)
@@ -118,7 +118,7 @@ func TestGetTemplates4xxErrors(t *testing.T) {
 			messageResponse, respDetails, err := whatsApp.GetTemplates(context.Background(), "111111111111")
 			serv.Close()
 
-			require.Nil(t, err)
+			require.NoError(t, err)
 			assert.NotEqual(t, http.Response{}, respDetails.HTTPResponse)
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
