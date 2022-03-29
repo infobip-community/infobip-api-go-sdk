@@ -108,7 +108,7 @@ func TestReqValidInput(t *testing.T) {
 				payloadBuf = bytes.NewBuffer(payload)
 			}
 
-			req, err := tc.handler.createReq(context.Background(), tc.method, tc.path, payloadBuf)
+			req, err := tc.handler.createReq(context.Background(), tc.method, tc.path, payloadBuf, nil)
 			require.NoError(t, err)
 
 			resp, body, err := tc.handler.executeReq(req)
@@ -131,7 +131,7 @@ func TestReqContext(t *testing.T) {
 	go func() {
 		cancel()
 	}()
-	req, err := handler.createReq(ctx, http.MethodGet, "some/path", nil)
+	req, err := handler.createReq(ctx, http.MethodGet, "some/path", nil, nil)
 	require.NoError(t, err)
 
 	resp, _, err := handler.executeReq(req)
@@ -146,7 +146,7 @@ func TestReqInvalidMethod(t *testing.T) {
 	defer serv.Close()
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
-	_, err := handler.createReq(context.Background(), "ČĆŽŽ", "some/path", nil)
+	_, err := handler.createReq(context.Background(), "ČĆŽŽ", "some/path", nil, nil)
 	require.Error(t, err)
 }
 
@@ -157,7 +157,7 @@ func TestReqInvalidResBody(t *testing.T) {
 	defer serv.Close()
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
-	req, err := handler.createReq(context.Background(), http.MethodGet, "some/path", nil)
+	req, err := handler.createReq(context.Background(), http.MethodGet, "some/path", nil, nil)
 	require.NoError(t, err)
 	resp, _, err := handler.executeReq(req)
 
@@ -173,7 +173,7 @@ func TestReqInvalidHost(t *testing.T) {
 	defer serv.Close()
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: "nonexistent"}
-	req, err := handler.createReq(context.Background(), http.MethodGet, "some/path", nil)
+	req, err := handler.createReq(context.Background(), http.MethodGet, "some/path", nil, nil)
 	require.NoError(t, err)
 
 	resp, _, err := handler.executeReq(req)
@@ -191,6 +191,11 @@ func TestGenerateQueryParams(t *testing.T) {
 			scenario: "params passed",
 			params:   map[string]string{"key1": "value1", "key2": "value2"},
 			expected: "key1=value1&key2=value2",
+		},
+		{
+			scenario: "empty values passed",
+			params:   map[string]string{"key1": "", "key2": ""},
+			expected: "",
 		},
 		{
 			scenario: "empty params",

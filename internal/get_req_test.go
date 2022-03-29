@@ -33,7 +33,7 @@ func TestGetReqOK(t *testing.T) {
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
 	respResource := exampleResp{}
-	respDetails, err := handler.GetRequest(context.Background(), &respResource, "some/path")
+	respDetails, err := handler.GetRequest(context.Background(), &respResource, "some/path", nil)
 
 	require.NoError(t, err)
 	assert.NotEqual(t, exampleResp{}, respResource)
@@ -67,7 +67,7 @@ func TestGetReq4xx(t *testing.T) {
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
 	respResource := exampleResp{}
-	respDetails, err := handler.GetRequest(context.Background(), &respResource, "some/path")
+	respDetails, err := handler.GetRequest(context.Background(), &respResource, "some/path", nil)
 
 	require.NoError(t, err)
 	assert.Equal(t, exampleResp{}, respResource)
@@ -84,7 +84,7 @@ func TestGetReqErr(t *testing.T) {
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: "nonexistent"}
 	respResource := models.MsgResponse{}
-	respDetails, err := handler.GetRequest(context.Background(), &respResource, "some/path")
+	respDetails, err := handler.GetRequest(context.Background(), &respResource, "some/path", nil)
 
 	require.NotNil(t, err)
 	assert.NotNil(t, respDetails)

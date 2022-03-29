@@ -31,3 +31,21 @@ func TestSendMMSExample(t *testing.T) {
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
 	assert.NotEqual(t, models.MMSResponse{}, msgResp)
 }
+
+func TestGetOutboundMsgDeliveryReportsExample(t *testing.T) {
+	apiKey := "secret"
+	baseURL := "https://myinfobipurl.com"
+	client, err := infobip.NewClient(baseURL, apiKey)
+	require.NoError(t, err)
+	params := models.OutboundMsgDeliveryReportsOpts{
+		BulkID:    "1",
+		MessageID: "1",
+		Limit:     "5",
+	}
+
+	msgResp, respDetails, err := client.MMS.GetOutboundMsgDeliveryReports(context.Background(), params)
+	fmt.Printf("%+v\n", msgResp)
+
+	require.NoError(t, err)
+	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+}
