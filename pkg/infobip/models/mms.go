@@ -37,7 +37,7 @@ type MMSHead struct {
 	CallbackData          string              `json:"callbackData,omitempty" validate:"lte=200"`
 	NotifyURL             string              `json:"notifyUrl,omitempty" validate:"omitempty,url"`
 	SendAt                string              `json:"sendAt,omitempty"`
-	IntermediateReport    bool                `json:"intermediateReport"`
+	IntermediateReport    *bool               `json:"intermediateReport,omitempty"`
 	DeliveryTimeWindow    *DeliveryTimeWindow `json:"deliveryTimeWindow,omitempty"`
 }
 
@@ -171,17 +171,17 @@ func (t *MMSMsg) GetMultipartBoundary() string {
 	return t.boundary
 }
 
-type OutboundMsgDeliveryReportsOpts struct {
+type OutboundMMSDeliveryReportsOpts struct {
 	BulkID    string
 	MessageID string
 	Limit     string
 }
 
 type OutboundMMSDeliveryReportsResponse struct {
-	Results []MMSDeliveryResult `json:"results"`
+	Results []OutboundMMSDeliveryResult `json:"results"`
 }
 
-type MMSDeliveryResult struct {
+type OutboundMMSDeliveryResult struct {
 	BulkID       string    `json:"bulkId"`
 	MessageID    string    `json:"messageId"`
 	To           string    `json:"to"`
@@ -199,4 +199,23 @@ type MMSDeliveryResult struct {
 type MMSPrice struct {
 	PricePerMessage int    `json:"pricePerMessage"`
 	Currency        string `json:"currency"`
+}
+
+type InboundMMSResponse struct {
+	Results []InboundMMSResult `json:"results"`
+}
+
+type InboundMMSResult struct {
+	MessageID    string   `json:"messageId"`
+	To           string   `json:"to"`
+	From         string   `json:"from"`
+	Message      string   `json:"message"`
+	ReceivedAt   string   `json:"receivedAt"`
+	MMSCount     int32    `json:"mmsCount"`
+	CallbackData string   `json:"callbackData"`
+	Price        MMSPrice `json:"price"`
+}
+
+type InboundMMSOpts struct {
+	Limit string
 }

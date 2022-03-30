@@ -14,6 +14,7 @@ import (
 
 	"github.com/infobip-community/infobip-api-go-sdk/internal"
 	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/models"
+	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/utils"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"
@@ -40,7 +41,7 @@ func TestSendMsgValidReq(t *testing.T) {
 			CallbackData:          "data",
 			NotifyURL:             "https://www.google.com",
 			SendAt:                "2006-01-02T15:04:05.123Z",
-			IntermediateReport:    true,
+			IntermediateReport:    utils.BoolPtr(true),
 			DeliveryTimeWindow: &models.DeliveryTimeWindow{
 				Days: []string{"MONDAY", "TUESDAY"},
 				From: &models.MMSTime{Minute: 1, Hour: 1},
