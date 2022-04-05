@@ -11,44 +11,82 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"strings"
 	"testing"
 )
 
+func generateEmailMsg() models.EmailMsg{
+	return models.EmailMsg{
+		From:    "someone@infobip.com",
+		To:      "someoneelse@infobip.com",
+		Subject: "Some test subject",
+		Text:    "Some test text",
+	}
+}
+
 func TestSendEmailValid(t *testing.T) {
 	apiKey := "secret"
-	msg := models.EmailMsg{
-		From:                    "someone@infobip.com",
-		To:                      "someoneelse@infobip.com",
-		Subject:                 "Some test subject",
-		Text:                    "Some test text",
-	}
+	emailMsg := generateEmailMsg()
 	rawJSONResp := []byte(`{
-		"to": "441134960001",
-		"messageCount": 1,
-		"messageId": "a28dd97c-1ffb-4fcf-99f1-0b557ed381da",
-		"status": {
-			"groupId": 1,
-			"groupName": "PENDING",
-			"id": 7,
-			"name": "PENDING_ENROUTE",
-			"description": "Message sent to next instance"
-		}
-	}`)
-	var expectedResp models.EmailResponse
+    "results": 
+[
+{
+
+    "bulkId": "string",
+    "messageId": "string",
+    "to": "string",
+    "sentAt": "2022-04-01T17:50:28Z",
+    "doneAt": "2022-04-01T17:50:28Z",
+    "messageCount": 0,
+    "price": 
+
+{
+
+    "pricePerMessage": 0,
+    "currency": "string"
+
+},
+"status": 
+{
+
+    "groupId": 0,
+    "groupName": "string",
+    "id": 0,
+    "name": "string",
+    "description": "string",
+    "action": "string"
+
+},
+"error": 
+
+            {
+                "groupId": 0,
+                "groupName": "string",
+                "id": 0,
+                "name": "string",
+                "description": "string",
+                "permanent": true
+            }
+        }
+    ]
+
+}`)
+	var expectedResp models.SendEmailResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.Nil(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, SendEmailPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendEmailPath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
 		var receivedMsg models.EmailMsg
+		fmt.Printf("%s\n", parsedBody)
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
-		assert.Equal(t, receivedMsg, msg)
+		assert.Equal(t, receivedMsg, emailMsg)
 
 		_, servErr = w.Write(rawJSONResp)
 		assert.Nil(t, servErr)
@@ -61,11 +99,72 @@ func TestSendEmailValid(t *testing.T) {
 			APIKey:     apiKey,
 		}}
 
-	emailResp, respDetails, err := email.Send(context.Background(), msg)
+	emailResp, respDetails, err := email.SendFullyFeatured(context.Background(), emailMsg)
 
 	require.Nil(t, err)
-	assert.NotEqual(t, models.MsgResponse{}, emailResp)
+	assert.NotEqual(t, models.SendEmailResponse{}, emailResp)
 	assert.Equal(t, expectedResp, emailResp)
+	assert.NotNil(t, respDetails)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
+}
+
+func TestSendEmailValidReq(t *testing.T) {
+	// TODO: implement this as in MMS, instead as in Whatsapp.
+	apiKey := "secret"
+	msg := generateEmailMsg()
+	rawJSONResp := []byte(`{
+		"bulkId": "1",
+		"messages": [
+			{
+				"to": "41793026727",
+				"status": {
+					"groupId": 1,
+					"groupName": "PENDING",
+					"id": 26,
+					"name": "PENDING_ACCEPTED",
+					"description": "Message accepted, pending for delivery."
+				},
+				"messageId": "2250be2d4219-3af1-78856-aabe-1362af1edfd2"
+			}
+		],
+		"errorMessage": "string"
+	}`)
+	var expectedResp models.MMSResponse
+	err := json.Unmarshal(rawJSONResp, &expectedResp)
+	require.NoError(t, err)
+
+	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendEmailPath))
+		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
+		assert.Regexp(t, regexp.MustCompile(`multipart/form-data; boundary=\w+`), r.Header.Get("Content-Type"))
+
+		require.NoError(t, err)
+		assert.Equal(t, string(expectedHead), r.MultipartForm.Value["head"][0])
+		assert.Contains(t, tmpFile.Name(), r.MultipartForm.File["media"][0].Filename)
+		assert.Equal(t, int64(len(content)), r.MultipartForm.File["media"][0].Size)
+		assert.Equal(t, msg.Text, r.MultipartForm.Value["text"][0])
+		var expectedExternallyHostedMedia []byte
+		expectedExternallyHostedMedia, err = json.Marshal(msg.ExternallyHostedMedia)
+		require.NoError(t, err)
+		assert.Equal(t, string(expectedExternallyHostedMedia), r.MultipartForm.Value["externallyHostedMedia"][0])
+		assert.Equal(t, msg.SMIL, r.MultipartForm.Value["smil"][0])
+
+		_, servErr := w.Write(rawJSONResp)
+		assert.Nil(t, servErr)
+	}))
+	defer serv.Close()
+	mms := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    serv.URL,
+		APIKey:     apiKey,
+	}}
+
+	msgResp, respDetails, err := mms.SendMsg(context.Background(), msg)
+
+	require.NoError(t, err)
+	assert.NotEqual(t, models.MMSResponse{}, msgResp)
+	assert.Equal(t, expectedResp, msgResp)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)

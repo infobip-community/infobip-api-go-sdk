@@ -2,7 +2,6 @@ package examples
 
 import (
 	"context"
-	"fmt"
 	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip"
 	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/models"
 	"github.com/stretchr/testify/assert"
@@ -23,10 +22,10 @@ func TestSendEmailExample(t *testing.T) {
 		Text:                    "Test email body",
 	}
 
-	msgResp, err := client.Email.Send(context.Background(), mail)
-	fmt.Printf("%+v\n", msgResp)
+	msgResp, respDetails, err := client.Email.SendFullyFeatured(context.Background(), mail)
 
 	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
 	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
 	assert.NotEqual(t, models.MsgResponse{}, msgResp)
 }
