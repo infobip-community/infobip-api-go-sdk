@@ -326,7 +326,7 @@ type EmailLogsResult struct {
 	} `json:"results"`
 }
 
-type SentBulksResult struct {
+type SentEmailBulksResult struct {
 	ExternalBulkId string `json:"externalBulkId"`
 	Bulks          []struct {
 		BulkId string    `json:"bulkId"`
@@ -334,6 +334,69 @@ type SentBulksResult struct {
 	} `json:"bulks"`
 }
 
+type SentEmailBulksStatusResult struct {
+	ExternalBulkId string `json:"externalBulkId"`
+	Bulks          []struct {
+		BulkId string `json:"bulkId"`
+		Status string `json:"status"`
+	} `json:"bulks"`
+}
+
+type RescheduleMessagesRequest struct {
+	SendAt time.Time `json:"sendAt"`
+}
+
+type UpdateScheduledMessagesStatusRequest struct {
+	Status string `json:"status"`
+}
+
+func (r *UpdateScheduledMessagesStatusRequest) Validate() error {
+	return validate.Struct(r)
+}
+
+func (r *UpdateScheduledMessagesStatusRequest) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(r)
+}
+
+type UpdateScheduledMessagesStatusResponse struct {
+	BulkId string `json:"bulkId"`
+	Status string `json:"status"`
+}
+
+func (r *RescheduleMessagesRequest) Validate() error {
+	return validate.Struct(r)
+}
+
+func (r *RescheduleMessagesRequest) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(r)
+}
+
+type RescheduleMessagesResponse struct {
+	BulkId string    `json:"bulkId"`
+	SendAt time.Time `json:"sendAt"`
+}
+
 func (e *EmailMsg) Validate() error {
 	return validate.Struct(e)
+}
+
+type ValidateAddressesRequest struct {
+	To string `json:"to"`
+}
+
+func (v *ValidateAddressesRequest) Validate() error {
+	return validate.Struct(v)
+}
+
+func (v *ValidateAddressesRequest) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(v)
+}
+
+type ValidateAddressesResult struct {
+	To           string `json:"to"`
+	ValidMailbox string `json:"validMailbox"`
+	ValidSyntax  bool   `json:"validSyntax"`
+	CatchAll     bool   `json:"catchAll"`
+	Disposable   bool   `json:"disposable"`
+	RoleBased    bool   `json:"roleBased"`
 }
