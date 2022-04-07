@@ -16,13 +16,37 @@ import (
 	"testing"
 )
 
-func generateEmailMsg() models.EmailMsg{
-	return models.EmailMsg{
-		From:    "someone@infobip.com",
-		To:      "someoneelse@infobip.com",
-		Subject: "Some test subject",
-		Text:    "Some test text",
+func generateEmailMsg() models.EmailMsg {
+	mail := models.EmailMsg{
+		From:                    "edcoronag@selfserviceib.com",
+		To:                      "edcoronag@gmail.com",
+		Cc:                      "",
+		Bcc:                     "",
+		Subject:                 "Some subject",
+		Text:                    "Some text",
+		BulkId:                  "",
+		MessageId:               "",
+		TemplateId:              0,
+		Attachment:              nil,
+		InlineImage:             nil,
+		HTML:                    "",
+		ReplyTo:                 "",
+		DefaultPlaceholders:     "",
+		PreserveRecipients:      false,
+		TrackingURL:             "",
+		TrackClicks:             false,
+		TrackOpens:              false,
+		Track:                   false,
+		CallbackData:            "",
+		IntermediateReport:      false,
+		NotifyURL:               "",
+		NotifyContentType:       "",
+		SendAt:                  "",
+		LandingPagePlaceholders: "",
+		LandingPageId:           "",
 	}
+
+	return mail
 }
 
 func TestSendEmailValid(t *testing.T) {
@@ -110,7 +134,6 @@ func TestSendEmailValid(t *testing.T) {
 }
 
 func TestSendEmailValidReq(t *testing.T) {
-	// TODO: implement this as in MMS, instead as in Whatsapp.
 	apiKey := "secret"
 	msg := generateEmailMsg()
 	rawJSONResp := []byte(`{

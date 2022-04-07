@@ -301,6 +301,39 @@ type EmailDeliveryReportsResult struct {
 	} `json:"results"`
 }
 
+type EmailLogsResult struct {
+	Results []struct {
+		MessageId    string    `json:"messageId"`
+		To           string    `json:"to"`
+		From         string    `json:"from"`
+		Text         string    `json:"text"`
+		SentAt       time.Time `json:"sentAt"`
+		DoneAt       time.Time `json:"doneAt"`
+		MessageCount int       `json:"messageCount"`
+		Price        struct {
+			PricePerMessage int    `json:"pricePerMessage"`
+			Currency        string `json:"currency"`
+		} `json:"price"`
+		Status struct {
+			GroupId     int    `json:"groupId"`
+			GroupName   string `json:"groupName"`
+			Id          int    `json:"id"`
+			Name        string `json:"name"`
+			Description string `json:"description"`
+			Action      string `json:"action"`
+		} `json:"status"`
+		BulkId string `json:"bulkId"`
+	} `json:"results"`
+}
+
+type SentBulksResult struct {
+	ExternalBulkId string `json:"externalBulkId"`
+	Bulks          []struct {
+		BulkId string    `json:"bulkId"`
+		SendAt time.Time `json:"sendAt"`
+	} `json:"bulks"`
+}
+
 func (e *EmailMsg) Validate() error {
 	return validate.Struct(e)
 }

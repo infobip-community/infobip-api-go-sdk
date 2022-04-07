@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	sendEmailPath = "/email/2/send"
+	sendEmailPath          = "/email/2/send"
 	getDeliveryReportsPath = "/email/1/reports"
+	getLogsPath            = "/email/1/logs"
 )
 
 type Channel struct {
@@ -16,12 +17,13 @@ type Channel struct {
 }
 
 type Email interface {
-	SendFullyFeatured(ctx context.Context, request models.EmailMsg) (response models.SendEmailResponse, responseDetails models.ResponseDetails, err error)
-	GetDeliveryReports(ctx context.Context, queryParams map[string]string) (responseDetails models.ResponseDetails, err error)
+	Send(ctx context.Context, request models.EmailMsg) (response models.SendEmailResponse, responseDetails models.ResponseDetails, err error)
+	GetDeliveryReports(ctx context.Context, queryParams map[string]string) (result models.EmailDeliveryReportsResult, respDetails models.ResponseDetails, err error)
+	GetLogs(ctx context.Context, queryParams map[string]string) (result models.EmailLogsResult, respDetails models.ResponseDetails, err error)
 }
 
-// SendFullyFeatured sends an email message with all available features.
-func (email *Channel) SendFullyFeatured(
+// Send sends an email message with all available features.
+func (email *Channel) Send(
 	ctx context.Context,
 	msg models.EmailMsg,
 ) (msgResp models.SendEmailResponse, respDetails models.ResponseDetails, err error) {
@@ -34,6 +36,11 @@ func (email *Channel) GetDeliveryReports(
 	ctx context.Context,
 	queryParams map[string]string,
 ) (response models.EmailDeliveryReportsResult, respDetails models.ResponseDetails, err error) {
-	respDetails, err = email.ReqHandler.GetRequest(ctx, &response, sendEmailPath, queryParams)
+	respDetails, err = email.ReqHandler.GetRequest(ctx, &response, getDeliveryReportsPath, queryParams)
 	return response, respDetails, err
+}
+
+func (email *Channel) GetLogs(ctx context.Context, queryParams map[string]string) (result models.EmailLogsResult, respDetails models.ResponseDetails, err error) {
+	respDetails, err = email.ReqHandler.GetRequest(ctx, &result, getLogsPath, queryParams)
+	return result, respDetails, err
 }
