@@ -40,6 +40,7 @@ type EmailMsg struct {
 }
 
 type SendEmailResponse struct {
+	BulkId   string `json:"bulkId"`
 	Messages []struct {
 		To           string `json:"to"`
 		MessageCount int    `json:"messageCount"`
@@ -52,14 +53,6 @@ type SendEmailResponse struct {
 			Description string `json:"description"`
 		} `json:"status"`
 	} `json:"messages"`
-}
-
-type EmailMsgResponseStatus struct {
-	GroupId     string `json:"groupId"`
-	GroupName   string `json:"groupName"`
-	Id          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
 }
 
 func (e *EmailMsg) Marshal() (*bytes.Buffer, error) {
@@ -270,17 +263,18 @@ func (e *EmailMsg) GetMultipartBoundary() string {
 	return e.boundary
 }
 
-type EmailDeliveryReportsResult struct {
+type EmailDeliveryReportsResponse struct {
 	Results []struct {
-		BulkId       string    `json:"bulkId"`
-		MessageId    string    `json:"messageId"`
-		To           string    `json:"to"`
-		SentAt       time.Time `json:"sentAt"`
-		DoneAt       time.Time `json:"doneAt"`
-		MessageCount int       `json:"messageCount"`
+		BulkId    string `json:"bulkId"`
+		MessageId string `json:"messageId"`
+		To        string `json:"to"`
+		// FIXME: this is a string, but it should be a time.Time
+		SentAt       string `json:"sentAt"`
+		DoneAt       string `json:"doneAt"`
+		MessageCount int    `json:"messageCount"`
 		Price        struct {
-			PricePerMessage int    `json:"pricePerMessage"`
-			Currency        string `json:"currency"`
+			PricePerMessage float64 `json:"pricePerMessage"`
+			Currency        string  `json:"currency"`
 		} `json:"price"`
 		Status struct {
 			GroupId     int    `json:"groupId"`
@@ -298,21 +292,22 @@ type EmailDeliveryReportsResult struct {
 			Description string `json:"description"`
 			Permanent   bool   `json:"permanent"`
 		} `json:"error"`
+		Channel string `json:"channel"`
 	} `json:"results"`
 }
 
-type EmailLogsResult struct {
+type EmailLogsResponse struct {
 	Results []struct {
-		MessageId    string    `json:"messageId"`
-		To           string    `json:"to"`
-		From         string    `json:"from"`
-		Text         string    `json:"text"`
-		SentAt       time.Time `json:"sentAt"`
-		DoneAt       time.Time `json:"doneAt"`
-		MessageCount int       `json:"messageCount"`
+		MessageId    string `json:"messageId"`
+		To           string `json:"to"`
+		From         string `json:"from"`
+		Text         string `json:"text"`
+		SentAt       string `json:"sentAt"`
+		DoneAt       string `json:"doneAt"`
+		MessageCount int    `json:"messageCount"`
 		Price        struct {
-			PricePerMessage int    `json:"pricePerMessage"`
-			Currency        string `json:"currency"`
+			PricePerMessage float64 `json:"pricePerMessage"`
+			Currency        string  `json:"currency"`
 		} `json:"price"`
 		Status struct {
 			GroupId     int    `json:"groupId"`
@@ -322,11 +317,12 @@ type EmailLogsResult struct {
 			Description string `json:"description"`
 			Action      string `json:"action"`
 		} `json:"status"`
-		BulkId string `json:"bulkId"`
+		BulkId  string `json:"bulkId"`
+		Channel string `json:"channel"`
 	} `json:"results"`
 }
 
-type SentEmailBulksResult struct {
+type SentEmailBulksResponse struct {
 	ExternalBulkId string `json:"externalBulkId"`
 	Bulks          []struct {
 		BulkId string    `json:"bulkId"`
@@ -334,7 +330,7 @@ type SentEmailBulksResult struct {
 	} `json:"bulks"`
 }
 
-type SentEmailBulksStatusResult struct {
+type SentEmailBulksStatusResponse struct {
 	ExternalBulkId string `json:"externalBulkId"`
 	Bulks          []struct {
 		BulkId string `json:"bulkId"`
@@ -392,7 +388,7 @@ func (v *ValidateAddressesRequest) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(v)
 }
 
-type ValidateAddressesResult struct {
+type ValidateAddressesResponse struct {
 	To           string `json:"to"`
 	ValidMailbox string `json:"validMailbox"`
 	ValidSyntax  bool   `json:"validSyntax"`
