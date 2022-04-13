@@ -6,7 +6,6 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
-	"time"
 )
 
 type EmailMsg struct {
@@ -325,8 +324,8 @@ type EmailLogsResponse struct {
 type SentEmailBulksResponse struct {
 	ExternalBulkId string `json:"externalBulkId"`
 	Bulks          []struct {
-		BulkId string    `json:"bulkId"`
-		SendAt time.Time `json:"sendAt"`
+		BulkId string `json:"bulkId"`
+		SendAt int64  `json:"sendAt"`
 	} `json:"bulks"`
 }
 
@@ -339,7 +338,7 @@ type SentEmailBulksStatusResponse struct {
 }
 
 type RescheduleMessagesRequest struct {
-	SendAt time.Time `json:"sendAt"`
+	SendAt string `json:"sendAt"`
 }
 
 type UpdateScheduledMessagesStatusRequest struct {
@@ -368,8 +367,8 @@ func (r *RescheduleMessagesRequest) Marshal() (*bytes.Buffer, error) {
 }
 
 type RescheduleMessagesResponse struct {
-	BulkId string    `json:"bulkId"`
-	SendAt time.Time `json:"sendAt"`
+	BulkId string `json:"bulkId"`
+	SendAt int64  `json:"sendAt"`
 }
 
 func (e *EmailMsg) Validate() error {

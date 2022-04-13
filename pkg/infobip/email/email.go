@@ -22,12 +22,12 @@ type Channel struct {
 }
 
 type Email interface {
-	Send(ctx context.Context, req models.EmailMsg) (resp models.SendEmailResponse, respDetails models.ResponseDetails, err error)
 	GetDeliveryReports(ctx context.Context, queryParams map[string]string) (resp models.EmailDeliveryReportsResponse, respDetails models.ResponseDetails, err error)
 	GetLogs(ctx context.Context, queryParams map[string]string) (resp models.EmailLogsResponse, respDetails models.ResponseDetails, err error)
 	GetSentBulks(ctx context.Context, queryParams map[string]string) (resp models.SentEmailBulksResponse, respDetails models.ResponseDetails, err error)
-	RescheduleMessages(ctx context.Context, req models.RescheduleMessagesRequest, queryParams map[string]string) (resp models.RescheduleMessagesResponse, respDetails models.ResponseDetails, err error)
 	GetSentBulksStatus(ctx context.Context, queryParams map[string]string) (resp models.SentEmailBulksStatusResponse, respDetails models.ResponseDetails, err error)
+	RescheduleMessages(ctx context.Context, req models.RescheduleMessagesRequest, queryParams map[string]string) (resp models.RescheduleMessagesResponse, respDetails models.ResponseDetails, err error)
+	Send(ctx context.Context, req models.EmailMsg) (resp models.SendEmailResponse, respDetails models.ResponseDetails, err error)
 	UpdateScheduledMessagesStatus(ctx context.Context, req models.UpdateScheduledMessagesStatusRequest, queryParams map[string]string) (resp models.UpdateScheduledMessagesStatusResponse, respDetails models.ResponseDetails, err error)
 	ValidateAddresses(ctx context.Context, req models.ValidateAddressesRequest) (resp models.ValidateAddressesResponse, respDetails models.ResponseDetails, err error)
 }
