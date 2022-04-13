@@ -4,10 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/infobip-community/infobip-api-go-sdk/internal"
-	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/models"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -15,6 +11,11 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/infobip-community/infobip-api-go-sdk/internal"
+	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/models"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func generateEmailMsg() models.EmailMsg {
