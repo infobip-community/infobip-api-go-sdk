@@ -34,7 +34,7 @@ func TestSendEmail(t *testing.T) {
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEmptyf(t, msgResp.Messages[0].MessageId, "MessageId should not be empty")
+	assert.NotEmptyf(t, msgResp.Messages[0].MessageID, "MessageID should not be empty")
 	assert.NotEqual(t, models.SendEmailResponse{}, msgResp)
 	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
@@ -48,7 +48,7 @@ func TestSendEmailBulk(t *testing.T) {
 		To:      "@gmail.com",
 		Subject: "Some subject",
 		Text:    "Some text",
-		BulkId:  "test-bulk-78",
+		BulkID:  "test-bulk-78",
 		SendAt:  "2022-04-13T11:35:39.214+00:00",
 	}
 
@@ -59,7 +59,7 @@ func TestSendEmailBulk(t *testing.T) {
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEmptyf(t, msgResp.Messages[0].MessageId, "MessageId should not be empty")
+	assert.NotEmptyf(t, msgResp.Messages[0].MessageID, "MessageID should not be empty")
 	assert.NotEqual(t, models.SendEmailResponse{}, msgResp)
 	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
@@ -80,7 +80,7 @@ func TestGetEmailDeliveryReports(t *testing.T) {
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEmptyf(t, deliveryReports.Results[0].MessageId, "MessageId should not be empty")
+	assert.NotEmptyf(t, deliveryReports.Results[0].MessageID, "MessageID should not be empty")
 	assert.NotEqual(t, models.EmailDeliveryReportsResponse{}, deliveryReports)
 	assert.NotEqual(t, models.ResponseDetails{}, deliveryReports)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)

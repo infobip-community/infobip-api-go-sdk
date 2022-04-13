@@ -25,9 +25,9 @@ func generateEmailMsg() models.EmailMsg {
 		Bcc:                     "anothermail@mail.com",
 		Subject:                 "Some subject",
 		Text:                    "Some text",
-		BulkId:                  "esy82u725261jz8e6pi3",
-		MessageId:               "somexternalMessageId0",
-		TemplateId:              5,
+		BulkID:                  "esy82u725261jz8e6pi3",
+		MessageID:               "somexternalMessageId0",
+		TemplateID:              5,
 		Attachment:              nil,
 		InlineImage:             nil,
 		HTML:                    "<body>Some html</body>",
@@ -44,7 +44,7 @@ func generateEmailMsg() models.EmailMsg {
 		NotifyContentType:       "application/json",
 		SendAt:                  "2022-01-01T00:00:00Z",
 		LandingPagePlaceholders: "someplaceholders",
-		LandingPageId:           "123456",
+		LandingPageID:           "123456",
 	}
 
 	return mail
@@ -125,9 +125,9 @@ func TestSendEmailValidReq(t *testing.T) {
 		assert.Equal(t, msg.Bcc, r.MultipartForm.Value["bcc"][0])
 		assert.Equal(t, msg.Subject, r.MultipartForm.Value["subject"][0])
 		assert.Equal(t, msg.Text, r.MultipartForm.Value["text"][0])
-		assert.Equal(t, msg.BulkId, r.MultipartForm.Value["bulkId"][0])
-		assert.Equal(t, msg.MessageId, r.MultipartForm.Value["messageId"][0])
-		assert.Equal(t, fmt.Sprintf("%d", msg.TemplateId), r.MultipartForm.Value["templateid"][0])
+		assert.Equal(t, msg.BulkID, r.MultipartForm.Value["bulkId"][0])
+		assert.Equal(t, msg.MessageID, r.MultipartForm.Value["messageId"][0])
+		assert.Equal(t, fmt.Sprintf("%d", msg.TemplateID), r.MultipartForm.Value["templateid"][0])
 		assert.Contains(t, attachment.Name(), r.MultipartForm.File["attachment"][0].Filename)
 		assert.Equal(t, int64(len(content)), r.MultipartForm.File["attachment"][0].Size)
 		assert.Contains(t, image.Name(), r.MultipartForm.File["inlineImage"][0].Filename)
@@ -146,7 +146,7 @@ func TestSendEmailValidReq(t *testing.T) {
 		assert.Equal(t, msg.NotifyContentType, r.MultipartForm.Value["notifyContentType"][0])
 		assert.Equal(t, msg.SendAt, r.MultipartForm.Value["sendAt"][0])
 		assert.Equal(t, msg.LandingPagePlaceholders, r.MultipartForm.Value["landingPagePlaceholders"][0])
-		assert.Equal(t, msg.LandingPageId, r.MultipartForm.Value["landingPageId"][0])
+		assert.Equal(t, msg.LandingPageID, r.MultipartForm.Value["landingPageId"][0])
 
 		_, servErr := w.Write(rawJSONResp)
 		assert.Nil(t, servErr)

@@ -15,9 +15,9 @@ type EmailMsg struct {
 	Bcc                     string
 	Subject                 string `validate:"required"`
 	Text                    string
-	BulkId                  string
-	MessageId               string
-	TemplateId              int
+	BulkID                  string
+	MessageID               string
+	TemplateID              int
 	Attachment              *os.File
 	InlineImage             *os.File
 	HTML                    string
@@ -34,20 +34,20 @@ type EmailMsg struct {
 	NotifyContentType       string
 	SendAt                  string
 	LandingPagePlaceholders string
-	LandingPageId           string
+	LandingPageID           string
 	boundary                string
 }
 
 type SendEmailResponse struct {
-	BulkId   string `json:"bulkId"`
+	BulkID   string `json:"bulkId"`
 	Messages []struct {
 		To           string `json:"to"`
 		MessageCount int    `json:"messageCount"`
-		MessageId    string `json:"messageId"`
+		MessageID    string `json:"messageId"`
 		Status       struct {
-			GroupId     int    `json:"groupId"`
+			GroupID     int    `json:"groupId"`
 			GroupName   string `json:"groupName"`
-			Id          int    `json:"id"`
+			ID          int    `json:"id"`
 			Name        string `json:"name"`
 			Description string `json:"description"`
 		} `json:"status"`
@@ -103,22 +103,22 @@ func (e *EmailMsg) Marshal() (*bytes.Buffer, error) {
 		}
 	}
 
-	if e.BulkId != "" {
-		err = writeMultipartText(multipartWriter, "bulkId", e.BulkId)
+	if e.BulkID != "" {
+		err = writeMultipartText(multipartWriter, "bulkId", e.BulkID)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	if e.MessageId != "" {
-		err = writeMultipartText(multipartWriter, "messageId", e.MessageId)
+	if e.MessageID != "" {
+		err = writeMultipartText(multipartWriter, "messageId", e.MessageID)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	if e.TemplateId != 0 {
-		err = writeMultipartText(multipartWriter, "templateid", fmt.Sprint(e.TemplateId))
+	if e.TemplateID != 0 {
+		err = writeMultipartText(multipartWriter, "templateid", fmt.Sprint(e.TemplateID))
 		if err != nil {
 			return nil, err
 		}
@@ -246,8 +246,8 @@ func (e *EmailMsg) Marshal() (*bytes.Buffer, error) {
 		}
 	}
 
-	if e.LandingPageId != "" {
-		err = writeMultipartText(multipartWriter, "landingPageId", e.LandingPageId)
+	if e.LandingPageID != "" {
+		err = writeMultipartText(multipartWriter, "landingPageId", e.LandingPageID)
 		if err != nil {
 			return nil, err
 		}
@@ -264,8 +264,8 @@ func (e *EmailMsg) GetMultipartBoundary() string {
 
 type EmailDeliveryReportsResponse struct {
 	Results []struct {
-		BulkId    string `json:"bulkId"`
-		MessageId string `json:"messageId"`
+		BulkID    string `json:"bulkId"`
+		MessageID string `json:"messageId"`
 		To        string `json:"to"`
 		// FIXME: this is a string, but it should be a time.Time
 		SentAt       string `json:"sentAt"`
@@ -276,17 +276,17 @@ type EmailDeliveryReportsResponse struct {
 			Currency        string  `json:"currency"`
 		} `json:"price"`
 		Status struct {
-			GroupId     int    `json:"groupId"`
+			GroupID     int    `json:"groupId"`
 			GroupName   string `json:"groupName"`
-			Id          int    `json:"id"`
+			ID          int    `json:"id"`
 			Name        string `json:"name"`
 			Description string `json:"description"`
 			Action      string `json:"action"`
 		} `json:"status"`
 		Error struct {
-			GroupId     int    `json:"groupId"`
+			GroupID     int    `json:"groupId"`
 			GroupName   string `json:"groupName"`
-			Id          int    `json:"id"`
+			ID          int    `json:"id"`
 			Name        string `json:"name"`
 			Description string `json:"description"`
 			Permanent   bool   `json:"permanent"`
@@ -297,7 +297,7 @@ type EmailDeliveryReportsResponse struct {
 
 type EmailLogsResponse struct {
 	Results []struct {
-		MessageId    string `json:"messageId"`
+		MessageID    string `json:"messageId"`
 		To           string `json:"to"`
 		From         string `json:"from"`
 		Text         string `json:"text"`
@@ -309,30 +309,30 @@ type EmailLogsResponse struct {
 			Currency        string  `json:"currency"`
 		} `json:"price"`
 		Status struct {
-			GroupId     int    `json:"groupId"`
+			GroupID     int    `json:"groupId"`
 			GroupName   string `json:"groupName"`
-			Id          int    `json:"id"`
+			ID          int    `json:"id"`
 			Name        string `json:"name"`
 			Description string `json:"description"`
 			Action      string `json:"action"`
 		} `json:"status"`
-		BulkId  string `json:"bulkId"`
+		BulkID  string `json:"bulkId"`
 		Channel string `json:"channel"`
 	} `json:"results"`
 }
 
 type SentEmailBulksResponse struct {
-	ExternalBulkId string `json:"externalBulkId"`
+	ExternalBulkID string `json:"externalBulkId"`
 	Bulks          []struct {
-		BulkId string `json:"bulkId"`
+		BulkID string `json:"bulkId"`
 		SendAt int64  `json:"sendAt"`
 	} `json:"bulks"`
 }
 
 type SentEmailBulksStatusResponse struct {
-	ExternalBulkId string `json:"externalBulkId"`
+	ExternalBulkID string `json:"externalBulkId"`
 	Bulks          []struct {
-		BulkId string `json:"bulkId"`
+		BulkID string `json:"bulkId"`
 		Status string `json:"status"`
 	} `json:"bulks"`
 }
@@ -354,7 +354,7 @@ func (r *UpdateScheduledMessagesStatusRequest) Marshal() (*bytes.Buffer, error) 
 }
 
 type UpdateScheduledMessagesStatusResponse struct {
-	BulkId string `json:"bulkId"`
+	BulkID string `json:"bulkId"`
 	Status string `json:"status"`
 }
 
@@ -367,7 +367,7 @@ func (r *RescheduleMessagesRequest) Marshal() (*bytes.Buffer, error) {
 }
 
 type RescheduleMessagesResponse struct {
-	BulkId string `json:"bulkId"`
+	BulkID string `json:"bulkId"`
 	SendAt int64  `json:"sendAt"`
 }
 
