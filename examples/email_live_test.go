@@ -4,12 +4,13 @@ package examples
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"testing"
+
 	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip"
 	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"net/http"
-	"testing"
 )
 
 const (
@@ -69,10 +70,11 @@ func TestGetEmailDeliveryReports(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := make(map[string]string)
-	queryParams["bulkId"] = ""
-	queryParams["messageId"] = ""
-	queryParams["limit"] = "1000"
+	queryParams := models.GetDeliveryReportsOpts{
+		BulkID:    "",
+		MessageID: "",
+		Limit:     "",
+	}
 	deliveryReports, respDetails, err := client.Email.GetDeliveryReports(context.Background(), queryParams)
 
 	fmt.Println(deliveryReports)
@@ -90,15 +92,16 @@ func TestGetLogs(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := make(map[string]string)
-	queryParams["messageId"] = ""
-	queryParams["from"] = ""
-	queryParams["to"] = ""
-	queryParams["bulkId"] = ""
-	queryParams["generalStatus"] = ""
-	queryParams["sentSince"] = ""
-	queryParams["sentUntil"] = ""
-	queryParams["limit"] = "1000"
+	queryParams := models.GetLogsOpts{
+		MessageID:     "",
+		From:          "",
+		To:            "",
+		BulkID:        "",
+		GeneralStatus: "",
+		SentSince:     "",
+		SentUntil:     "",
+		Limit:         "",
+	}
 
 	logs, respDetails, err := client.Email.GetLogs(context.Background(), queryParams)
 
@@ -116,8 +119,9 @@ func TestGetSentBulks(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := make(map[string]string)
-	queryParams["bulkId"] = "test-bulk-78"
+	queryParams := models.GetSentBulksOpts{
+		BulkID: "test-bulk-78",
+	}
 
 	bulks, respDetails, err := client.Email.GetSentBulks(context.Background(), queryParams)
 
@@ -135,8 +139,9 @@ func TestGetSentBulksStatus(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := make(map[string]string)
-	queryParams["bulkId"] = "test-bulk-78"
+	queryParams := models.GetSentBulksStatusOpts{
+		BulkID: "test-bulk-78",
+	}
 
 	bulks, respDetails, err := client.Email.GetSentBulksStatus(context.Background(), queryParams)
 
@@ -154,8 +159,9 @@ func TestRescheduleMessages(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := make(map[string]string)
-	queryParams["bulkId"] = "test-bulk-78"
+	queryParams := models.RescheduleMessagesOpts{
+		BulkID: "test-bulk-78",
+	}
 
 	req := models.RescheduleMessagesRequest{
 		SendAt: "2022-04-13T17:56:07Z",
@@ -177,8 +183,9 @@ func TestUpdateScheduledMessagesStatus(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := make(map[string]string)
-	queryParams["bulkId"] = "test-bulk-78"
+	queryParams := models.UpdateScheduledMessagesStatusOpts{
+		BulkID: "test-bulk-78",
+	}
 
 	req := models.UpdateScheduledMessagesStatusRequest{
 		Status: "CANCELED",

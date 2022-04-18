@@ -267,7 +267,7 @@ type EmailDeliveryReportsResponse struct {
 		BulkID    string `json:"bulkId"`
 		MessageID string `json:"messageId"`
 		To        string `json:"to"`
-		// FIXME: this is a string, but it should be a time.Time
+		// TODO: this is a string, but it should be a time.Time
 		SentAt       string `json:"sentAt"`
 		DoneAt       string `json:"doneAt"`
 		MessageCount int    `json:"messageCount"`
@@ -293,6 +293,12 @@ type EmailDeliveryReportsResponse struct {
 		} `json:"error"`
 		Channel string `json:"channel"`
 	} `json:"results"`
+}
+
+type GetDeliveryReportsOpts struct {
+	BulkID    string
+	MessageID string
+	Limit     string
 }
 
 type EmailLogsResponse struct {
@@ -321,12 +327,27 @@ type EmailLogsResponse struct {
 	} `json:"results"`
 }
 
+type GetLogsOpts struct {
+	MessageID     string
+	From          string
+	To            string
+	BulkID        string
+	GeneralStatus string
+	SentSince     string
+	SentUntil     string
+	Limit         string
+}
+
 type SentEmailBulksResponse struct {
 	ExternalBulkID string `json:"externalBulkId"`
 	Bulks          []struct {
 		BulkID string `json:"bulkId"`
 		SendAt int64  `json:"sendAt"`
 	} `json:"bulks"`
+}
+
+type GetSentBulksOpts struct {
+	BulkID string `validate:"required"`
 }
 
 type SentEmailBulksStatusResponse struct {
@@ -337,12 +358,24 @@ type SentEmailBulksStatusResponse struct {
 	} `json:"bulks"`
 }
 
+type GetSentBulksStatusOpts struct {
+	BulkID string `validate:"required"`
+}
+
 type RescheduleMessagesRequest struct {
 	SendAt string `json:"sendAt"`
 }
 
+type RescheduleMessagesOpts struct {
+	BulkID string `validate:"required"`
+}
+
 type UpdateScheduledMessagesStatusRequest struct {
 	Status string `json:"status"`
+}
+
+type UpdateScheduledMessagesStatusOpts struct {
+	BulkID string `validate:"required"`
 }
 
 func (r *UpdateScheduledMessagesStatusRequest) Validate() error {
