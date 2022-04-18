@@ -50,7 +50,7 @@ func TestGetSentBulksStatusValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	queryParams := make(map[string]string)
+	queryParams := models.GetSentBulksStatusOpts{}
 
 	resp, respDetails, err := email.GetSentBulksStatus(context.Background(), queryParams)
 

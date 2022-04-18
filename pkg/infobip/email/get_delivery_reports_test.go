@@ -101,7 +101,7 @@ func TestGetDeliveryReports(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	queryParams := make(map[string]string)
+	queryParams := models.GetDeliveryReportsOpts{}
 
 	resp, respDetails, err := email.GetDeliveryReports(context.Background(), queryParams)
 
