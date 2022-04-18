@@ -18,42 +18,27 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func generateEmailMsg() models.EmailMsg {
-	mail := models.EmailMsg{
-		From:                    "edcoronag@selfserviceib.com",
-		To:                      "edcoronag@gmail.com",
-		Cc:                      "somemail@mail.com",
-		Bcc:                     "anothermail@mail.com",
-		Subject:                 "Some subject",
-		Text:                    "Some text",
-		BulkID:                  "esy82u725261jz8e6pi3",
-		MessageID:               "somexternalMessageId0",
-		TemplateID:              5,
-		Attachment:              nil,
-		InlineImage:             nil,
-		HTML:                    "<body>Some html</body>",
-		ReplyTo:                 "reply@infobip.com",
-		DefaultPlaceholders:     "someplaceholders",
-		PreserveRecipients:      true,
-		TrackingURL:             "https://tracking.com",
-		TrackClicks:             true,
-		TrackOpens:              true,
-		Track:                   true,
-		CallbackData:            "somedata",
-		IntermediateReport:      true,
-		NotifyURL:               "https://someurl.com",
-		NotifyContentType:       "application/json",
-		SendAt:                  "2022-01-01T00:00:00Z",
-		LandingPagePlaceholders: "someplaceholders",
-		LandingPageID:           "123456",
-	}
-
-	return mail
-}
-
 func TestSendEmailValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := generateEmailMsg()
+	msg := models.GenerateEmailMsg()
+
+	content := []byte("temporary file's content")
+	attachment, err := ioutil.TempFile("", "example")
+	require.NoError(t, err)
+	_, err = attachment.Write(content)
+	require.NoError(t, err)
+	_, err = attachment.Seek(0, 0)
+	require.NoError(t, err)
+
+	image, err := os.Open("testdata/image.png")
+	require.NoError(t, err)
+
+	msg.Attachment = attachment
+	msg.InlineImage = image
+
+	defer image.Close()
+	defer attachment.Close()
+
 	rawJSONResp := []byte(`{
 	  "bulkId": "esy82u725261jz8e6pi3",
 	  "messages": [
@@ -95,23 +80,10 @@ func TestSendEmailValidReq(t *testing.T) {
 		}
 	  ]
 	}`)
+
 	var expectedResp models.SendEmailResponse
-	err := json.Unmarshal(rawJSONResp, &expectedResp)
+	err = json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
-
-	content := []byte("temporary file's content")
-	attachment, err := ioutil.TempFile("", "example")
-	require.NoError(t, err)
-	_, err = attachment.Write(content)
-	require.NoError(t, err)
-	_, err = attachment.Seek(0, 0)
-	require.NoError(t, err)
-
-	image, err := os.Open("testdata/image.png")
-	require.NoError(t, err)
-
-	msg.Attachment = attachment
-	msg.InlineImage = image
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.True(t, strings.HasSuffix(r.URL.Path, sendEmailPath))
