@@ -4,9 +4,10 @@
 package infobip
 
 import (
-	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/email"
 	"net/http"
 	"net/url"
+
+	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/email"
 
 	"github.com/infobip-community/infobip-api-go-sdk/internal"
 	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/mms"
