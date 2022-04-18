@@ -54,6 +54,7 @@ type SendEmailResponse struct {
 	} `json:"messages"`
 }
 
+//nolint:cyclop,funlen,gocognit,gocyclo // Because the EmailMsg has too many fields.
 func (e *EmailMsg) Marshal() (*bytes.Buffer, error) {
 	buf := bytes.Buffer{}
 	multipartWriter := multipart.NewWriter(&buf)
