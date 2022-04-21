@@ -1,11 +1,15 @@
-# infobip-api-go-sdk
+# Infobip API Go SDK
+
+![Workflow](https://github.com/infobip-community/infobip-api-go-sdk/actions/workflows/checks.yml/badge.svg)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/infobip-community/infobip-api-go-sdk)
 [![Licence](https://img.shields.io/github/license/infobip-community/infobip-api-go-sdk)](LICENSE)
 ![Lines](https://img.shields.io/tokei/lines/github/infobip-community/infobip-api-go-sdk)
 
 Go client SDK for Infobip's API Channels
 
-## Supported Channels
+---
+
+## 📡 Supported Channels
 
 - [WhatsApp](https://www.infobip.com/docs/api#channels/whatsapp)
 - [Email](https://www.infobip.com/docs/api#channels/email)
@@ -13,7 +17,7 @@ Go client SDK for Infobip's API Channels
 
 More channels to be added in the near future.
 
-## Installation
+## 📦 Installation
 
 Currently, infobip-api-go-sdk requires Go version 1.13 or greater.
 We'll do our best not to break older versions of Go unless it's absolutely necessary, but due to tooling constraints,
@@ -27,7 +31,7 @@ go get "github.com/infobip-community/infobip-api-go-sdk"
 
 will add the client to the current module, along with all of its dependencies.
 
-## Usage
+## 🚀 Usage
 
 ```go
 import "github.com/infobip-community/infobip-api-go-sdk/pkg/infobip"
@@ -88,11 +92,11 @@ contains tests intended to be used for live testing all endpoints of available c
 the apiKey and baseURL variables, along with certain message fields, depending on the endpoint (e.g. From/To for WhatsApp).
 
 
-## Authentication
+## 🔐 Authentication
 
 Currently, infobip-api-go-sdk only supports API Key authentication, and the key needs to be passed during client creation.
 This will most likely change with future versions, once more authentication methods are included.
 
-## License
+## ⚖️ License
 
 This library is distributed under the MIT license found in the [LICENSE](./LICENSE) file.
