@@ -1,4 +1,5 @@
-// Package examples provides some real usage examples. Some of them depend on the server state, and need custom configuration.
+// Package examples provides some real usage examples.
+// Some of them depend on the server state, and need custom configuration.
 package examples
 
 import (
@@ -14,8 +15,8 @@ import (
 )
 
 const (
-	apiKey  = "YOURKEY"
-	baseURL = "YOURURL.api.infobip.com"
+	apiKey  = "your-key"
+	baseURL = "your-base-url"
 )
 
 func TestSendEmail(t *testing.T) {

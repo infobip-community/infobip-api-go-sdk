@@ -24,13 +24,13 @@ type EmailMsg struct {
 	ReplyTo                 string
 	DefaultPlaceholders     string
 	PreserveRecipients      bool
-	TrackingURL             string
+	TrackingURL             string `validate:"omitempty,url"`
 	TrackClicks             bool
 	TrackOpens              bool
 	Track                   bool
 	CallbackData            string
 	IntermediateReport      bool
-	NotifyURL               string
+	NotifyURL               string `validate:"omitempty,url"`
 	NotifyContentType       string
 	SendAt                  string
 	LandingPagePlaceholders string
@@ -265,10 +265,9 @@ func (e *EmailMsg) GetMultipartBoundary() string {
 
 type EmailDeliveryReportsResponse struct {
 	Results []struct {
-		BulkID    string `json:"bulkId"`
-		MessageID string `json:"messageId"`
-		To        string `json:"to"`
-		// TODO: this is a string, but it should be a time.Time
+		BulkID       string `json:"bulkId"`
+		MessageID    string `json:"messageId"`
+		To           string `json:"to"`
 		SentAt       string `json:"sentAt"`
 		DoneAt       string `json:"doneAt"`
 		MessageCount int    `json:"messageCount"`
@@ -300,6 +299,10 @@ type GetDeliveryReportsOpts struct {
 	BulkID    string
 	MessageID string
 	Limit     string
+}
+
+func (o *GetDeliveryReportsOpts) Validate() error {
+	return validate.Struct(o)
 }
 
 type EmailLogsResponse struct {
@@ -339,6 +342,10 @@ type GetLogsOpts struct {
 	Limit         string
 }
 
+func (o *GetLogsOpts) Validate() error {
+	return validate.Struct(o)
+}
+
 type SentEmailBulksResponse struct {
 	ExternalBulkID string `json:"externalBulkId"`
 	Bulks          []struct {
@@ -349,6 +356,10 @@ type SentEmailBulksResponse struct {
 
 type GetSentBulksOpts struct {
 	BulkID string `validate:"required"`
+}
+
+func (o *GetSentBulksOpts) Validate() error {
+	return validate.Struct(o)
 }
 
 type SentEmailBulksStatusResponse struct {
@@ -363,6 +374,10 @@ type GetSentBulksStatusOpts struct {
 	BulkID string `validate:"required"`
 }
 
+func (o *GetSentBulksStatusOpts) Validate() error {
+	return validate.Struct(o)
+}
+
 type RescheduleMessagesRequest struct {
 	SendAt string `json:"sendAt"`
 }
@@ -371,12 +386,20 @@ type RescheduleMessagesOpts struct {
 	BulkID string `validate:"required"`
 }
 
+func (o *RescheduleMessagesOpts) Validate() error {
+	return validate.Struct(o)
+}
+
 type UpdateScheduledMessagesStatusRequest struct {
-	Status string `json:"status"`
+	Status string `json:"status" validate:"required,oneof=PENDING PAUSED PROCESSING CANCELED FINISHED FAILED"`
 }
 
 type UpdateScheduledMessagesStatusOpts struct {
 	BulkID string `validate:"required"`
+}
+
+func (o *UpdateScheduledMessagesStatusOpts) Validate() error {
+	return validate.Struct(o)
 }
 
 func (r *UpdateScheduledMessagesStatusRequest) Validate() error {

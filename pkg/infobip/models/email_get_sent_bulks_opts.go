@@ -16,7 +16,7 @@ func TestValidGetSentBulksOpts(t *testing.T) {
 	})
 }
 
-func TestInvalidGetDelieryReportsOpts(t *testing.T) {
+func TestInvalidGetSentBulksOpts(t *testing.T) {
 	t.Run("InvalidGetSentBulksOpts", func(t *testing.T) {
 		test := GetSentBulksOpts{}
 		err := test.Validate()
