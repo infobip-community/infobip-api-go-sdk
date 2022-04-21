@@ -49,8 +49,6 @@ linters-settings:
     max-complexity: 30 # the maximal code complexity to report # default 10
     package-average: 10.0 # the maximal average package complexity. If it's higher than 0.0 (float) the check is enabled # default 0.0
     skip-tests: false # should ignore tests # default false
-    exclude:
-      - "EmailMsg.*Marshal"
   dupl:
     threshold: 150 # default 150
   errorlint:
@@ -72,12 +70,8 @@ linters-settings:
   funlen:
     lines: 100 # default 60
     statements: 50 # default 40
-    exclude:
-      - "EmailMsg.*Marshal"
   gocognit:
     min-complexity: 20 # minimal code complexity to report, 30 by default (but we recommend 10-20)
-    exclude:
-      - "EmailMsg.*Marshal"
   goconst:
     match-constant: true # look for existing constants matching the values # default true
     min-len: 3 # minimal length of string constant # default 3
@@ -115,8 +109,6 @@ linters-settings:
       #  checkExported: false # whether to check exported functions # default false
   gocyclo:
     min-complexity: 30 # default 30
-    exclude:
-      - "EmailMsg.*Marshal"
   godot:
     scope: declarations # comments to be checked: `declarations` (default), `toplevel`, or `all`
     exclude: [] # list of regexps for excluding particular comment lines from check # default []
