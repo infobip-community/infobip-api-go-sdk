@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetDeliveryReports(t *testing.T) {
+func TestGetDeliveryReportsValidReq(t *testing.T) {
 	apiKey := "secret"
 
 	rawJSONResp := []byte(`
@@ -111,4 +111,46 @@ func TestGetDeliveryReports(t *testing.T) {
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
+}
+
+func TestGetDeliveryReportsErrors(t *testing.T) {
+	test := struct {
+		rawJSONResp []byte
+		statusCode  int
+	}{
+		rawJSONResp: []byte(`{
+			  "requestError": {
+				 "serviceException": {
+				   "messageId": "BAD_REQUEST",
+				   "text": "Bad request",
+				   "validationErrors": "\"request.message.content.media.file.url\": [\"is not a valid url\"]"
+				 }
+			  }
+		}`),
+		statusCode: http.StatusBadRequest,
+	}
+
+	var expectedResp models.EmailDeliveryReportsResponse
+	err := json.Unmarshal(test.rawJSONResp, &expectedResp)
+	require.NoError(t, err)
+
+	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(test.statusCode)
+		_, servErr := w.Write(test.rawJSONResp)
+		assert.Nil(t, servErr)
+	}))
+
+	email := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    serv.URL,
+		APIKey:     "secret",
+	}}
+
+	msgResp, respDetails, err := email.GetDeliveryReports(context.Background(), models.GetDeliveryReportsOpts{})
+	serv.Close()
+
+	require.NoError(t, err)
+	assert.NotEqual(t, http.Response{}, respDetails.HTTPResponse)
+	assert.Equal(t, test.statusCode, respDetails.HTTPResponse.StatusCode)
+	assert.Equal(t, expectedResp, msgResp)
 }

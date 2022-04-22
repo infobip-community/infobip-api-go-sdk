@@ -12,6 +12,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/infobip-community/infobip-api-go-sdk/internal"
 	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/models"
 	"github.com/stretchr/testify/assert"
@@ -139,4 +140,67 @@ func TestSendEmailValidReq(t *testing.T) {
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 	assert.Equal(t, models.ErrorDetails{}, respDetails.ErrorResponse)
+}
+
+func TestInvalidEmailMsg(t *testing.T) {
+	msg := models.GenerateEmailMsg()
+	msg.To = ""
+
+	email := Channel{ReqHandler: internal.HTTPHandler{
+		HTTPClient: http.Client{},
+		BaseURL:    "http://something.com",
+		APIKey:     "secret",
+	}}
+
+	msgResp, respDetails, err := email.Send(context.Background(), msg)
+
+	require.NotNil(t, err)
+	assert.IsType(t, err, validator.ValidationErrors{})
+	assert.Equal(t, models.SendEmailResponse{}, msgResp)
+	assert.Equal(t, models.ResponseDetails{}, respDetails)
+}
+
+func TestSendEmailErrors(t *testing.T) {
+	tests := []struct {
+		rawJSONResp []byte
+		statusCode  int
+	}{
+		{
+			rawJSONResp: []byte(`{
+				  "requestError": {
+					 "serviceException": {
+					   "messageId": "string",
+					   "text": "string"
+					 }
+				  }
+			}`),
+			statusCode: http.StatusBadRequest,
+		},
+	}
+
+	for _, test := range tests {
+		var expectedResp models.SendEmailResponse
+		err := json.Unmarshal(test.rawJSONResp, &expectedResp)
+		require.NoError(t, err)
+
+		serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(test.statusCode)
+			_, servErr := w.Write(test.rawJSONResp)
+			assert.Nil(t, servErr)
+		}))
+
+		email := Channel{ReqHandler: internal.HTTPHandler{
+			HTTPClient: http.Client{},
+			BaseURL:    serv.URL,
+			APIKey:     "secret",
+		}}
+
+		msgResp, respDetails, err := email.Send(context.Background(), models.GenerateEmailMsg())
+		serv.Close()
+
+		require.NoError(t, err)
+		assert.NotEqual(t, http.Response{}, respDetails.HTTPResponse)
+		assert.Equal(t, test.statusCode, respDetails.HTTPResponse.StatusCode)
+		assert.Equal(t, expectedResp, msgResp)
+	}
 }
