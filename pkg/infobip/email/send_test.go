@@ -105,7 +105,7 @@ func TestSendEmailValidReq(t *testing.T) {
 		assert.Contains(t, attachment.Name(), r.MultipartForm.File["attachment"][0].Filename)
 		assert.Equal(t, int64(len(content)), r.MultipartForm.File["attachment"][0].Size)
 		assert.Contains(t, image.Name(), r.MultipartForm.File["inlineImage"][0].Filename)
-		// TODO: missing size check.
+		assert.Greater(t, r.MultipartForm.File["inlineImage"][0].Size, int64(100))
 		assert.Equal(t, msg.HTML, r.MultipartForm.Value["HTML"][0])
 		assert.Equal(t, msg.ReplyTo, r.MultipartForm.Value["replyto"][0])
 		assert.Equal(t, msg.DefaultPlaceholders, r.MultipartForm.Value["defaultplaceholders"][0])
