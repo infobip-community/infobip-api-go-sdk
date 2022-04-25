@@ -17,6 +17,11 @@ Go client SDK for Infobip's API Channels
 
 More channels to be added in the near future.
 
+## 🔐 Authentication
+
+Currently, infobip-api-go-sdk only supports API Key authentication, and the key needs to be passed during client creation.
+This will most likely change with future versions, once more authentication methods are included. You can get your base URL and API key by logging into Portal. Follow the instructions [here](https://www.infobip.com/docs/api).
+
 ## 📦 Installation
 
 Currently, infobip-api-go-sdk requires Go version 1.13 or greater.
@@ -30,11 +35,6 @@ go get "github.com/infobip-community/infobip-api-go-sdk"
 ```
 
 will add the client to the current module, along with all of its dependencies.
-
-## 🔐 Authentication
-
-Currently, infobip-api-go-sdk only supports API Key authentication, and the key needs to be passed during client creation.
-This will most likely change with future versions, once more authentication methods are included. You can get your base URL and API key by logging into Portal. Follow the instructions [here](https://www.infobip.com/docs/api).
 
 ## 🚀 Usage
 
