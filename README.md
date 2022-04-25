@@ -31,6 +31,11 @@ go get "github.com/infobip-community/infobip-api-go-sdk"
 
 will add the client to the current module, along with all of its dependencies.
 
+## 🔐 Authentication
+
+Currently, infobip-api-go-sdk only supports API Key authentication, and the key needs to be passed during client creation.
+This will most likely change with future versions, once more authentication methods are included. You can get your base URL and API key by logging into Portal. Follow the instructions [here](https://www.infobip.com/docs/api).
+
 ## 🚀 Usage
 
 ```go
@@ -87,15 +92,9 @@ should be sufficient.
 
 ### Examples
 
-The best way to learn how to use the library is to check the examples. For more sample code snippets, the [examples](https://github.com/infobip-community/infobip-api-go-sdk/tree/main/examples) directory
+The best way to learn how to use the library is to check the examples. The [examples](https://github.com/infobip-community/infobip-api-go-sdk/tree/main/examples) directory
 contains tests intended to be used for live testing all endpoints of available channels. The prerequisite for running an individual test is changing
 the apiKey and baseURL variables, along with certain message fields, depending on the endpoint (e.g. From/To for WhatsApp).
-
-
-## 🔐 Authentication
-
-Currently, infobip-api-go-sdk only supports API Key authentication, and the key needs to be passed during client creation.
-This will most likely change with future versions, once more authentication methods are included.
 
 ## ⚖️ License
 
