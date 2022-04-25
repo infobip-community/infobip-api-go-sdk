@@ -95,6 +95,24 @@ func (h *HTTPHandler) PostJSONReq(
 	return h.postRequest(ctx, payload, respResource, reqPath, "application/json")
 }
 
+func (h *HTTPHandler) PutJSONReq(
+	ctx context.Context,
+	putResource models.Validatable,
+	respResource interface{},
+	reqPath string,
+	queryParams map[string]string,
+) (respDetails models.ResponseDetails, err error) {
+	err = putResource.Validate()
+	if err != nil {
+		return respDetails, err
+	}
+	payload, err := putResource.Marshal()
+	if err != nil {
+		return respDetails, err
+	}
+	return h.putRequest(ctx, payload, respResource, reqPath, "application/json", queryParams)
+}
+
 func (h *HTTPHandler) PostMultipartReq(
 	ctx context.Context,
 	postResource models.MultipartValidatable,
@@ -146,6 +164,35 @@ func (h *HTTPHandler) postRequest(
 		if _, ok := respResource.(*models.MMSResponse); ok {
 			_ = json.Unmarshal(parsedBody, &respResource)
 		}
+	}
+	return respDetails, err
+}
+
+func (h *HTTPHandler) putRequest(
+	ctx context.Context,
+	payload *bytes.Buffer,
+	respResource interface{},
+	reqPath string,
+	contentType string,
+	queryParams map[string]string,
+) (respDetails models.ResponseDetails, err error) {
+	req, err := h.createReq(ctx, http.MethodPut, reqPath, payload, queryParams)
+	if err != nil {
+		return respDetails, err
+	}
+	req.Header.Set("Content-Type", contentType)
+
+	resp, parsedBody, err := h.executeReq(req) //nolint: bodyclose // closed in the method itself
+	if err != nil {
+		_ = json.Unmarshal(parsedBody, &respDetails.ErrorResponse)
+		return respDetails, err
+	}
+	respDetails.HTTPResponse = *resp
+
+	if resp.StatusCode == http.StatusOK {
+		err = json.Unmarshal(parsedBody, &respResource)
+	} else {
+		_ = json.Unmarshal(parsedBody, &respDetails.ErrorResponse)
 	}
 	return respDetails, err
 }

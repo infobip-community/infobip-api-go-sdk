@@ -222,7 +222,7 @@ func validateTemplateMsgHeader(sl validator.StructLevel, msg TemplateMsg) {
 	switch header.Type {
 	case "TEXT":
 		if header.Placeholder == "" {
-			sl.ReportError(header.Placeholder, "placholder", "Placeholder", "missingplaceholder", "")
+			sl.ReportError(header.Placeholder, "placeholder", "Placeholder", "missingplaceholder", "")
 		}
 	case "DOCUMENT":
 		if header.MediaURL == "" {
