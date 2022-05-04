@@ -151,7 +151,7 @@ type GetSMSLogsResponse struct {
 			Description string `json:"description"`
 		} `json:"status"`
 		Error struct {
-			GroupId     int    `json:"groupId"`
+			GroupID     int    `json:"groupId"`
 			GroupName   string `json:"groupName"`
 			ID          int    `json:"id"`
 			Name        string `json:"name"`

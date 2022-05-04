@@ -63,7 +63,9 @@ func (email *Channel) GetDeliveryReports(
 	params := []internal.QueryParameter{
 		{Name: "bulkId", Value: queryParams.BulkID},
 		{Name: "messageId", Value: queryParams.MessageID},
-		{Name: "limit", Value: fmt.Sprint(queryParams.Limit)},
+	}
+	if queryParams.Limit > 0 {
+		params = append(params, internal.QueryParameter{Name: "limit", Value: fmt.Sprint(queryParams.Limit)})
 	}
 
 	respDetails, err = email.ReqHandler.GetRequest(ctx, &resp, getDeliveryReportsPath, params)
@@ -83,8 +85,11 @@ func (email *Channel) GetLogs(
 		{Name: "generalStatus", Value: queryParams.GeneralStatus},
 		{Name: "sentSince", Value: queryParams.SentSince},
 		{Name: "sentUntil", Value: queryParams.SentUntil},
-		{Name: "limit", Value: fmt.Sprint(queryParams.Limit)},
 	}
+	if queryParams.Limit > 0 {
+		params = append(params, internal.QueryParameter{Name: "limit", Value: fmt.Sprint(queryParams.Limit)})
+	}
+
 	respDetails, err = email.ReqHandler.GetRequest(ctx, &resp, getLogsPath, params)
 	return resp, respDetails, err
 }

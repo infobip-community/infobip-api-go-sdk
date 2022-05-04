@@ -75,16 +75,16 @@ func GenerateSMSMsg() SMSMsg {
 		NotifyURL:         "https://someurl.com",
 		Text:              "Some content",
 		Transliteration:   "CENTRAL_EUROPEAN",
-		ValidityPeriod:    5,
+		ValidityPeriod:    1,
 		SMSDeliveryTimeWindow: &SMSDeliveryTimeWindow{
 			Days: []string{"MONDAY"},
 			From: SMSTime{
 				Hour:   1,
-				Minute: 10,
+				Minute: 0,
 			},
 			To: SMSTime{
-				Hour:   2,
-				Minute: 20,
+				Hour:   1,
+				Minute: 1,
 			},
 		},
 		SendAt: "10-10-2020T10:10:10Z",

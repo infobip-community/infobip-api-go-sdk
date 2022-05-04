@@ -212,7 +212,9 @@ func (h *HTTPHandler) generateCommonHeaders() http.Header {
 func generateQueryParams(params []QueryParameter) string {
 	q := url.Values{}
 	for _, param := range params {
-		q.Add(param.Name, param.Value)
+		if param.Value != "" {
+			q.Add(param.Name, param.Value)
+		}
 	}
 
 	return q.Encode()

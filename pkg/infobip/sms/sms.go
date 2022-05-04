@@ -42,7 +42,9 @@ func (sms *Channel) GetDeliveryReports(
 	params := []internal.QueryParameter{
 		{Name: "bulkId", Value: queryParams.BulkID},
 		{Name: "messageId", Value: queryParams.MessageID},
-		{Name: "limit", Value: fmt.Sprint(queryParams.Limit)},
+	}
+	if queryParams.Limit > 0 {
+		params = append(params, internal.QueryParameter{Name: "limit", Value: fmt.Sprint(queryParams.Limit)})
 	}
 	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, getDeliveryReportsPath, params)
 	return resp, respDetails, err
@@ -58,9 +60,11 @@ func (sms *Channel) GetLogs(
 		{Name: "generalStatus", Value: queryParams.GeneralStatus},
 		{Name: "sentSince", Value: queryParams.SentSince},
 		{Name: "sentUntil", Value: queryParams.SentUntil},
-		{Name: "limit", Value: fmt.Sprint(queryParams.Limit)},
 		{Name: "mcc", Value: queryParams.MCC},
 		{Name: "mnc", Value: queryParams.MNC},
+	}
+	if queryParams.Limit > 0 {
+		params = append(params, internal.QueryParameter{Name: "limit", Value: fmt.Sprint(queryParams.Limit)})
 	}
 
 	for _, id := range queryParams.BulkID {
