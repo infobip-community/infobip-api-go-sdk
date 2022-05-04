@@ -19,12 +19,17 @@ type HTTPHandler struct {
 	HTTPClient http.Client
 }
 
+type QueryParameter struct {
+	Name  string
+	Value string
+}
+
 func (h *HTTPHandler) createReq(
 	ctx context.Context,
 	method string,
 	resourcePath string,
 	body io.Reader,
-	queryParams map[string]string,
+	queryParams []QueryParameter,
 ) (*http.Request, error) {
 	req, err := http.NewRequestWithContext(ctx, method, fmt.Sprintf("%s/%s", h.BaseURL, resourcePath), body)
 	if err != nil {
@@ -56,7 +61,7 @@ func (h *HTTPHandler) GetRequest(
 	ctx context.Context,
 	respResource interface{},
 	reqPath string,
-	queryParams map[string]string,
+	queryParams []QueryParameter,
 ) (respDetails models.ResponseDetails, err error) {
 	req, err := h.createReq(ctx, http.MethodGet, reqPath, nil, queryParams)
 	if err != nil {
@@ -100,7 +105,7 @@ func (h *HTTPHandler) PutJSONReq(
 	putResource models.Validatable,
 	respResource interface{},
 	reqPath string,
-	queryParams map[string]string,
+	queryParams []QueryParameter,
 ) (respDetails models.ResponseDetails, err error) {
 	err = putResource.Validate()
 	if err != nil {
@@ -174,7 +179,7 @@ func (h *HTTPHandler) putRequest(
 	respResource interface{},
 	reqPath string,
 	contentType string,
-	queryParams map[string]string,
+	queryParams []QueryParameter,
 ) (respDetails models.ResponseDetails, err error) {
 	req, err := h.createReq(ctx, http.MethodPut, reqPath, payload, queryParams)
 	if err != nil {
@@ -204,12 +209,10 @@ func (h *HTTPHandler) generateCommonHeaders() http.Header {
 	return header
 }
 
-func generateQueryParams(params map[string]string) string {
+func generateQueryParams(params []QueryParameter) string {
 	q := url.Values{}
-	for k, v := range params {
-		if v != "" {
-			q.Add(k, v)
-		}
+	for _, param := range params {
+		q.Add(param.Name, param.Value)
 	}
 
 	return q.Encode()

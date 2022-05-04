@@ -2,6 +2,7 @@ package email
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/infobip-community/infobip-api-go-sdk/internal"
 	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/models"
@@ -23,23 +24,23 @@ type Channel struct {
 }
 
 type Email interface {
-	GetDeliveryReports(ctx context.Context, queryParams models.GetDeliveryReportsOpts) (
+	GetDeliveryReports(ctx context.Context, queryParams models.GetEmailDeliveryReportsParams) (
 		resp models.EmailDeliveryReportsResponse, respDetails models.ResponseDetails, err error)
-	GetLogs(ctx context.Context, queryParams models.GetLogsOpts) (
+	GetLogs(ctx context.Context, queryParams models.GetLogsParams) (
 		resp models.EmailLogsResponse, respDetails models.ResponseDetails, err error)
-	GetSentBulks(ctx context.Context, queryParams models.GetSentBulksOpts) (
+	GetSentBulks(ctx context.Context, queryParams models.GetSentBulksParams) (
 		resp models.SentEmailBulksResponse, respDetails models.ResponseDetails, err error)
-	GetSentBulksStatus(ctx context.Context, queryParams models.GetSentBulksStatusOpts) (
+	GetSentBulksStatus(ctx context.Context, queryParams models.GetSentBulksStatusParams) (
 		resp models.SentEmailBulksStatusResponse, respDetails models.ResponseDetails, err error)
 	RescheduleMessages(
-		ctx context.Context, req models.RescheduleMessagesRequest, queryParams models.RescheduleMessagesOpts) (
+		ctx context.Context, req models.RescheduleMessagesRequest, queryParams models.RescheduleMessagesParams) (
 		resp models.RescheduleMessagesResponse, respDetails models.ResponseDetails, err error)
 	Send(ctx context.Context, req models.EmailMsg) (
 		resp models.SendEmailResponse, respDetails models.ResponseDetails, err error)
 	UpdateScheduledMessagesStatus(
 		ctx context.Context,
 		req models.UpdateScheduledMessagesStatusRequest,
-		queryParams models.UpdateScheduledMessagesStatusOpts) (
+		queryParams models.UpdateScheduledMessagesStatusParams) (
 		resp models.UpdateScheduledMessagesStatusResponse, respDetails models.ResponseDetails, err error)
 	ValidateAddresses(ctx context.Context, req models.ValidateAddressesRequest) (
 		resp models.ValidateAddressesResponse, respDetails models.ResponseDetails, err error)
@@ -57,30 +58,32 @@ func (email *Channel) Send(
 // GetDeliveryReports gets one-time delivery reports for all sent emails.
 func (email *Channel) GetDeliveryReports(
 	ctx context.Context,
-	queryParams models.GetDeliveryReportsOpts,
+	queryParams models.GetEmailDeliveryReportsParams,
 ) (resp models.EmailDeliveryReportsResponse, respDetails models.ResponseDetails, err error) {
-	params := map[string]string{
-		"bulkId":    queryParams.BulkID,
-		"messageId": queryParams.MessageID,
-		"limit":     queryParams.Limit,
+	params := []internal.QueryParameter{
+		{Name: "bulkId", Value: queryParams.BulkID},
+		{Name: "messageId", Value: queryParams.MessageID},
+		{Name: "limit", Value: fmt.Sprint(queryParams.Limit)},
 	}
+
 	respDetails, err = email.ReqHandler.GetRequest(ctx, &resp, getDeliveryReportsPath, params)
 	return resp, respDetails, err
 }
 
 // GetLogs gets email logs of sent Email messagesId for request. Logs are available for the last 48 hours.
-func (email *Channel) GetLogs(ctx context.Context,
-	queryParams models.GetLogsOpts,
+func (email *Channel) GetLogs(
+	ctx context.Context,
+	queryParams models.GetLogsParams,
 ) (resp models.EmailLogsResponse, respDetails models.ResponseDetails, err error) {
-	params := map[string]string{
-		"messageId":     queryParams.MessageID,
-		"from":          queryParams.From,
-		"to":            queryParams.To,
-		"bulkId":        queryParams.BulkID,
-		"generalStatus": queryParams.GeneralStatus,
-		"sentSince":     queryParams.SentSince,
-		"sentUntil":     queryParams.SentUntil,
-		"limit":         queryParams.Limit,
+	params := []internal.QueryParameter{
+		{Name: "messageId", Value: queryParams.MessageID},
+		{Name: "from", Value: queryParams.From},
+		{Name: "to", Value: queryParams.To},
+		{Name: "bulkId", Value: queryParams.BulkID},
+		{Name: "generalStatus", Value: queryParams.GeneralStatus},
+		{Name: "sentSince", Value: queryParams.SentSince},
+		{Name: "sentUntil", Value: queryParams.SentUntil},
+		{Name: "limit", Value: fmt.Sprint(queryParams.Limit)},
 	}
 	respDetails, err = email.ReqHandler.GetRequest(ctx, &resp, getLogsPath, params)
 	return resp, respDetails, err
@@ -88,9 +91,9 @@ func (email *Channel) GetLogs(ctx context.Context,
 
 // GetSentBulks gets the scheduled time of your Email messages.
 func (email *Channel) GetSentBulks(ctx context.Context,
-	queryParams models.GetSentBulksOpts,
+	queryParams models.GetSentBulksParams,
 ) (resp models.SentEmailBulksResponse, respDetails models.ResponseDetails, err error) {
-	params := map[string]string{"bulkId": queryParams.BulkID}
+	params := []internal.QueryParameter{{Name: "bulkId", Value: queryParams.BulkID}}
 	respDetails, err = email.ReqHandler.GetRequest(ctx, &resp, getSentEmailBulksPath, params)
 	return resp, respDetails, err
 }
@@ -99,18 +102,18 @@ func (email *Channel) GetSentBulks(ctx context.Context,
 func (email *Channel) RescheduleMessages(
 	ctx context.Context,
 	req models.RescheduleMessagesRequest,
-	queryParams models.RescheduleMessagesOpts,
+	queryParams models.RescheduleMessagesParams,
 ) (resp models.RescheduleMessagesResponse, respDetails models.ResponseDetails, err error) {
-	params := map[string]string{"bulkId": queryParams.BulkID}
+	params := []internal.QueryParameter{{Name: "bulkId", Value: queryParams.BulkID}}
 	respDetails, err = email.ReqHandler.PutJSONReq(ctx, &req, &resp, rescheduleMessagesPath, params)
 	return resp, respDetails, err
 }
 
 // GetSentBulksStatus returns status of scheduled email messages.
 func (email *Channel) GetSentBulksStatus(ctx context.Context,
-	queryParams models.GetSentBulksStatusOpts,
+	queryParams models.GetSentBulksStatusParams,
 ) (resp models.SentEmailBulksStatusResponse, respDetails models.ResponseDetails, err error) {
-	params := map[string]string{"bulkId": queryParams.BulkID}
+	params := []internal.QueryParameter{{Name: "bulkId", Value: queryParams.BulkID}}
 	respDetails, err = email.ReqHandler.GetRequest(ctx, &resp, getSentEmailBulksStatusPath, params)
 	return resp, respDetails, err
 }
@@ -118,9 +121,9 @@ func (email *Channel) GetSentBulksStatus(ctx context.Context,
 // UpdateScheduledMessagesStatus updates status or completely cancels sending of scheduled messages.
 func (email *Channel) UpdateScheduledMessagesStatus(ctx context.Context,
 	req models.UpdateScheduledMessagesStatusRequest,
-	queryParams models.UpdateScheduledMessagesStatusOpts,
+	queryParams models.UpdateScheduledMessagesStatusParams,
 ) (resp models.UpdateScheduledMessagesStatusResponse, respDetails models.ResponseDetails, err error) {
-	params := map[string]string{"bulkId": queryParams.BulkID}
+	params := []internal.QueryParameter{{Name: "bulkId", Value: queryParams.BulkID}}
 	respDetails, err = email.ReqHandler.PutJSONReq(ctx, &req, &resp, updateScheduledMessagesStatusPath, params)
 	return resp, respDetails, err
 }

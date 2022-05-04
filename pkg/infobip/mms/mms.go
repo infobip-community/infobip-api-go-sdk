@@ -2,6 +2,7 @@ package mms
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/infobip-community/infobip-api-go-sdk/internal"
 	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/models"
@@ -11,9 +12,9 @@ import (
 // MMS API docs: https://www.infobip.com/docs/api#channels/mms
 type MMS interface {
 	SendMsg(context.Context, models.MMSMsg) (models.MMSResponse, models.ResponseDetails, error)
-	GetOutboundMsgDeliveryReports(ctx context.Context, opts models.OutboundMMSDeliveryReportsOpts) (
+	GetOutboundMsgDeliveryReports(ctx context.Context, params models.OutboundMMSDeliveryReportsParams) (
 		models.OutboundMMSDeliveryReportsResponse, models.ResponseDetails, error)
-	GetInboundMsgs(ctx context.Context, opts models.InboundMMSOpts) (
+	GetInboundMsgs(ctx context.Context, params models.InboundMMSParams) (
 		models.InboundMMSResponse, models.ResponseDetails, error)
 }
 
@@ -35,18 +36,22 @@ func (mms *Channel) SendMsg(
 
 func (mms *Channel) GetOutboundMsgDeliveryReports(
 	ctx context.Context,
-	opts models.OutboundMMSDeliveryReportsOpts,
+	params models.OutboundMMSDeliveryReportsParams,
 ) (msgResp models.OutboundMMSDeliveryReportsResponse, respDetails models.ResponseDetails, err error) {
-	params := map[string]string{"bulkId": opts.BulkID, "messageId": opts.MessageID, "limit": opts.Limit}
-	respDetails, err = mms.ReqHandler.GetRequest(ctx, &msgResp, getOutboundMMSDeliveryReportsPath, params)
+	queryParams := []internal.QueryParameter{
+		{Name: "bulkId", Value: params.BulkID},
+		{Name: "messageId", Value: params.MessageID},
+		{Name: "limit", Value: fmt.Sprint(params.Limit)},
+	}
+	respDetails, err = mms.ReqHandler.GetRequest(ctx, &msgResp, getOutboundMMSDeliveryReportsPath, queryParams)
 	return msgResp, respDetails, err
 }
 
 func (mms *Channel) GetInboundMsgs(
 	ctx context.Context,
-	opts models.InboundMMSOpts,
+	params models.InboundMMSParams,
 ) (msgResp models.InboundMMSResponse, respDetails models.ResponseDetails, err error) {
-	params := map[string]string{"limit": opts.Limit}
-	respDetails, err = mms.ReqHandler.GetRequest(ctx, &msgResp, getInboundMMSPath, params)
+	queryParams := []internal.QueryParameter{{Name: "limit", Value: fmt.Sprint(params.Limit)}}
+	respDetails, err = mms.ReqHandler.GetRequest(ctx, &msgResp, getInboundMMSPath, queryParams)
 	return msgResp, respDetails, err
 }

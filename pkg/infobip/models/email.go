@@ -295,13 +295,13 @@ type EmailDeliveryReportsResponse struct {
 	} `json:"results"`
 }
 
-type GetDeliveryReportsOpts struct {
+type GetEmailDeliveryReportsParams struct {
 	BulkID    string
 	MessageID string
-	Limit     string
+	Limit     int
 }
 
-func (o *GetDeliveryReportsOpts) Validate() error {
+func (o *GetEmailDeliveryReportsParams) Validate() error {
 	return validate.Struct(o)
 }
 
@@ -331,7 +331,7 @@ type EmailLogsResponse struct {
 	} `json:"results"`
 }
 
-type GetLogsOpts struct {
+type GetLogsParams struct {
 	MessageID     string
 	From          string
 	To            string
@@ -339,10 +339,10 @@ type GetLogsOpts struct {
 	GeneralStatus string
 	SentSince     string
 	SentUntil     string
-	Limit         string
+	Limit         int
 }
 
-func (o *GetLogsOpts) Validate() error {
+func (o *GetLogsParams) Validate() error {
 	return validate.Struct(o)
 }
 
@@ -354,11 +354,11 @@ type SentEmailBulksResponse struct {
 	} `json:"bulks"`
 }
 
-type GetSentBulksOpts struct {
+type GetSentBulksParams struct {
 	BulkID string `validate:"required"`
 }
 
-func (o *GetSentBulksOpts) Validate() error {
+func (o *GetSentBulksParams) Validate() error {
 	return validate.Struct(o)
 }
 
@@ -370,11 +370,11 @@ type SentEmailBulksStatusResponse struct {
 	} `json:"bulks"`
 }
 
-type GetSentBulksStatusOpts struct {
+type GetSentBulksStatusParams struct {
 	BulkID string `validate:"required"`
 }
 
-func (o *GetSentBulksStatusOpts) Validate() error {
+func (o *GetSentBulksStatusParams) Validate() error {
 	return validate.Struct(o)
 }
 
@@ -382,11 +382,11 @@ type RescheduleMessagesRequest struct {
 	SendAt string `json:"sendAt"`
 }
 
-type RescheduleMessagesOpts struct {
+type RescheduleMessagesParams struct {
 	BulkID string `validate:"required"`
 }
 
-func (o *RescheduleMessagesOpts) Validate() error {
+func (o *RescheduleMessagesParams) Validate() error {
 	return validate.Struct(o)
 }
 
@@ -394,11 +394,11 @@ type UpdateScheduledMessagesStatusRequest struct {
 	Status string `json:"status" validate:"required,oneof=PENDING PAUSED PROCESSING CANCELED FINISHED FAILED"`
 }
 
-type UpdateScheduledMessagesStatusOpts struct {
+type UpdateScheduledMessagesStatusParams struct {
 	BulkID string `validate:"required"`
 }
 
-func (o *UpdateScheduledMessagesStatusOpts) Validate() error {
+func (o *UpdateScheduledMessagesStatusParams) Validate() error {
 	return validate.Struct(o)
 }
 

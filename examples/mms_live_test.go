@@ -37,10 +37,10 @@ func TestGetOutboundMsgDeliveryReportsExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
-	params := models.OutboundMMSDeliveryReportsOpts{
+	params := models.OutboundMMSDeliveryReportsParams{
 		BulkID:    "1",
 		MessageID: "1",
-		Limit:     "5",
+		Limit:     5,
 	}
 
 	msgResp, respDetails, err := client.MMS.GetOutboundMsgDeliveryReports(context.Background(), params)
@@ -55,8 +55,8 @@ func TestGetInboundMMSExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
-	params := models.InboundMMSOpts{
-		Limit: "5",
+	params := models.InboundMMSParams{
+		Limit: 5,
 	}
 
 	msgResp, respDetails, err := client.MMS.GetInboundMsgs(context.Background(), params)

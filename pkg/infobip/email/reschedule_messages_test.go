@@ -48,7 +48,7 @@ func TestRescheduleMessagesValidReq(t *testing.T) {
 	req := models.RescheduleMessagesRequest{
 		SendAt: "2022-04-12T17:56:07Z",
 	}
-	queryParams := models.RescheduleMessagesOpts{}
+	queryParams := models.RescheduleMessagesParams{}
 
 	resp, respDetails, err := email.RescheduleMessages(context.Background(), req, queryParams)
 

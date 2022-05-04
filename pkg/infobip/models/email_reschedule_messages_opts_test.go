@@ -6,9 +6,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidRescheduleMessagesOpts(t *testing.T) {
-	t.Run("ValidRescheduleMessagesOpts", func(t *testing.T) {
-		test := RescheduleMessagesOpts{
+func TestValidRescheduleMessagesParams(t *testing.T) {
+	t.Run("ValidRescheduleMessagesParams", func(t *testing.T) {
+		test := RescheduleMessagesParams{
 			BulkID: "some-bulk-id",
 		}
 		err := test.Validate()
@@ -16,9 +16,9 @@ func TestValidRescheduleMessagesOpts(t *testing.T) {
 	})
 }
 
-func TestInvalidRescheduleMessagesOpts(t *testing.T) {
-	t.Run("InvalidRescheduleMessagesOpts", func(t *testing.T) {
-		test := RescheduleMessagesOpts{}
+func TestInvalidRescheduleMessagesParams(t *testing.T) {
+	t.Run("InvalidRescheduleMessagesParams", func(t *testing.T) {
+		test := RescheduleMessagesParams{}
 		err := test.Validate()
 		require.Error(t, err)
 	})

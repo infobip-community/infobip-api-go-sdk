@@ -101,7 +101,7 @@ func TestGetDeliveryReportsValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	queryParams := models.GetDeliveryReportsOpts{}
+	queryParams := models.GetEmailDeliveryReportsParams{}
 
 	resp, respDetails, err := email.GetDeliveryReports(context.Background(), queryParams)
 
@@ -146,7 +146,7 @@ func TestGetDeliveryReportsErrors(t *testing.T) {
 		APIKey:     "secret",
 	}}
 
-	msgResp, respDetails, err := email.GetDeliveryReports(context.Background(), models.GetDeliveryReportsOpts{})
+	msgResp, respDetails, err := email.GetDeliveryReports(context.Background(), models.GetEmailDeliveryReportsParams{})
 	serv.Close()
 
 	require.NoError(t, err)

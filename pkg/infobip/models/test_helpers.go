@@ -40,3 +40,53 @@ func GenerateEmailMsg() EmailMsg {
 		LandingPageID:           "123456",
 	}
 }
+
+func GenerateSendSMSRequest() SendSMSRequest {
+	return SendSMSRequest{
+		BulkID:   "some-bulk-id",
+		Messages: []SMSMsg{GenerateSMSMsg()},
+		SendingSpeedLimit: &SendingSpeedLimit{
+			Amount:   1,
+			TimeUnit: "MINUTE",
+		},
+		Tracking: &Tracking{
+			BaseURL:    "https://tracking.com",
+			Track:      "SMS",
+			Type:       "ONE_TIME_PIN",
+			ProcessKey: "someKey",
+		},
+	}
+}
+
+func GenerateSMSMsg() SMSMsg {
+	return SMSMsg{
+		CallbackData: "DLR callback data",
+		Destinations: []Destination{{
+			MessageID: "some-id",
+			To:        "16175551212",
+		}},
+		Flash:              false,
+		From:               "Someone",
+		IntermediateReport: false,
+		Language: Language{
+			LanguageCode: "EN",
+		},
+		NotifyContentType: "application/json",
+		NotifyURL:         "https://someurl.com",
+		Text:              "Some content",
+		Transliteration:   "CENTRAL_EUROPEAN",
+		ValidityPeriod:    5,
+		SMSDeliveryTimeWindow: &SMSDeliveryTimeWindow{
+			Days: []string{"MONDAY"},
+			From: SMSTime{
+				Hour:   1,
+				Minute: 10,
+			},
+			To: SMSTime{
+				Hour:   2,
+				Minute: 20,
+			},
+		},
+		SendAt: "10-10-2020T10:10:10Z",
+	}
+}

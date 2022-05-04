@@ -40,14 +40,14 @@ func TestGetInboundMMSValidReq(t *testing.T) {
 
 	tests := []struct {
 		scenario       string
-		params         models.InboundMMSOpts
+		params         models.InboundMMSParams
 		expectedParams string
 	}{
-		{scenario: "No params passed", params: models.InboundMMSOpts{}, expectedParams: ""},
+		{scenario: "No params passed", params: models.InboundMMSParams{}, expectedParams: ""},
 		{
 			scenario: "Params passed",
-			params: models.InboundMMSOpts{
-				Limit: "1",
+			params: models.InboundMMSParams{
+				Limit: 1,
 			},
 			expectedParams: "limit=1",
 		},

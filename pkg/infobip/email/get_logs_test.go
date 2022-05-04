@@ -122,7 +122,7 @@ func TestGetLogsValidReq(t *testing.T) {
 	}))
 	defer serv.Close()
 
-	queryParams := models.GetLogsOpts{}
+	queryParams := models.GetLogsParams{}
 
 	email := Channel{ReqHandler: internal.HTTPHandler{
 		HTTPClient: http.Client{},

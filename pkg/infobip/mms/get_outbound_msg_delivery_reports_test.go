@@ -56,16 +56,16 @@ func TestGetOutboundMsgDeliveryReportsValidReq(t *testing.T) {
 
 	tests := []struct {
 		scenario       string
-		params         models.OutboundMMSDeliveryReportsOpts
+		params         models.OutboundMMSDeliveryReportsParams
 		expectedParams string
 	}{
-		{scenario: "No params passed", params: models.OutboundMMSDeliveryReportsOpts{}, expectedParams: ""},
+		{scenario: "No params passed", params: models.OutboundMMSDeliveryReportsParams{}, expectedParams: ""},
 		{
 			scenario: "Params passed",
-			params: models.OutboundMMSDeliveryReportsOpts{
+			params: models.OutboundMMSDeliveryReportsParams{
 				BulkID:    "1",
 				MessageID: "2",
-				Limit:     "3",
+				Limit:     3,
 			},
 			expectedParams: "bulkId=1&limit=3&messageId=2",
 		},

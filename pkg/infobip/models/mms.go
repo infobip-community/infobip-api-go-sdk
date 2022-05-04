@@ -171,10 +171,10 @@ func (t *MMSMsg) GetMultipartBoundary() string {
 	return t.boundary
 }
 
-type OutboundMMSDeliveryReportsOpts struct {
+type OutboundMMSDeliveryReportsParams struct {
 	BulkID    string
 	MessageID string
-	Limit     string
+	Limit     int
 }
 
 type OutboundMMSDeliveryReportsResponse struct {
@@ -216,6 +216,6 @@ type InboundMMSResult struct {
 	Price        MMSPrice `json:"price"`
 }
 
-type InboundMMSOpts struct {
-	Limit string
+type InboundMMSParams struct {
+	Limit int
 }

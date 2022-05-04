@@ -66,10 +66,10 @@ func TestGetEmailDeliveryReports(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.GetDeliveryReportsOpts{
+	queryParams := models.GetEmailDeliveryReportsParams{
 		BulkID:    "",
 		MessageID: "",
-		Limit:     "",
+		Limit:     1,
 	}
 	deliveryReports, respDetails, err := client.Email.GetDeliveryReports(context.Background(), queryParams)
 
@@ -88,7 +88,7 @@ func TestGetLogs(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.GetLogsOpts{
+	queryParams := models.GetLogsParams{
 		MessageID:     "",
 		From:          "",
 		To:            "",
@@ -96,7 +96,7 @@ func TestGetLogs(t *testing.T) {
 		GeneralStatus: "",
 		SentSince:     "",
 		SentUntil:     "",
-		Limit:         "",
+		Limit:         1,
 	}
 
 	logs, respDetails, err := client.Email.GetLogs(context.Background(), queryParams)
@@ -115,7 +115,7 @@ func TestGetSentBulks(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.GetSentBulksOpts{
+	queryParams := models.GetSentBulksParams{
 		BulkID: "test-bulk-78",
 	}
 
@@ -135,7 +135,7 @@ func TestGetSentBulksStatus(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.GetSentBulksStatusOpts{
+	queryParams := models.GetSentBulksStatusParams{
 		BulkID: "test-bulk-78",
 	}
 
@@ -155,7 +155,7 @@ func TestRescheduleMessages(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.RescheduleMessagesOpts{
+	queryParams := models.RescheduleMessagesParams{
 		BulkID: "test-bulk-78",
 	}
 
@@ -179,7 +179,7 @@ func TestUpdateScheduledMessagesStatus(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.UpdateScheduledMessagesStatusOpts{
+	queryParams := models.UpdateScheduledMessagesStatusParams{
 		BulkID: "test-bulk-78",
 	}
 
