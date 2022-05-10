@@ -21,7 +21,7 @@ import (
 
 func TestInteractiveButtonsValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.InteractiveButtonsMsg{
+	msg := models.WAInteractiveButtonsMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content: models.InteractiveButtonsContent{
 			Body: models.InteractiveButtonsBody{Text: "Some text"},
@@ -45,7 +45,7 @@ func TestInteractiveButtonsValidReq(t *testing.T) {
 			"description": "Message sent to next instance"
 		}
 	}`)
-	var expectedResp models.MsgResponse
+	var expectedResp models.SendWAMsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
@@ -55,7 +55,7 @@ func TestInteractiveButtonsValidReq(t *testing.T) {
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.InteractiveButtonsMsg
+		var receivedMsg models.WAInteractiveButtonsMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -70,10 +70,10 @@ func TestInteractiveButtonsValidReq(t *testing.T) {
 		BaseURL:    serv.URL,
 		APIKey:     apiKey,
 	}}
-	messageResponse, respDetails, err := whatsApp.SendInteractiveButtonsMsg(context.Background(), msg)
+	messageResponse, respDetails, err := whatsApp.SendInteractiveButtons(context.Background(), msg)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.MsgResponse{}, messageResponse)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, messageResponse)
 	assert.Equal(t, expectedResp, messageResponse)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
@@ -81,7 +81,7 @@ func TestInteractiveButtonsValidReq(t *testing.T) {
 }
 
 func TestInvalidInteractiveButtonsMsg(t *testing.T) {
-	msg := models.InteractiveButtonsMsg{
+	msg := models.WAInteractiveButtonsMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content: models.InteractiveButtonsContent{
 			Body: models.InteractiveButtonsBody{Text: "Some text"},
@@ -99,11 +99,11 @@ func TestInvalidInteractiveButtonsMsg(t *testing.T) {
 		APIKey:     "secret",
 	}}
 
-	messageResponse, respDetails, err := whatsApp.SendInteractiveButtonsMsg(context.Background(), msg)
+	messageResponse, respDetails, err := whatsApp.SendInteractiveButtons(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
-	assert.Equal(t, models.MsgResponse{}, messageResponse)
+	assert.Equal(t, models.SendWAMsgResponse{}, messageResponse)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
@@ -153,7 +153,7 @@ func TestInteractiveButtons4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.InteractiveButtonsMsg{
+	msg := models.WAInteractiveButtonsMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content: models.InteractiveButtonsContent{
 			Body: models.InteractiveButtonsBody{Text: "Some text"},
@@ -182,7 +182,7 @@ func TestInteractiveButtons4xxErrors(t *testing.T) {
 				APIKey:     "secret",
 			}}
 
-			messageResponse, respDetails, err := whatsApp.SendInteractiveButtonsMsg(context.Background(), msg)
+			messageResponse, respDetails, err := whatsApp.SendInteractiveButtons(context.Background(), msg)
 			serv.Close()
 
 			require.NoError(t, err)
@@ -190,7 +190,7 @@ func TestInteractiveButtons4xxErrors(t *testing.T) {
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
-			assert.Equal(t, models.MsgResponse{}, messageResponse)
+			assert.Equal(t, models.SendWAMsgResponse{}, messageResponse)
 		})
 	}
 }

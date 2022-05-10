@@ -14,11 +14,11 @@ func TestValidTemplateMessage(t *testing.T) {
 	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name     string
-		instance TemplateMsgs
+		instance WATemplateMsgs
 	}{
 		{
 			name: "minimum input",
-			instance: TemplateMsgs{
+			instance: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: MsgCommon{From: "16175551213", To: "16175551212"},
@@ -35,7 +35,7 @@ func TestValidTemplateMessage(t *testing.T) {
 		},
 		{
 			name: "minimum input, empty placeholders",
-			instance: TemplateMsgs{
+			instance: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: MsgCommon{From: "16175551213", To: "16175551212"},
@@ -53,7 +53,7 @@ func TestValidTemplateMessage(t *testing.T) {
 		},
 		{
 			name: "complete input, header TEXT",
-			instance: TemplateMsgs{
+			instance: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -71,7 +71,7 @@ func TestValidTemplateMessage(t *testing.T) {
 		},
 		{
 			name: "complete input, header DOCUMENT",
-			instance: TemplateMsgs{
+			instance: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -93,7 +93,7 @@ func TestValidTemplateMessage(t *testing.T) {
 		},
 		{
 			name: "complete input, header IMAGE",
-			instance: TemplateMsgs{
+			instance: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -111,7 +111,7 @@ func TestValidTemplateMessage(t *testing.T) {
 		},
 		{
 			name: "complete input, header VIDEO",
-			instance: TemplateMsgs{
+			instance: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -129,7 +129,7 @@ func TestValidTemplateMessage(t *testing.T) {
 		},
 		{
 			name: "complete input, header LOCATION",
-			instance: TemplateMsgs{
+			instance: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -151,7 +151,7 @@ func TestValidTemplateMessage(t *testing.T) {
 		},
 		{
 			name: "complete input, button QUICK_REPLY",
-			instance: TemplateMsgs{
+			instance: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -171,7 +171,7 @@ func TestValidTemplateMessage(t *testing.T) {
 		},
 		{
 			name: "complete input, button URL",
-			instance: TemplateMsgs{
+			instance: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -206,15 +206,15 @@ func TestTemplateConstraints(t *testing.T) {
 	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name     string
-		messages TemplateMsgs
+		messages WATemplateMsgs
 	}{
 		{
 			name:     "empty messages",
-			messages: TemplateMsgs{},
+			messages: WATemplateMsgs{},
 		},
 		{
 			name: "missing Content",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -224,7 +224,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "missing TemplateName",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -240,7 +240,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "invalid TemplateName format",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -257,7 +257,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "invalid TemplateName length",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -274,7 +274,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "missing TemplateData",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -288,7 +288,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "missing TemplateData body",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -303,7 +303,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "invalid Body placeholder",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -320,7 +320,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "missing Header Type",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -338,7 +338,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "invalid Header Type",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -356,7 +356,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "missing Header Placeholder for type TEXT",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -374,7 +374,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "missing Header Filename for type DOCUMENT",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -392,7 +392,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "invalid Header Filename for type DOCUMENT",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -414,7 +414,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "missing Header MediaURL for type DOCUMENT",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -432,7 +432,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "invalid Header MediaURL for type DOCUMENT",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -454,7 +454,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "missing Header MediaURL for type IMAGE",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -472,7 +472,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "missing Header MediaURL for type VIDEO",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -490,7 +490,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "missing Header Latitude for type LOCATION",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -508,7 +508,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "missing Header Longitude for type LOCATION",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -526,7 +526,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "invalid Header Latitude for type LOCATION",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -548,7 +548,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "invalid Header Longitude for type LOCATION",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -570,7 +570,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "invalid Button Type",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -588,7 +588,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "invalid Button Parameter for Type QUICK_REPLY",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -606,7 +606,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "count over max for QUICK_REPLY Buttons",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -629,7 +629,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "count over max for URL Buttons",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -650,7 +650,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "contains both QUICK_REPLY and URL Buttons types",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -671,7 +671,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "missing Content Language",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -687,7 +687,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "missing SMSFailover From",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -705,7 +705,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "invalid SMSFailover From",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -723,7 +723,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "missing SMSFailover Text",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -741,7 +741,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "invalid SMSFailover Text",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,
@@ -759,7 +759,7 @@ func TestTemplateConstraints(t *testing.T) {
 		},
 		{
 			name: "invalid BulkID",
-			messages: TemplateMsgs{
+			messages: WATemplateMsgs{
 				Messages: []TemplateMsg{
 					{
 						MsgCommon: msgCommon,

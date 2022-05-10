@@ -21,7 +21,7 @@ import (
 
 func TestAudioValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.AudioMsg{
+	msg := models.WAAudioMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content:   models.AudioContent{MediaURL: "https://www.mypath.com/whatsappaudio.mp3"},
 	}
@@ -37,7 +37,7 @@ func TestAudioValidReq(t *testing.T) {
 			"description": "Message sent to next instance"
 		}
 	}`)
-	var expectedResp models.MsgResponse
+	var expectedResp models.SendWAMsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
@@ -47,7 +47,7 @@ func TestAudioValidReq(t *testing.T) {
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.AudioMsg
+		var receivedMsg models.WAAudioMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -62,10 +62,10 @@ func TestAudioValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendAudioMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendAudio(context.Background(), msg)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
 	assert.Equal(t, expectedResp, msgResp)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
@@ -73,7 +73,7 @@ func TestAudioValidReq(t *testing.T) {
 }
 
 func TestInvalidAudioMsg(t *testing.T) {
-	msg := models.AudioMsg{
+	msg := models.WAAudioMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content:   models.AudioContent{MediaURL: "hello world"},
 	}
@@ -83,11 +83,11 @@ func TestInvalidAudioMsg(t *testing.T) {
 		APIKey:     "secret",
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendAudioMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendAudio(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
-	assert.Equal(t, models.MsgResponse{}, msgResp)
+	assert.Equal(t, models.SendWAMsgResponse{}, msgResp)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
@@ -137,7 +137,7 @@ func TestAudio4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.AudioMsg{
+	msg := models.WAAudioMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content:   models.AudioContent{MediaURL: "https://www.mypath.com/whatsappaudio.mp3"},
 	}
@@ -158,7 +158,7 @@ func TestAudio4xxErrors(t *testing.T) {
 				APIKey:     "secret",
 			}}
 
-			msgResp, respDetails, err := whatsApp.SendAudioMsg(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.SendAudio(context.Background(), msg)
 			serv.Close()
 
 			require.NoError(t, err)
@@ -166,7 +166,7 @@ func TestAudio4xxErrors(t *testing.T) {
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
-			assert.Equal(t, models.MsgResponse{}, msgResp)
+			assert.Equal(t, models.SendWAMsgResponse{}, msgResp)
 		})
 	}
 }

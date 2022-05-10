@@ -20,7 +20,7 @@ func TestTemplateMessagesExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
-	message := models.TemplateMsgs{
+	message := models.WATemplateMsgs{
 		Messages: []models.TemplateMsg{
 			{
 				MsgCommon: models.MsgCommon{From: "111111111111 ", To: "222222222222"},
@@ -45,12 +45,12 @@ func TestTemplateMessagesExample(t *testing.T) {
 		},
 	}
 
-	resp, respDetails, err := client.WhatsApp.SendTemplateMsgs(context.Background(), message)
+	resp, respDetails, err := client.WhatsApp.SendTemplate(context.Background(), message)
 	fmt.Printf("%+v\n", resp)
 
 	require.NoError(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.BulkMsgResponse{}, resp)
+	assert.NotEqual(t, models.BulkWAMsgResponse{}, resp)
 }
 
 func TestSendTextExample(t *testing.T) {
@@ -58,7 +58,7 @@ func TestSendTextExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
-	message := models.TextMsg{
+	message := models.WATextMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
@@ -66,12 +66,12 @@ func TestSendTextExample(t *testing.T) {
 		Content: models.TextContent{Text: "This message was sent from the Infobip API using the Go API client."},
 	}
 
-	msgResp, respDetails, err := client.WhatsApp.SendTextMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendText(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.NoError(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
 }
 
 func TestSendDocumentExample(t *testing.T) {
@@ -79,7 +79,7 @@ func TestSendDocumentExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
-	message := models.DocumentMsg{
+	message := models.WADocumentMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
@@ -87,12 +87,12 @@ func TestSendDocumentExample(t *testing.T) {
 		Content: models.DocumentContent{MediaURL: "https://myurl.com/doc1.doc"},
 	}
 
-	msgResp, respDetails, err := client.WhatsApp.SendDocumentMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendDocument(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.NoError(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
 }
 
 func TestSendImageExample(t *testing.T) {
@@ -100,7 +100,7 @@ func TestSendImageExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
-	message := models.ImageMsg{
+	message := models.WAImageMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
@@ -110,12 +110,12 @@ func TestSendImageExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := client.WhatsApp.SendImageMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendImage(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.NoError(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
 }
 
 func TestAudioExample(t *testing.T) {
@@ -123,7 +123,7 @@ func TestAudioExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
-	message := models.AudioMsg{
+	message := models.WAAudioMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
@@ -131,12 +131,12 @@ func TestAudioExample(t *testing.T) {
 		Content: models.AudioContent{MediaURL: "https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.aac"},
 	}
 
-	msgResp, respDetails, err := client.WhatsApp.SendAudioMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendAudio(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.NoError(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
 }
 
 func TestVideoExample(t *testing.T) {
@@ -144,7 +144,7 @@ func TestVideoExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
-	message := models.VideoMsg{
+	message := models.WAVideoMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
@@ -152,12 +152,12 @@ func TestVideoExample(t *testing.T) {
 		Content: models.VideoContent{MediaURL: "https://download.samplelib.com/mp4/sample-5s.mp4"},
 	}
 
-	msgResp, respDetails, err := client.WhatsApp.SendVideoMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendVideo(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.NoError(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
 }
 
 func TestStickerExample(t *testing.T) {
@@ -165,7 +165,7 @@ func TestStickerExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
-	message := models.StickerMsg{
+	message := models.WAStickerMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
@@ -173,12 +173,12 @@ func TestStickerExample(t *testing.T) {
 		Content: models.StickerContent{MediaURL: "https://myurl.com/sticker.webp"},
 	}
 
-	msgResp, respDetails, err := client.WhatsApp.SendStickerMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendSticker(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.NoError(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
 }
 
 func TestLocationExample(t *testing.T) {
@@ -186,7 +186,7 @@ func TestLocationExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
-	message := models.LocationMsg{
+	message := models.WALocationMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
@@ -199,12 +199,12 @@ func TestLocationExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := client.WhatsApp.SendLocationMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendLocation(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.NoError(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
 }
 
 func TestContactExample(t *testing.T) {
@@ -212,7 +212,7 @@ func TestContactExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
-	message := models.ContactMsg{
+	message := models.WAContactMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
@@ -222,12 +222,12 @@ func TestContactExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := client.WhatsApp.SendContactMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendContact(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.NoError(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
 }
 
 func TestInteractiveButtonsExample(t *testing.T) {
@@ -235,7 +235,7 @@ func TestInteractiveButtonsExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
-	message := models.InteractiveButtonsMsg{
+	message := models.WAInteractiveButtonsMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
@@ -255,12 +255,12 @@ func TestInteractiveButtonsExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := client.WhatsApp.SendInteractiveButtonsMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendInteractiveButtons(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.NoError(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
 }
 
 func TestInteractiveListExample(t *testing.T) {
@@ -268,7 +268,7 @@ func TestInteractiveListExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
-	message := models.InteractiveListMsg{
+	message := models.WAInteractiveListMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
@@ -290,12 +290,12 @@ func TestInteractiveListExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := client.WhatsApp.SendInteractiveListMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendInteractiveList(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.NoError(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
 }
 
 func TestInteractiveProductExample(t *testing.T) {
@@ -303,7 +303,7 @@ func TestInteractiveProductExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
-	message := models.InteractiveProductMsg{
+	message := models.WAInteractiveProductMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
@@ -316,12 +316,12 @@ func TestInteractiveProductExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := client.WhatsApp.SendInteractiveProductMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendInteractiveProduct(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.NoError(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
 }
 
 func TestInteractiveMultiproductExample(t *testing.T) {
@@ -329,7 +329,7 @@ func TestInteractiveMultiproductExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
-	message := models.InteractiveMultiproductMsg{
+	message := models.WAInteractiveMultiproductMsg{
 		MsgCommon: models.MsgCommon{
 			From: "111111111111",
 			To:   "222222222222",
@@ -346,12 +346,12 @@ func TestInteractiveMultiproductExample(t *testing.T) {
 		},
 	}
 
-	msgResp, respDetails, err := client.WhatsApp.SendInteractiveMultiproductMsg(context.Background(), message)
+	msgResp, respDetails, err := client.WhatsApp.SendInteractiveMultiproduct(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.NoError(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
 }
 
 func TestGetTemplatesExample(t *testing.T) {
@@ -365,8 +365,8 @@ func TestGetTemplatesExample(t *testing.T) {
 	fmt.Printf("%+v\n", msgResp)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.TemplatesResponse{}, respDetails)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.GetWATemplatesResponse{}, respDetails)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
 }
 
 func TestCreateTemplateExample(t *testing.T) {
@@ -390,6 +390,6 @@ func TestCreateTemplateExample(t *testing.T) {
 	fmt.Printf("%+v\n", msgResp)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.TemplateResponse{}, respDetails)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.CreateWATemplateResponse{}, respDetails)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
 }

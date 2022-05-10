@@ -68,7 +68,7 @@ func GenerateSMSMsg() SMSMsg {
 		Flash:              false,
 		From:               "Someone",
 		IntermediateReport: false,
-		Language: Language{
+		Language: &Language{
 			LanguageCode: "EN",
 		},
 		NotifyContentType: "application/json",

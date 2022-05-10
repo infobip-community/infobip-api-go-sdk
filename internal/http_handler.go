@@ -166,7 +166,7 @@ func (h *HTTPHandler) postRequest(
 	} else {
 		_ = json.Unmarshal(parsedBody, &respDetails.ErrorResponse)
 		// MMS 4xx/5xx responses use the same response as 2xx responses
-		if _, ok := respResource.(*models.MMSResponse); ok {
+		if _, ok := respResource.(*models.SendMMSResponse); ok {
 			_ = json.Unmarshal(parsedBody, &respResource)
 		}
 	}

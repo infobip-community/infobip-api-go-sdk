@@ -8,7 +8,7 @@ import (
 
 func TestValidUpdateScheduledMessagesStatusParams(t *testing.T) {
 	t.Run("ValidUpdateScheduledMessagesStatusParams", func(t *testing.T) {
-		test := UpdateScheduledMessagesStatusParams{
+		test := UpdateScheduledEmailMessagesStatusParams{
 			BulkID: "some-bulk-id",
 		}
 		err := test.Validate()
@@ -18,7 +18,7 @@ func TestValidUpdateScheduledMessagesStatusParams(t *testing.T) {
 
 func TestInvalidUpdateScheduledMessagesStatusParams(t *testing.T) {
 	t.Run("InvalidUpdateScheduledMessagesStatusParams", func(t *testing.T) {
-		test := UpdateScheduledMessagesStatusParams{}
+		test := UpdateScheduledEmailMessagesStatusParams{}
 		err := test.Validate()
 		require.Error(t, err)
 	})

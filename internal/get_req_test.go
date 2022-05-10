@@ -83,10 +83,10 @@ func TestGetReqErr(t *testing.T) {
 	defer serv.Close()
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: "nonexistent"}
-	respResource := models.MsgResponse{}
+	respResource := models.SendWAMsgResponse{}
 	respDetails, err := handler.GetRequest(context.Background(), &respResource, "some/path", nil)
 
 	require.NotNil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.Equal(t, models.MsgResponse{}, models.MsgResponse{})
+	assert.Equal(t, models.SendWAMsgResponse{}, models.SendWAMsgResponse{})
 }

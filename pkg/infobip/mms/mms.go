@@ -11,33 +11,35 @@ import (
 // MMS provides methods to interact with the Infobip MMS API.
 // MMS API docs: https://www.infobip.com/docs/api#channels/mms
 type MMS interface {
-	SendMsg(context.Context, models.MMSMsg) (models.MMSResponse, models.ResponseDetails, error)
-	GetOutboundMsgDeliveryReports(ctx context.Context, queryParams models.OutboundMMSDeliveryReportsParams) (
-		models.OutboundMMSDeliveryReportsResponse, models.ResponseDetails, error)
-	GetInboundMsgs(ctx context.Context, queryParams models.InboundMMSParams) (
-		models.InboundMMSResponse, models.ResponseDetails, error)
+	Send(context.Context, models.MMSMsg) (models.SendMMSResponse, models.ResponseDetails, error)
+	GetDeliveryReports(ctx context.Context, queryParams models.GetMMSDeliveryReportsParams) (
+		models.GetOutboundMMSDeliveryReportsResponse, models.ResponseDetails, error)
+	GetInboundMessages(ctx context.Context, queryParams models.GetInboundMMSParams) (
+		models.GetInboundMMSResponse, models.ResponseDetails, error)
 }
 
 type Channel struct {
 	ReqHandler internal.HTTPHandler
 }
 
-const sendMessagePath = "/mms/1/single"
-const getOutboundMMSDeliveryReportsPath = "/mms/1/reports"
-const getInboundMMSPath = "/mms/1/inbox/reports"
+const (
+	sendMessagePath                   = "/mms/1/single"
+	getOutboundMMSDeliveryReportsPath = "/mms/1/reports"
+	getInboundMMSPath                 = "/mms/1/inbox/reports"
+)
 
-func (mms *Channel) SendMsg(
+func (mms *Channel) Send(
 	ctx context.Context,
 	msg models.MMSMsg,
-) (msgResp models.MMSResponse, respDetails models.ResponseDetails, err error) {
+) (msgResp models.SendMMSResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = mms.ReqHandler.PostMultipartReq(ctx, &msg, &msgResp, sendMessagePath)
 	return msgResp, respDetails, err
 }
 
-func (mms *Channel) GetOutboundMsgDeliveryReports(
+func (mms *Channel) GetDeliveryReports(
 	ctx context.Context,
-	queryParams models.OutboundMMSDeliveryReportsParams,
-) (msgResp models.OutboundMMSDeliveryReportsResponse, respDetails models.ResponseDetails, err error) {
+	queryParams models.GetMMSDeliveryReportsParams,
+) (msgResp models.GetOutboundMMSDeliveryReportsResponse, respDetails models.ResponseDetails, err error) {
 	params := []internal.QueryParameter{
 		{Name: "bulkId", Value: queryParams.BulkID},
 		{Name: "messageId", Value: queryParams.MessageID},
@@ -50,11 +52,11 @@ func (mms *Channel) GetOutboundMsgDeliveryReports(
 	return msgResp, respDetails, err
 }
 
-func (mms *Channel) GetInboundMsgs(
+func (mms *Channel) GetInboundMessages(
 	ctx context.Context,
-	queryParams models.InboundMMSParams,
-) (msgResp models.InboundMMSResponse, respDetails models.ResponseDetails, err error) {
-	params := []internal.QueryParameter{}
+	queryParams models.GetInboundMMSParams,
+) (msgResp models.GetInboundMMSResponse, respDetails models.ResponseDetails, err error) {
+	var params []internal.QueryParameter
 	if queryParams.Limit > 0 {
 		params = append(params, internal.QueryParameter{Name: "limit", Value: fmt.Sprint(queryParams.Limit)})
 	}

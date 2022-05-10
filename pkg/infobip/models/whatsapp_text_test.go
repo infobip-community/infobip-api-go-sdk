@@ -10,10 +10,10 @@ import (
 func TestValidTextMessage(t *testing.T) {
 	tests := []struct {
 		name     string
-		instance TextMsg
+		instance WATextMsg
 	}{
 		{name: "minimum input",
-			instance: TextMsg{
+			instance: WATextMsg{
 				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
@@ -22,7 +22,7 @@ func TestValidTextMessage(t *testing.T) {
 			}},
 		{
 			name: "complete input",
-			instance: TextMsg{
+			instance: WATextMsg{
 				MsgCommon: GenerateTestMsgCommon(),
 				Content: TextContent{
 					Text:       "hello world, here's the link: https://www.google.com",
@@ -66,7 +66,7 @@ func TestTextMessageConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := TextMsg{
+			msg := WATextMsg{
 				MsgCommon: msgCommon,
 				Content:   tc.content,
 			}

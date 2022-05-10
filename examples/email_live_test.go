@@ -88,7 +88,7 @@ func TestGetLogs(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.GetLogsParams{
+	queryParams := models.GetEmailLogsParams{
 		MessageID:     "",
 		From:          "",
 		To:            "",
@@ -115,7 +115,7 @@ func TestGetSentBulks(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.GetSentBulksParams{
+	queryParams := models.GetSentEmailBulksParams{
 		BulkID: "test-bulk-78",
 	}
 
@@ -135,7 +135,7 @@ func TestGetSentBulksStatus(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.GetSentBulksStatusParams{
+	queryParams := models.GetSentEmailBulksStatusParams{
 		BulkID: "test-bulk-78",
 	}
 
@@ -155,11 +155,11 @@ func TestRescheduleMessages(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.RescheduleMessagesParams{
+	queryParams := models.RescheduleEmailMessagesParams{
 		BulkID: "test-bulk-78",
 	}
 
-	req := models.RescheduleMessagesRequest{
+	req := models.RescheduleEmailMessagesRequest{
 		SendAt: "2022-04-13T17:56:07Z",
 	}
 
@@ -179,11 +179,11 @@ func TestUpdateScheduledMessagesStatus(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.UpdateScheduledMessagesStatusParams{
+	queryParams := models.UpdateScheduledEmailMessagesStatusParams{
 		BulkID: "test-bulk-78",
 	}
 
-	req := models.UpdateScheduledMessagesStatusRequest{
+	req := models.UpdateScheduledEmailMessagesStatusRequest{
 		Status: "CANCELED",
 	}
 
@@ -203,7 +203,7 @@ func TestValidateAddresses(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	req := models.ValidateAddressesRequest{
+	req := models.ValidateEmailAddressesRequest{
 		To: "somemail@domain.com",
 	}
 
@@ -214,7 +214,7 @@ func TestValidateAddresses(t *testing.T) {
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEqual(t, models.ValidateAddressesResponse{}, validateResp)
+	assert.NotEqual(t, models.ValidateEmailAddressesResponse{}, validateResp)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }

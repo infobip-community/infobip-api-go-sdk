@@ -50,19 +50,19 @@ func TestGetOutboundMsgDeliveryReportsValidReq(t *testing.T) {
 			}
 		]	
 	}`)
-	var expectedResp models.OutboundMMSDeliveryReportsResponse
+	var expectedResp models.GetOutboundMMSDeliveryReportsResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
 	tests := []struct {
 		scenario       string
-		params         models.OutboundMMSDeliveryReportsParams
+		params         models.GetMMSDeliveryReportsParams
 		expectedParams string
 	}{
-		{scenario: "No params passed", params: models.OutboundMMSDeliveryReportsParams{}, expectedParams: ""},
+		{scenario: "No params passed", params: models.GetMMSDeliveryReportsParams{}, expectedParams: ""},
 		{
 			scenario: "Params passed",
-			params: models.OutboundMMSDeliveryReportsParams{
+			params: models.GetMMSDeliveryReportsParams{
 				BulkID:    "1",
 				MessageID: "2",
 				Limit:     3,
@@ -88,15 +88,15 @@ func TestGetOutboundMsgDeliveryReportsValidReq(t *testing.T) {
 				APIKey:     apiKey,
 			}}
 
-			var msgResp models.OutboundMMSDeliveryReportsResponse
+			var msgResp models.GetOutboundMMSDeliveryReportsResponse
 			var respDetails models.ResponseDetails
-			msgResp, respDetails, err = mms.GetOutboundMsgDeliveryReports(
+			msgResp, respDetails, err = mms.GetDeliveryReports(
 				context.Background(),
 				tc.params,
 			)
 
 			require.NoError(t, err)
-			assert.NotEqual(t, models.OutboundMMSDeliveryReportsResponse{}, msgResp)
+			assert.NotEqual(t, models.GetOutboundMMSDeliveryReportsResponse{}, msgResp)
 			assert.Equal(t, expectedResp, msgResp)
 			assert.NotNil(t, respDetails)
 			assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)

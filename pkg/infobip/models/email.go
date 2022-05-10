@@ -331,7 +331,7 @@ type EmailLogsResponse struct {
 	} `json:"results"`
 }
 
-type GetLogsParams struct {
+type GetEmailLogsParams struct {
 	MessageID     string
 	From          string
 	To            string
@@ -342,7 +342,7 @@ type GetLogsParams struct {
 	Limit         int
 }
 
-func (o *GetLogsParams) Validate() error {
+func (o *GetEmailLogsParams) Validate() error {
 	return validate.Struct(o)
 }
 
@@ -354,11 +354,11 @@ type SentEmailBulksResponse struct {
 	} `json:"bulks"`
 }
 
-type GetSentBulksParams struct {
+type GetSentEmailBulksParams struct {
 	BulkID string `validate:"required"`
 }
 
-func (o *GetSentBulksParams) Validate() error {
+func (o *GetSentEmailBulksParams) Validate() error {
 	return validate.Struct(o)
 }
 
@@ -370,43 +370,43 @@ type SentEmailBulksStatusResponse struct {
 	} `json:"bulks"`
 }
 
-type GetSentBulksStatusParams struct {
+type GetSentEmailBulksStatusParams struct {
 	BulkID string `validate:"required"`
 }
 
-func (o *GetSentBulksStatusParams) Validate() error {
+func (o *GetSentEmailBulksStatusParams) Validate() error {
 	return validate.Struct(o)
 }
 
-type RescheduleMessagesRequest struct {
+type RescheduleEmailMessagesRequest struct {
 	SendAt string `json:"sendAt"`
 }
 
-type RescheduleMessagesParams struct {
+type RescheduleEmailMessagesParams struct {
 	BulkID string `validate:"required"`
 }
 
-func (o *RescheduleMessagesParams) Validate() error {
+func (o *RescheduleEmailMessagesParams) Validate() error {
 	return validate.Struct(o)
 }
 
-type UpdateScheduledMessagesStatusRequest struct {
+type UpdateScheduledEmailMessagesStatusRequest struct {
 	Status string `json:"status" validate:"required,oneof=PENDING PAUSED PROCESSING CANCELED FINISHED FAILED"`
 }
 
-type UpdateScheduledMessagesStatusParams struct {
+type UpdateScheduledEmailMessagesStatusParams struct {
 	BulkID string `validate:"required"`
 }
 
-func (o *UpdateScheduledMessagesStatusParams) Validate() error {
+func (o *UpdateScheduledEmailMessagesStatusParams) Validate() error {
 	return validate.Struct(o)
 }
 
-func (r *UpdateScheduledMessagesStatusRequest) Validate() error {
+func (r *UpdateScheduledEmailMessagesStatusRequest) Validate() error {
 	return validate.Struct(r)
 }
 
-func (r *UpdateScheduledMessagesStatusRequest) Marshal() (*bytes.Buffer, error) {
+func (r *UpdateScheduledEmailMessagesStatusRequest) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(r)
 }
 
@@ -415,11 +415,11 @@ type UpdateScheduledMessagesStatusResponse struct {
 	Status string `json:"status"`
 }
 
-func (r *RescheduleMessagesRequest) Validate() error {
+func (r *RescheduleEmailMessagesRequest) Validate() error {
 	return validate.Struct(r)
 }
 
-func (r *RescheduleMessagesRequest) Marshal() (*bytes.Buffer, error) {
+func (r *RescheduleEmailMessagesRequest) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(r)
 }
 
@@ -432,19 +432,19 @@ func (e *EmailMsg) Validate() error {
 	return validate.Struct(e)
 }
 
-type ValidateAddressesRequest struct {
+type ValidateEmailAddressesRequest struct {
 	To string `json:"to"`
 }
 
-func (v *ValidateAddressesRequest) Validate() error {
+func (v *ValidateEmailAddressesRequest) Validate() error {
 	return validate.Struct(v)
 }
 
-func (v *ValidateAddressesRequest) Marshal() (*bytes.Buffer, error) {
+func (v *ValidateEmailAddressesRequest) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(v)
 }
 
-type ValidateAddressesResponse struct {
+type ValidateEmailAddressesResponse struct {
 	To           string `json:"to"`
 	ValidMailbox string `json:"validMailbox"`
 	ValidSyntax  bool   `json:"validSyntax"`

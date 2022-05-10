@@ -21,7 +21,7 @@ import (
 
 func TestInteractiveMultiproductValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.InteractiveMultiproductMsg{
+	msg := models.WAInteractiveMultiproductMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content: models.InteractiveMultiproductContent{
 			Header: models.InteractiveMultiproductHeader{Type: "TEXT", Text: "Header"},
@@ -46,7 +46,7 @@ func TestInteractiveMultiproductValidReq(t *testing.T) {
 			"description": "Message sent to next instance"
 		}
 	}`)
-	var expectedResp models.MsgResponse
+	var expectedResp models.SendWAMsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
@@ -56,7 +56,7 @@ func TestInteractiveMultiproductValidReq(t *testing.T) {
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.InteractiveMultiproductMsg
+		var receivedMsg models.WAInteractiveMultiproductMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -71,10 +71,10 @@ func TestInteractiveMultiproductValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendInteractiveMultiproductMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendInteractiveMultiproduct(context.Background(), msg)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
 	assert.Equal(t, expectedResp, msgResp)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
@@ -82,7 +82,7 @@ func TestInteractiveMultiproductValidReq(t *testing.T) {
 }
 
 func TestInvalidInteractiveMultiproductMsg(t *testing.T) {
-	msg := models.InteractiveMultiproductMsg{
+	msg := models.WAInteractiveMultiproductMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content: models.InteractiveMultiproductContent{
 			Header: models.InteractiveMultiproductHeader{Type: "invalid", Text: "Header"},
@@ -101,11 +101,11 @@ func TestInvalidInteractiveMultiproductMsg(t *testing.T) {
 		APIKey:     "secret",
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendInteractiveMultiproductMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendInteractiveMultiproduct(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
-	assert.Equal(t, models.MsgResponse{}, msgResp)
+	assert.Equal(t, models.SendWAMsgResponse{}, msgResp)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
@@ -154,7 +154,7 @@ func TestInteractiveMultiproduct4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.InteractiveMultiproductMsg{
+	msg := models.WAInteractiveMultiproductMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content: models.InteractiveMultiproductContent{
 			Header: models.InteractiveMultiproductHeader{Type: "TEXT", Text: "Header"},
@@ -184,7 +184,7 @@ func TestInteractiveMultiproduct4xxErrors(t *testing.T) {
 				APIKey:     "secret",
 			}}
 
-			msgResp, respDetails, err := whatsApp.SendInteractiveMultiproductMsg(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.SendInteractiveMultiproduct(context.Background(), msg)
 			serv.Close()
 
 			require.NoError(t, err)
@@ -192,7 +192,7 @@ func TestInteractiveMultiproduct4xxErrors(t *testing.T) {
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
-			assert.Equal(t, models.MsgResponse{}, msgResp)
+			assert.Equal(t, models.SendWAMsgResponse{}, msgResp)
 		})
 	}
 }

@@ -45,10 +45,10 @@ func TestUpdateScheduledMessagesStatusValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	req := models.UpdateScheduledMessagesStatusRequest{
+	req := models.UpdateScheduledEmailMessagesStatusRequest{
 		Status: "CANCELED",
 	}
-	queryParams := models.UpdateScheduledMessagesStatusParams{}
+	queryParams := models.UpdateScheduledEmailMessagesStatusParams{}
 
 	resp, respDetails, err := email.UpdateScheduledMessagesStatus(context.Background(), req, queryParams)
 

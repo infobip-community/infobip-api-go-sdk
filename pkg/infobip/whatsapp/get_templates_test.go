@@ -40,7 +40,7 @@ func TestGetTemplatesValidReq(t *testing.T) {
 			}
 		]
 	}`)
-	var expectedResp models.TemplatesResponse
+	var expectedResp models.GetWATemplatesResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
@@ -63,7 +63,7 @@ func TestGetTemplatesValidReq(t *testing.T) {
 	messageResponse, respDetails, err := whatsApp.GetTemplates(context.Background(), sender)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.TemplatesResponse{}, messageResponse)
+	assert.NotEqual(t, models.GetWATemplatesResponse{}, messageResponse)
 	assert.Equal(t, expectedResp, messageResponse)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
@@ -123,7 +123,7 @@ func TestGetTemplates4xxErrors(t *testing.T) {
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
-			assert.Equal(t, models.TemplatesResponse{}, messageResponse)
+			assert.Equal(t, models.GetWATemplatesResponse{}, messageResponse)
 		})
 	}
 }

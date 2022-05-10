@@ -54,7 +54,7 @@ func TestSendMessageValidReq(t *testing.T) {
 	require.NoError(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendSmsPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, sendSMSPath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
@@ -77,7 +77,7 @@ func TestSendMessageValidReq(t *testing.T) {
 	msgResp, respDetails, err := sms.Send(context.Background(), request)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
 	assert.Equal(t, expectedResp, msgResp)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)

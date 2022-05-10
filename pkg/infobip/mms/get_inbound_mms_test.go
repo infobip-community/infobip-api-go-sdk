@@ -34,19 +34,19 @@ func TestGetInboundMMSValidReq(t *testing.T) {
 			}
 		]
 	}`)
-	var expectedResp models.InboundMMSResponse
+	var expectedResp models.GetInboundMMSResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
 	tests := []struct {
 		scenario       string
-		params         models.InboundMMSParams
+		params         models.GetInboundMMSParams
 		expectedParams string
 	}{
-		{scenario: "No params passed", params: models.InboundMMSParams{}, expectedParams: ""},
+		{scenario: "No params passed", params: models.GetInboundMMSParams{}, expectedParams: ""},
 		{
 			scenario: "Params passed",
-			params: models.InboundMMSParams{
+			params: models.GetInboundMMSParams{
 				Limit: 1,
 			},
 			expectedParams: "limit=1",
@@ -70,15 +70,15 @@ func TestGetInboundMMSValidReq(t *testing.T) {
 				APIKey:     apiKey,
 			}}
 
-			var msgResp models.InboundMMSResponse
+			var msgResp models.GetInboundMMSResponse
 			var respDetails models.ResponseDetails
-			msgResp, respDetails, err = mms.GetInboundMsgs(
+			msgResp, respDetails, err = mms.GetInboundMessages(
 				context.Background(),
 				tc.params,
 			)
 
 			require.NoError(t, err)
-			assert.NotEqual(t, models.InboundMMSResponse{}, msgResp)
+			assert.NotEqual(t, models.GetInboundMMSResponse{}, msgResp)
 			assert.Equal(t, expectedResp, msgResp)
 			assert.NotNil(t, respDetails)
 			assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)

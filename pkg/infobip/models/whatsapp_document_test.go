@@ -11,10 +11,10 @@ import (
 func TestValidDocumentMessage(t *testing.T) {
 	tests := []struct {
 		name     string
-		instance DocumentMsg
+		instance WADocumentMsg
 	}{
 		{name: "minimum input",
-			instance: DocumentMsg{
+			instance: WADocumentMsg{
 				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
@@ -23,7 +23,7 @@ func TestValidDocumentMessage(t *testing.T) {
 			}},
 		{
 			name: "complete input",
-			instance: DocumentMsg{
+			instance: WADocumentMsg{
 				MsgCommon: GenerateTestMsgCommon(),
 				Content: DocumentContent{
 					MediaURL: "https://www.mypath.com/my_doc.txt",
@@ -82,7 +82,7 @@ func TestDocumentMessageConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := DocumentMsg{
+			msg := WADocumentMsg{
 				MsgCommon: msgCommon,
 				Content:   tc.content,
 			}

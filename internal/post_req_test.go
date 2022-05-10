@@ -17,7 +17,7 @@ import (
 )
 
 func TestPostReqOK(t *testing.T) {
-	msg := models.TextMsg{
+	msg := models.WATextMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content:   models.TextContent{Text: "hello world"},
 	}
@@ -33,7 +33,7 @@ func TestPostReqOK(t *testing.T) {
 			"description": "Message sent to next instance"
 		}
 	}`)
-	var expectedResp models.MsgResponse
+	var expectedResp models.SendWAMsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
@@ -42,7 +42,7 @@ func TestPostReqOK(t *testing.T) {
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.TextMsg
+		var receivedMsg models.WATextMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -54,11 +54,11 @@ func TestPostReqOK(t *testing.T) {
 	defer serv.Close()
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
-	respResource := models.MsgResponse{}
+	respResource := models.SendWAMsgResponse{}
 	respDetails, err := handler.PostJSONReq(context.Background(), &msg, &respResource, "some/path")
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.MsgResponse{}, respResource)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, respResource)
 	assert.Equal(t, expectedResp, respResource)
 	require.NoError(t, err)
 	assert.NotNil(t, respDetails)
@@ -67,7 +67,7 @@ func TestPostReqOK(t *testing.T) {
 }
 
 func TestPostReq4xx(t *testing.T) {
-	msg := models.TextMsg{
+	msg := models.WATextMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content:   models.TextContent{Text: "hello world"},
 	}
@@ -91,7 +91,7 @@ func TestPostReq4xx(t *testing.T) {
 	defer serv.Close()
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
-	respResource := models.MsgResponse{}
+	respResource := models.SendWAMsgResponse{}
 	respDetails, err := handler.PostJSONReq(context.Background(), &msg, &respResource, "some/path")
 
 	require.NoError(t, err)
@@ -99,7 +99,7 @@ func TestPostReq4xx(t *testing.T) {
 	assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 	assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 	assert.Equal(t, http.StatusUnauthorized, respDetails.HTTPResponse.StatusCode)
-	assert.Equal(t, models.MsgResponse{}, respResource)
+	assert.Equal(t, models.SendWAMsgResponse{}, respResource)
 }
 
 func TestPostReqErr(t *testing.T) {
@@ -108,19 +108,19 @@ func TestPostReqErr(t *testing.T) {
 	defer serv.Close()
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: "nonexistent"}
-	msg := models.TextMsg{
+	msg := models.WATextMsg{
 		MsgCommon: models.MsgCommon{
 			From: "+16175551213",
 			To:   "+16175551212",
 		},
 		Content: models.TextContent{Text: "hello world"},
 	}
-	respResource := models.MsgResponse{}
+	respResource := models.SendWAMsgResponse{}
 	respDetails, err := handler.PostJSONReq(context.Background(), &msg, &respResource, "some/path")
 
 	require.NotNil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.Equal(t, models.MsgResponse{}, models.MsgResponse{})
+	assert.Equal(t, models.SendWAMsgResponse{}, models.SendWAMsgResponse{})
 }
 
 type InvaliTestdMsg struct {
@@ -146,10 +146,10 @@ func TestPostInvalidPayload(t *testing.T) {
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
 	msg := InvaliTestdMsg{FloatField: math.Inf(1)}
-	respResource := models.MsgResponse{}
+	respResource := models.SendWAMsgResponse{}
 	respDetails, err := handler.PostJSONReq(context.Background(), &msg, &respResource, "some/path")
 
 	require.NotNil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.Equal(t, models.MsgResponse{}, models.MsgResponse{})
+	assert.Equal(t, models.SendWAMsgResponse{}, models.SendWAMsgResponse{})
 }
