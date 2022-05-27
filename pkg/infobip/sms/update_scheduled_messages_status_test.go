@@ -1,4 +1,4 @@
-package email
+package sms
 
 import (
 	"context"
@@ -16,22 +16,22 @@ import (
 )
 
 func TestUpdateScheduledMessagesStatusValidReq(t *testing.T) {
-	apiKey := "apiKey"
 	rawJSONResp := []byte(`
 		{
-			"bulkId": "test-bulk-525",
-			"status": "CANCELED"
+			"bulkId": "test-bulk-73",
+			"status": "PAUSED"
 		}
 	`)
 
-	var expectedResp models.UpdateScheduledStatusResponse
+	var expectedResp models.UpdateScheduledSMSStatusResponse
 
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
+	apiKey := "some-api-key"
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		require.Equal(t, http.MethodPut, r.Method)
-		assert.True(t, strings.HasSuffix(r.URL.Path, updateScheduledMessagesStatusPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, updateScheduledSMSStatusPath))
 		assert.Equal(t, fmt.Sprint("App ", apiKey), r.Header.Get("Authorization"))
 
 		_, servErr := w.Write(rawJSONResp)
@@ -39,21 +39,21 @@ func TestUpdateScheduledMessagesStatusValidReq(t *testing.T) {
 	}))
 	defer serv.Close()
 
-	email := Channel{ReqHandler: internal.HTTPHandler{
+	sms := Channel{ReqHandler: internal.HTTPHandler{
 		HTTPClient: http.Client{},
 		BaseURL:    serv.URL,
 		APIKey:     apiKey,
 	}}
 
-	req := models.UpdateScheduledEmailStatusRequest{
+	req := models.UpdateScheduledSMSStatusRequest{
 		Status: "CANCELED",
 	}
-	queryParams := models.UpdateScheduledEmailStatusParams{}
+	queryParams := models.UpdateScheduledSMSStatusParams{}
 
-	resp, respDetails, err := email.UpdateScheduledMessagesStatus(context.Background(), req, queryParams)
+	resp, respDetails, err := sms.UpdateScheduledMessagesStatus(context.Background(), req, queryParams)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.UpdateScheduledStatusResponse{}, resp)
+	assert.NotEqual(t, models.UpdateScheduledSMSStatusResponse{}, resp)
 	assert.Equal(t, expectedResp, resp)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)

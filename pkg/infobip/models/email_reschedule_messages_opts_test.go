@@ -8,7 +8,7 @@ import (
 
 func TestValidRescheduleMessagesParams(t *testing.T) {
 	t.Run("ValidRescheduleMessagesParams", func(t *testing.T) {
-		test := RescheduleEmailMessagesParams{
+		test := RescheduleEmailParams{
 			BulkID: "some-bulk-id",
 		}
 		err := test.Validate()
@@ -18,7 +18,7 @@ func TestValidRescheduleMessagesParams(t *testing.T) {
 
 func TestInvalidRescheduleMessagesParams(t *testing.T) {
 	t.Run("InvalidRescheduleMessagesParams", func(t *testing.T) {
-		test := RescheduleEmailMessagesParams{}
+		test := RescheduleEmailParams{}
 		err := test.Validate()
 		require.Error(t, err)
 	})

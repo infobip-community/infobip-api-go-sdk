@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"io/ioutil"
@@ -123,29 +122,13 @@ func TestPostReqErr(t *testing.T) {
 	assert.Equal(t, models.SendWAMsgResponse{}, models.SendWAMsgResponse{})
 }
 
-type InvaliTestdMsg struct {
-	FloatField float64 `json:"floatField"`
-}
-
-func (t *InvaliTestdMsg) Validate() error {
-	return nil
-}
-
-func (t *InvaliTestdMsg) Marshal() (*bytes.Buffer, error) {
-	payload, err := json.Marshal(t)
-	if err != nil {
-		return nil, err
-	}
-	return bytes.NewBuffer(payload), nil
-}
-
 func TestPostInvalidPayload(t *testing.T) {
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	}))
 	defer serv.Close()
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
-	msg := InvaliTestdMsg{FloatField: math.Inf(1)}
+	msg := InvalidTestMsg{FloatField: math.Inf(1)}
 	respResource := models.SendWAMsgResponse{}
 	respDetails, err := handler.PostJSONReq(context.Background(), &msg, &respResource, "some/path")
 

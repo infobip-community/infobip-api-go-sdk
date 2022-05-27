@@ -9,24 +9,23 @@ import (
 )
 
 const (
-	getDeliveryReportsPath       = "/sms/1/reports"
-	getLogsPath                  = "/sms/1/logs"
-	sendSMSPath                  = "/sms/2/text/advanced"
-	sendBinarySMSPath            = "/sms/2/binary/advanced"
-	sendSMSOverQueryParamsPath   = "/sms/1/text/query"
-	previewSMSPath               = "/sms/1/preview"
-	getInboundSMSPath            = "/sms/1/inbox/reports"
-	getScheduledSMSPath          = "/sms/1/bulks"
-	rescheduleSMSPath            = "/sms/1/bulks"
-	getScheduledSMSStatusPath    = "/sms/1/bulks/status"
-	updateScheduledSMSStatusPath = "/sms/1/bulks/status"
+	getDeliveryReportsPath       = "sms/1/reports"
+	getLogsPath                  = "sms/1/logs"
+	sendSMSPath                  = "sms/2/text/advanced"
+	sendBinarySMSPath            = "sms/2/binary/advanced"
+	sendSMSOverQueryParamsPath   = "sms/1/text/query"
+	previewSMSPath               = "sms/1/preview"
+	getInboundSMSPath            = "sms/1/inbox/reports"
+	getScheduledSMSPath          = "sms/1/bulks"
+	rescheduleSMSPath            = "sms/1/bulks"
+	getScheduledSMSStatusPath    = "sms/1/bulks/status"
+	updateScheduledSMSStatusPath = "sms/1/bulks/status"
 )
 
 // TODO:
-// [ ] Implement validate for all models that have validate strings.
-// [ ] Add query params validate before executing HTTP call.
+// [x] Implement validate for all models that have validate strings.
 // [ ] Check that models have all required fields (especially responses)
-// [ ] Check that naming is consistent for models, and short for methods.
+// [x] Check that naming is consistent for models, and short for methods.
 // [ ] All tests pass
 // [ ] Add tests
 // [ ] Add godoc comments
@@ -141,7 +140,7 @@ func (sms *Channel) SendOverQueryParams(
 		{Name: "flash", Value: fmt.Sprint(queryParams.Flash)},
 		{Name: "transliteration", Value: queryParams.Transliteration},
 		{Name: "languageCode", Value: queryParams.LanguageCode},
-		{Name: "intermediateReport", Value: fmt.Sprint(queryParams.IntermediateReport)}, // TODO: check case of string
+		{Name: "intermediateReport", Value: fmt.Sprint(queryParams.IntermediateReport)},
 		{Name: "notifyUrl", Value: queryParams.NotifyURL},
 		{Name: "notifyContentType", Value: queryParams.NotifyContentType},
 		{Name: "callbackData", Value: queryParams.CallbackData},
@@ -157,7 +156,7 @@ func (sms *Channel) SendOverQueryParams(
 		params = append(params, internal.QueryParameter{Name: "to", Value: to})
 	}
 
-	respDetails, err = sms.ReqHandler.GetRequest(ctx, resp, sendSMSOverQueryParamsPath, params)
+	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, sendSMSOverQueryParamsPath, params)
 
 	return resp, respDetails, err
 }

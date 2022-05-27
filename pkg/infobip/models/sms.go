@@ -4,12 +4,12 @@ import (
 	"bytes"
 )
 
-type Destination struct {
+type SMSDestination struct {
 	MessageID string `json:"messageId"`
 	To        string `json:"to" validate:"required"`
 }
 
-type Language struct {
+type SMSLanguage struct {
 	LanguageCode string `json:"languageCode"`
 }
 
@@ -19,26 +19,26 @@ type SMSTime struct {
 }
 
 type SMSDeliveryTimeWindow struct {
-	Days []string `json:"days" validate:"required"`
+	Days []string `json:"days" validate:"required,min=1"`
 	From SMSTime  `json:"from,omitempty"`
 	To   SMSTime  `json:"to,omitempty"`
 }
 
 type SMSMsg struct {
-	CallbackData           string `json:"callbackData,omitempty"`
-	*SMSDeliveryTimeWindow `json:"deliveryTimeWindow,omitempty"`
-	Destinations           []Destination `json:"destinations"`
-	Flash                  bool          `json:"flash,omitempty"`
-	From                   string        `json:"from"`
-	IntermediateReport     bool          `json:"intermediateReport,omitempty"`
-	*Language              `json:"language,omitempty"`
-	NotifyContentType      string `json:"notifyContentType,omitempty"`
-	NotifyURL              string `json:"notifyUrl,omitempty"`
-	*Regional              `json:"regional,omitempty"`
-	SendAt                 string `json:"sendAt,omitempty"`
-	Text                   string `json:"text"`
-	Transliteration        string `json:"transliteration,omitempty"`
-	ValidityPeriod         int    `json:"validityPeriod,omitempty"`
+	CallbackData       string                 `json:"callbackData,omitempty"`
+	DeliveryTimeWindow *SMSDeliveryTimeWindow `json:"deliveryTimeWindow,omitempty"`
+	Destinations       []SMSDestination       `json:"destinations" validate:"required,min=1"`
+	Flash              bool                   `json:"flash,omitempty"`
+	From               string                 `json:"from"`
+	IntermediateReport bool                   `json:"intermediateReport,omitempty"`
+	Language           *SMSLanguage           `json:"language,omitempty"`
+	NotifyContentType  string                 `json:"notifyContentType,omitempty"`
+	NotifyURL          string                 `json:"notifyUrl,omitempty"`
+	Regional           *SMSRegional           `json:"regional,omitempty"`
+	SendAt             string                 `json:"sendAt,omitempty"`
+	Text               string                 `json:"text"`
+	Transliteration    string                 `json:"transliteration,omitempty"`
+	ValidityPeriod     int                    `json:"validityPeriod,omitempty"`
 }
 
 func (s *SMSMsg) Validate() error {
@@ -49,23 +49,23 @@ func (s *SMSMsg) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(s)
 }
 
-type Tracking struct {
+type SMSTracking struct {
 	BaseURL    string `json:"baseUrl"`
 	Track      string `json:"track"`
 	Type       string `json:"type" validate:"oneof=ONE_TIME_PIN SOCIAL_INVITES"`
 	ProcessKey string `json:"processKey"`
 }
 
-type SendingSpeedLimit struct {
+type SMSSendingSpeedLimit struct {
 	Amount   int    `json:"amount" validate:"required"`
 	TimeUnit string `json:"timeUnit" validate:"oneof=MINUTE HOUR DAY"`
 }
 
 type SendSMSRequest struct {
-	BulkID             string   `json:"bulkId"`
-	Messages           []SMSMsg `json:"messages" validate:"required"`
-	*SendingSpeedLimit `json:"sendingSpeedLimit,omitempty"`
-	*Tracking          `json:"tracking,omitempty"`
+	BulkID            string                `json:"bulkId"`
+	Messages          []SMSMsg              `json:"messages" validate:"required,min=1"`
+	SendingSpeedLimit *SMSSendingSpeedLimit `json:"sendingSpeedLimit,omitempty"`
+	Tracking          *SMSTracking          `json:"tracking,omitempty"`
 }
 
 func (s *SendSMSRequest) Validate() error {
@@ -76,19 +76,26 @@ func (s *SendSMSRequest) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(s)
 }
 
+type SMSStatus struct {
+	Action      string `json:"action"`
+	Description string `json:"description"`
+	GroupID     int    `json:"groupId"`
+	GroupName   string `json:"groupName"`
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+}
+
+type SMSPrice struct {
+	PricePerMessage float64 `json:"pricePerMessage"`
+	Currency        string  `json:"currency"`
+}
+
 type SendSMSResponse struct {
 	BulkID   string `json:"bulkId"`
 	Messages []struct {
-		MessageID string `json:"messageId"`
-		Status    struct {
-			Action      string `json:"action"`
-			Description string `json:"description"`
-			GroupID     int    `json:"groupId"`
-			GroupName   string `json:"groupName"`
-			ID          int    `json:"id"`
-			Name        string `json:"name"`
-		} `json:"status"`
-		To string `json:"to"`
+		MessageID string     `json:"messageId"`
+		Status    *SMSStatus `json:"status"`
+		To        string     `json:"to"`
 	} `json:"messages"`
 }
 
@@ -102,68 +109,46 @@ func (g *GetSMSDeliveryReportsParams) Validate() error {
 	return validate.Struct(g)
 }
 
+type SMSError struct {
+	Description string `json:"description"`
+	GroupID     int    `json:"groupId"`
+	GroupName   string `json:"groupName"`
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Permanent   bool   `json:"permanent"`
+}
+
 type GetSMSDeliveryReportsResponse struct {
 	Results []struct {
-		BulkID    string `json:"bulkId"`
-		MessageID string `json:"messageId"`
-		To        string `json:"to"`
-		From      string `json:"from"`
-		SentAt    string `json:"sentAt"`
-		DoneAt    string `json:"doneAt"`
-		SmsCount  int    `json:"smsCount"`
-		MccMnc    string `json:"mccMnc"`
-		Price     struct {
-			PricePerMessage float64 `json:"pricePerMessage"`
-			Currency        string  `json:"currency"`
-		} `json:"price"`
-		Status struct {
-			GroupID     int    `json:"groupId"`
-			GroupName   string `json:"groupName"`
-			ID          int    `json:"id"`
-			Name        string `json:"name"`
-			Description string `json:"description"`
-		} `json:"status"`
-		Error struct {
-			GroupID     int    `json:"groupId"`
-			GroupName   string `json:"groupName"`
-			ID          int    `json:"id"`
-			Name        string `json:"name"`
-			Description string `json:"description"`
-			Permanent   bool   `json:"permanent"`
-		} `json:"error"`
+		BulkID       string    `json:"bulkId"`
+		CallbackData string    `json:"callbackData"`
+		DoneAt       string    `json:"doneAt"`
+		Error        SMSError  `json:"error"`
+		From         string    `json:"from"`
+		MccMnc       string    `json:"mccMnc"`
+		MessageID    string    `json:"messageId"`
+		Price        SMSPrice  `json:"price"`
+		SentAt       string    `json:"sentAt"`
+		SmsCount     int       `json:"smsCount"`
+		Status       SMSStatus `json:"status"`
+		To           string    `json:"to"`
 	} `json:"results"`
 }
 
 type GetSMSLogsResponse struct {
 	Results []struct {
-		BulkID    string `json:"bulkId"`
-		MessageID string `json:"messageId"`
-		To        string `json:"to"`
-		From      string `json:"from"`
-		Text      string `json:"text"`
-		SentAt    string `json:"sentAt"`
-		DoneAt    string `json:"doneAt"`
-		SmsCount  int    `json:"smsCount"`
-		MccMnc    string `json:"mccMnc"`
-		Price     struct {
-			PricePerMessage float64 `json:"pricePerMessage"`
-			Currency        string  `json:"currency"`
-		} `json:"price"`
-		Status struct {
-			GroupID     int    `json:"groupId"`
-			GroupName   string `json:"groupName"`
-			ID          int    `json:"id"`
-			Name        string `json:"name"`
-			Description string `json:"description"`
-		} `json:"status"`
-		Error struct {
-			GroupID     int    `json:"groupId"`
-			GroupName   string `json:"groupName"`
-			ID          int    `json:"id"`
-			Name        string `json:"name"`
-			Description string `json:"description"`
-			Permanent   bool   `json:"permanent"`
-		} `json:"error"`
+		BulkID    string    `json:"bulkId"`
+		MessageID string    `json:"messageId"`
+		To        string    `json:"to"`
+		From      string    `json:"from"`
+		Text      string    `json:"text"`
+		SentAt    string    `json:"sentAt"`
+		DoneAt    string    `json:"doneAt"`
+		SmsCount  int       `json:"smsCount"`
+		MccMnc    string    `json:"mccMnc"`
+		Price     SMSPrice  `json:"price"`
+		Status    SMSStatus `json:"status"`
+		Error     SMSError  `json:"error"`
 	} `json:"results"`
 }
 
@@ -184,7 +169,7 @@ func (g *GetSMSLogsParams) Validate() error {
 	return validate.Struct(g)
 }
 
-type Binary struct {
+type SMSBinary struct {
 	Hex        string `json:"hex" validate:"required"`
 	DataCoding int    `json:"dataCoding"`
 	EsmClass   int    `json:"esmClass"`
@@ -195,14 +180,14 @@ type IndiaDLT struct {
 	PrincipalEntityID string `json:"principalEntityId" validate:"required"`
 }
 
-type Regional struct {
+type SMSRegional struct {
 	IndiaDLT `json:"indiaDlt"`
 }
 
 type BinarySMSMsg struct {
-	From               string        `json:"from"`
-	Destinations       []Destination `json:"destinations"`
-	*Binary            `json:"binary"`
+	From               string                 `json:"from"`
+	Destinations       []SMSDestination       `json:"destinations" validate:"min=1"`
+	Binary             *SMSBinary             `json:"binary"`
 	IntermediateReport bool                   `json:"intermediateReport,omitempty"`
 	NotifyURL          string                 `json:"notifyUrl,omitempty"`
 	NotifyContentType  string                 `json:"notifyContentType,omitempty"`
@@ -210,13 +195,13 @@ type BinarySMSMsg struct {
 	ValidityPeriod     int                    `json:"validityPeriod,omitempty"`
 	SendAt             string                 `json:"sendAt,omitempty"`
 	DeliveryTimeWindow *SMSDeliveryTimeWindow `json:"deliveryTimeWindow,omitempty"`
-	*Regional          `json:"regional,omitempty"`
+	Regional           *SMSRegional           `json:"regional,omitempty"`
 }
 
 type SendBinarySMSRequest struct {
-	BulkID             string         `json:"bulkId"`
-	Messages           []BinarySMSMsg `json:"messages" validate:"required"`
-	*SendingSpeedLimit `json:"sendingSpeedLimit,omitempty"`
+	BulkID                string         `json:"bulkId"`
+	Messages              []BinarySMSMsg `json:"messages" validate:"required,min=1"`
+	*SMSSendingSpeedLimit `json:"sendingSpeedLimit,omitempty"`
 }
 
 func (s *SendBinarySMSRequest) Validate() error {
@@ -230,16 +215,9 @@ func (s *SendBinarySMSRequest) Marshal() (*bytes.Buffer, error) {
 type SendBinarySMSResponse struct {
 	BulkID   string `json:"bulkId"`
 	Messages []struct {
-		To     string `json:"to"`
-		Status struct {
-			Action      string `json:"action"`
-			Description string `json:"description"`
-			GroupID     int    `json:"groupId"`
-			GroupName   string `json:"groupName"`
-			ID          int    `json:"id"`
-			Name        string `json:"name"`
-		} `json:"status"`
-		MessageID string `json:"messageId"`
+		To        string    `json:"to"`
+		Status    SMSStatus `json:"status"`
+		MessageID string    `json:"messageId"`
 	} `json:"messages"`
 }
 
@@ -273,23 +251,16 @@ func (s *SendSMSOverQueryParamsParams) Validate() error {
 type SendSMSOverQueryParamsResponse struct {
 	BulkID   string `json:"bulkId"`
 	Messages []struct {
-		To     string `json:"to"`
-		Status struct {
-			Action      string `json:"action"`
-			Description string `json:"description"`
-			GroupID     int    `json:"groupId"`
-			GroupName   string `json:"groupName"`
-			ID          int    `json:"id"`
-			Name        string `json:"name"`
-		} `json:"status"`
-		MessageID string `json:"messageId"`
+		MessageID string    `json:"messageId"`
+		Status    SMSStatus `json:"status,omitempty"`
+		To        string    `json:"to"`
 	} `json:"messages"`
 }
 
 type PreviewSMSRequest struct {
-	LanguageCode    string `json:"languageCode" validation:"oneof=TR ES PT AUTODETECT"`
-	Text            string `json:"text"`
-	Transliteration string `json:"transliteration" validation:"oneof=TURKISH GREEK CYRILLIC SERBIAN_CYRILLIC CENTRAL_EUROPEAN BALTIC NON_UNICODE"`
+	LanguageCode    string `json:"languageCode,omitempty" validate:"omitempty,oneof=TR ES PT AUTODETECT"`
+	Text            string `json:"text" validate:"required"`
+	Transliteration string `json:"transliteration,omitempty" validate:"omitempty,oneof=TURKISH GREEK CYRILLIC SERBIAN_CYRILLIC CENTRAL_EUROPEAN BALTIC NON_UNICODE"` //nolint:lll
 }
 
 func (r *PreviewSMSRequest) Validate() error {
@@ -305,8 +276,8 @@ type PreviewSMSResponse struct {
 	Previews     []struct {
 		CharactersRemaining int `json:"charactersRemaining"`
 		Configuration       struct {
-			Language        `json:"language"`
-			Transliteration string `json:"transliteration"`
+			Language        SMSLanguage `json:"language"`
+			Transliteration string      `json:"transliteration"`
 		} `json:"configuration"`
 		MessageCount int    `json:"messageCount"`
 		TextPreview  string `json:"textPreview"`
@@ -325,19 +296,16 @@ type GetInboundSMSResponse struct {
 	MessageCount        int `json:"messageCount"`
 	PendingMessageCount int `json:"pendingMessageCount"`
 	Results             []struct {
-		CallbackData string `json:"callbackData"`
-		CleanText    string `json:"cleanText"`
-		From         string `json:"from"`
-		Keyword      string `json:"keyword"`
-		MessageID    string `json:"messageId"`
-		Price        struct {
-			PricePerMessage float64 `json:"pricePerMessage"`
-			Currency        string  `json:"currency"`
-		} `json:"price"`
-		ReceivedAt string `json:"receivedAt"`
-		SmsCount   int    `json:"smsCount"`
-		Text       string `json:"text"`
-		To         string `json:"to"`
+		CallbackData string   `json:"callbackData"`
+		CleanText    string   `json:"cleanText"`
+		From         string   `json:"from"`
+		Keyword      string   `json:"keyword"`
+		MessageID    string   `json:"messageId"`
+		Price        SMSPrice `json:"price"`
+		ReceivedAt   string   `json:"receivedAt"`
+		SmsCount     int      `json:"smsCount"`
+		Text         string   `json:"text"`
+		To           string   `json:"to"`
 	} `json:"results"`
 }
 

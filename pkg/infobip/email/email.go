@@ -27,21 +27,21 @@ type Email interface {
 	GetDeliveryReports(ctx context.Context, queryParams models.GetEmailDeliveryReportsParams) (
 		resp models.EmailDeliveryReportsResponse, respDetails models.ResponseDetails, err error)
 	GetLogs(ctx context.Context, queryParams models.GetEmailLogsParams) (
-		resp models.EmailLogsResponse, respDetails models.ResponseDetails, err error)
+		resp models.GetEmailLogsResponse, respDetails models.ResponseDetails, err error)
 	GetSentBulks(ctx context.Context, queryParams models.GetSentEmailBulksParams) (
 		resp models.SentEmailBulksResponse, respDetails models.ResponseDetails, err error)
 	GetSentBulksStatus(ctx context.Context, queryParams models.GetSentEmailBulksStatusParams) (
 		resp models.SentEmailBulksStatusResponse, respDetails models.ResponseDetails, err error)
 	RescheduleMessages(
-		ctx context.Context, req models.RescheduleEmailMessagesRequest, queryParams models.RescheduleEmailMessagesParams) (
-		resp models.RescheduleMessagesResponse, respDetails models.ResponseDetails, err error)
+		ctx context.Context, req models.RescheduleEmailRequest, queryParams models.RescheduleEmailParams) (
+		resp models.RescheduleEmailResponse, respDetails models.ResponseDetails, err error)
 	Send(ctx context.Context, req models.EmailMsg) (
 		resp models.SendEmailResponse, respDetails models.ResponseDetails, err error)
 	UpdateScheduledMessagesStatus(
 		ctx context.Context,
-		req models.UpdateScheduledEmailMessagesStatusRequest,
-		queryParams models.UpdateScheduledEmailMessagesStatusParams) (
-		resp models.UpdateScheduledMessagesStatusResponse, respDetails models.ResponseDetails, err error)
+		req models.UpdateScheduledEmailStatusRequest,
+		queryParams models.UpdateScheduledEmailStatusParams) (
+		resp models.UpdateScheduledStatusResponse, respDetails models.ResponseDetails, err error)
 	ValidateAddresses(ctx context.Context, req models.ValidateEmailAddressesRequest) (
 		resp models.ValidateEmailAddressesResponse, respDetails models.ResponseDetails, err error)
 }
@@ -76,7 +76,7 @@ func (email *Channel) GetDeliveryReports(
 func (email *Channel) GetLogs(
 	ctx context.Context,
 	queryParams models.GetEmailLogsParams,
-) (resp models.EmailLogsResponse, respDetails models.ResponseDetails, err error) {
+) (resp models.GetEmailLogsResponse, respDetails models.ResponseDetails, err error) {
 	params := []internal.QueryParameter{
 		{Name: "messageId", Value: queryParams.MessageID},
 		{Name: "from", Value: queryParams.From},
@@ -106,9 +106,9 @@ func (email *Channel) GetSentBulks(ctx context.Context,
 // RescheduleMessages changes the date and time for scheduled messages.
 func (email *Channel) RescheduleMessages(
 	ctx context.Context,
-	req models.RescheduleEmailMessagesRequest,
-	queryParams models.RescheduleEmailMessagesParams,
-) (resp models.RescheduleMessagesResponse, respDetails models.ResponseDetails, err error) {
+	req models.RescheduleEmailRequest,
+	queryParams models.RescheduleEmailParams,
+) (resp models.RescheduleEmailResponse, respDetails models.ResponseDetails, err error) {
 	params := []internal.QueryParameter{{Name: "bulkId", Value: queryParams.BulkID}}
 	respDetails, err = email.ReqHandler.PutJSONReq(ctx, &req, &resp, rescheduleMessagesPath, params)
 	return resp, respDetails, err
@@ -125,9 +125,9 @@ func (email *Channel) GetSentBulksStatus(ctx context.Context,
 
 // UpdateScheduledMessagesStatus updates status or completely cancels sending of scheduled messages.
 func (email *Channel) UpdateScheduledMessagesStatus(ctx context.Context,
-	req models.UpdateScheduledEmailMessagesStatusRequest,
-	queryParams models.UpdateScheduledEmailMessagesStatusParams,
-) (resp models.UpdateScheduledMessagesStatusResponse, respDetails models.ResponseDetails, err error) {
+	req models.UpdateScheduledEmailStatusRequest,
+	queryParams models.UpdateScheduledEmailStatusParams,
+) (resp models.UpdateScheduledStatusResponse, respDetails models.ResponseDetails, err error) {
 	params := []internal.QueryParameter{{Name: "bulkId", Value: queryParams.BulkID}}
 	respDetails, err = email.ReqHandler.PutJSONReq(ctx, &req, &resp, updateScheduledMessagesStatusPath, params)
 	return resp, respDetails, err

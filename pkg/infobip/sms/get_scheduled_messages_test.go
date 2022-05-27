@@ -1,4 +1,4 @@
-package email
+package sms
 
 import (
 	"context"
@@ -15,23 +15,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpdateScheduledMessagesStatusValidReq(t *testing.T) {
-	apiKey := "apiKey"
+func TestGetScheduledMessagesValidReq(t *testing.T) {
 	rawJSONResp := []byte(`
 		{
-			"bulkId": "test-bulk-525",
-			"status": "CANCELED"
+			"bulkId": "test-bulk-73",
+			"sendAt": "2021-11-11T16:00:00.000+0000"
 		}
 	`)
 
-	var expectedResp models.UpdateScheduledStatusResponse
-
+	apiKey := "some-api-key"
+	var expectedResp models.GetScheduledSMSResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		require.Equal(t, http.MethodPut, r.Method)
-		assert.True(t, strings.HasSuffix(r.URL.Path, updateScheduledMessagesStatusPath))
+		require.Equal(t, http.MethodGet, r.Method)
+		assert.True(t, strings.HasSuffix(r.URL.Path, getScheduledSMSPath))
 		assert.Equal(t, fmt.Sprint("App ", apiKey), r.Header.Get("Authorization"))
 
 		_, servErr := w.Write(rawJSONResp)
@@ -39,21 +38,18 @@ func TestUpdateScheduledMessagesStatusValidReq(t *testing.T) {
 	}))
 	defer serv.Close()
 
-	email := Channel{ReqHandler: internal.HTTPHandler{
+	queryParams := models.GetScheduledSMSParams{}
+
+	sms := Channel{ReqHandler: internal.HTTPHandler{
 		HTTPClient: http.Client{},
 		BaseURL:    serv.URL,
 		APIKey:     apiKey,
 	}}
 
-	req := models.UpdateScheduledEmailStatusRequest{
-		Status: "CANCELED",
-	}
-	queryParams := models.UpdateScheduledEmailStatusParams{}
-
-	resp, respDetails, err := email.UpdateScheduledMessagesStatus(context.Background(), req, queryParams)
+	resp, respDetails, err := sms.GetScheduledMessages(context.Background(), queryParams)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.UpdateScheduledStatusResponse{}, resp)
+	assert.NotEqual(t, models.GetScheduledSMSResponse{}, resp)
 	assert.Equal(t, expectedResp, resp)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)

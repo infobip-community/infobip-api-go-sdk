@@ -305,7 +305,7 @@ func (o *GetEmailDeliveryReportsParams) Validate() error {
 	return validate.Struct(o)
 }
 
-type EmailLogsResponse struct {
+type GetEmailLogsResponse struct {
 	Results []struct {
 		MessageID    string `json:"messageId"`
 		To           string `json:"to"`
@@ -378,52 +378,52 @@ func (o *GetSentEmailBulksStatusParams) Validate() error {
 	return validate.Struct(o)
 }
 
-type RescheduleEmailMessagesRequest struct {
+type RescheduleEmailRequest struct {
 	SendAt string `json:"sendAt"`
 }
 
-type RescheduleEmailMessagesParams struct {
+type RescheduleEmailParams struct {
 	BulkID string `validate:"required"`
 }
 
-func (o *RescheduleEmailMessagesParams) Validate() error {
+func (o *RescheduleEmailParams) Validate() error {
 	return validate.Struct(o)
 }
 
-type UpdateScheduledEmailMessagesStatusRequest struct {
+type UpdateScheduledEmailStatusRequest struct {
 	Status string `json:"status" validate:"required,oneof=PENDING PAUSED PROCESSING CANCELED FINISHED FAILED"`
 }
 
-type UpdateScheduledEmailMessagesStatusParams struct {
+type UpdateScheduledEmailStatusParams struct {
 	BulkID string `validate:"required"`
 }
 
-func (o *UpdateScheduledEmailMessagesStatusParams) Validate() error {
+func (o *UpdateScheduledEmailStatusParams) Validate() error {
 	return validate.Struct(o)
 }
 
-func (r *UpdateScheduledEmailMessagesStatusRequest) Validate() error {
+func (r *UpdateScheduledEmailStatusRequest) Validate() error {
 	return validate.Struct(r)
 }
 
-func (r *UpdateScheduledEmailMessagesStatusRequest) Marshal() (*bytes.Buffer, error) {
+func (r *UpdateScheduledEmailStatusRequest) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(r)
 }
 
-type UpdateScheduledMessagesStatusResponse struct {
+type UpdateScheduledStatusResponse struct {
 	BulkID string `json:"bulkId"`
 	Status string `json:"status"`
 }
 
-func (r *RescheduleEmailMessagesRequest) Validate() error {
+func (r *RescheduleEmailRequest) Validate() error {
 	return validate.Struct(r)
 }
 
-func (r *RescheduleEmailMessagesRequest) Marshal() (*bytes.Buffer, error) {
+func (r *RescheduleEmailRequest) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(r)
 }
 
-type RescheduleMessagesResponse struct {
+type RescheduleEmailResponse struct {
 	BulkID string `json:"bulkId"`
 	SendAt int64  `json:"sendAt"`
 }

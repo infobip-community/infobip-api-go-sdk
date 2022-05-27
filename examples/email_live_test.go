@@ -106,7 +106,7 @@ func TestGetLogs(t *testing.T) {
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEqual(t, models.EmailLogsResponse{}, logs)
+	assert.NotEqual(t, models.GetEmailLogsResponse{}, logs)
 	assert.NotEqual(t, models.ResponseDetails{}, logs)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
@@ -155,11 +155,11 @@ func TestRescheduleMessages(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.RescheduleEmailMessagesParams{
+	queryParams := models.RescheduleEmailParams{
 		BulkID: "test-bulk-78",
 	}
 
-	req := models.RescheduleEmailMessagesRequest{
+	req := models.RescheduleEmailRequest{
 		SendAt: "2022-04-13T17:56:07Z",
 	}
 
@@ -170,7 +170,7 @@ func TestRescheduleMessages(t *testing.T) {
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEqual(t, models.RescheduleMessagesResponse{}, rescheduleResp)
+	assert.NotEqual(t, models.RescheduleEmailResponse{}, rescheduleResp)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
@@ -179,11 +179,11 @@ func TestUpdateScheduledMessagesStatus(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.UpdateScheduledEmailMessagesStatusParams{
+	queryParams := models.UpdateScheduledEmailStatusParams{
 		BulkID: "test-bulk-78",
 	}
 
-	req := models.UpdateScheduledEmailMessagesStatusRequest{
+	req := models.UpdateScheduledEmailStatusRequest{
 		Status: "CANCELED",
 	}
 
@@ -194,7 +194,7 @@ func TestUpdateScheduledMessagesStatus(t *testing.T) {
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEqual(t, models.UpdateScheduledMessagesStatusResponse{}, updateResp)
+	assert.NotEqual(t, models.UpdateScheduledStatusResponse{}, updateResp)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }

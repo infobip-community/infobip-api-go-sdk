@@ -1,4 +1,4 @@
-package email
+package sms
 
 import (
 	"context"
@@ -15,23 +15,23 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUpdateScheduledMessagesStatusValidReq(t *testing.T) {
-	apiKey := "apiKey"
+func TestRescheduleMessagesValidReq(t *testing.T) {
 	rawJSONResp := []byte(`
 		{
-			"bulkId": "test-bulk-525",
-			"status": "CANCELED"
+			"bulkId": "test-bulk-73",
+			"sendAt": "2021-11-25T16:00:00.000+0000"
 		}
 	`)
 
-	var expectedResp models.UpdateScheduledStatusResponse
+	var expectedResp models.RescheduleSMSResponse
 
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
+	apiKey := "apiKey"
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		require.Equal(t, http.MethodPut, r.Method)
-		assert.True(t, strings.HasSuffix(r.URL.Path, updateScheduledMessagesStatusPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, rescheduleSMSPath))
 		assert.Equal(t, fmt.Sprint("App ", apiKey), r.Header.Get("Authorization"))
 
 		_, servErr := w.Write(rawJSONResp)
@@ -39,21 +39,21 @@ func TestUpdateScheduledMessagesStatusValidReq(t *testing.T) {
 	}))
 	defer serv.Close()
 
-	email := Channel{ReqHandler: internal.HTTPHandler{
+	sms := Channel{ReqHandler: internal.HTTPHandler{
 		HTTPClient: http.Client{},
 		BaseURL:    serv.URL,
 		APIKey:     apiKey,
 	}}
 
-	req := models.UpdateScheduledEmailStatusRequest{
-		Status: "CANCELED",
+	req := models.RescheduleSMSRequest{
+		SendAt: "2022-04-12T17:56:07Z",
 	}
-	queryParams := models.UpdateScheduledEmailStatusParams{}
+	queryParams := models.RescheduleSMSParams{}
 
-	resp, respDetails, err := email.UpdateScheduledMessagesStatus(context.Background(), req, queryParams)
+	resp, respDetails, err := sms.RescheduleMessages(context.Background(), req, queryParams)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.UpdateScheduledStatusResponse{}, resp)
+	assert.NotEqual(t, models.RescheduleEmailResponse{}, resp)
 	assert.Equal(t, expectedResp, resp)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)

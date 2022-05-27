@@ -8,7 +8,7 @@ import (
 
 func TestValidUpdateScheduledMessagesStatusRequest(t *testing.T) {
 	t.Run("valid input", func(t *testing.T) {
-		instance := UpdateScheduledEmailMessagesStatusRequest{
+		instance := UpdateScheduledEmailStatusRequest{
 			Status: "PENDING",
 		}
 		err := instance.Validate()
@@ -18,7 +18,7 @@ func TestValidUpdateScheduledMessagesStatusRequest(t *testing.T) {
 
 func TestInvalidUpdateScheduledMessagesStatusRequest(t *testing.T) {
 	t.Run("invalid status", func(t *testing.T) {
-		instance := UpdateScheduledEmailMessagesStatusRequest{
+		instance := UpdateScheduledEmailStatusRequest{
 			Status: "SOMETHING",
 		}
 		err := instance.Validate()
