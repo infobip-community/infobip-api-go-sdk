@@ -129,7 +129,7 @@ func TestPostMultipartReq4xx(t *testing.T) {
 	defer serv.Close()
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
-	respResource := models.SendWAMsgResponse{}
+	respResource := models.SendEmailResponse{}
 	respDetails, err := handler.PostMultipartReq(context.Background(), &msg, &respResource, "some/path")
 
 	require.NoError(t, err)
@@ -137,7 +137,7 @@ func TestPostMultipartReq4xx(t *testing.T) {
 	assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 	assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 	assert.Equal(t, http.StatusUnauthorized, respDetails.HTTPResponse.StatusCode)
-	assert.Equal(t, models.SendWAMsgResponse{}, respResource)
+	assert.Equal(t, models.SendEmailResponse{}, respResource)
 }
 
 func TestPostMultipartReqErr(t *testing.T) {
@@ -148,10 +148,10 @@ func TestPostMultipartReqErr(t *testing.T) {
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: "nonexistent"}
 	msg := models.GenerateEmailMsg()
 
-	respResource := models.SendWAMsgResponse{}
+	respResource := models.SendEmailResponse{}
 	respDetails, err := handler.PostMultipartReq(context.Background(), &msg, &respResource, "some/path")
 
 	require.NotNil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.Equal(t, models.SendWAMsgResponse{}, models.SendWAMsgResponse{})
+	assert.Equal(t, models.SendEmailResponse{}, respResource)
 }

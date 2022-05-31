@@ -9,14 +9,14 @@ import (
 )
 
 const (
-	sendEmailPath                     = "/email/2/send"
-	getDeliveryReportsPath            = "/email/1/reports"
-	getLogsPath                       = "/email/1/logs"
-	getSentEmailBulksPath             = "/email/1/bulks"
-	rescheduleMessagesPath            = "/email/1/bulks"
-	getSentEmailBulksStatusPath       = "/email/1/bulks/status"
-	updateScheduledMessagesStatusPath = "/email/1/bulks/status"
-	validateAddressesPath             = "/email/2/validation"
+	sendEmailPath                     = "email/2/send"
+	getDeliveryReportsPath            = "email/1/reports"
+	getLogsPath                       = "email/1/logs"
+	getSentEmailBulksPath             = "email/1/bulks"
+	rescheduleMessagesPath            = "email/1/bulks"
+	getSentEmailBulksStatusPath       = "email/1/bulks/status"
+	updateScheduledMessagesStatusPath = "email/1/bulks/status"
+	validateAddressesPath             = "email/2/validation"
 )
 
 type Channel struct {
@@ -25,7 +25,7 @@ type Channel struct {
 
 type Email interface {
 	GetDeliveryReports(ctx context.Context, queryParams models.GetEmailDeliveryReportsParams) (
-		resp models.EmailDeliveryReportsResponse, respDetails models.ResponseDetails, err error)
+		resp models.GetEmailDeliveryReportsResponse, respDetails models.ResponseDetails, err error)
 	GetLogs(ctx context.Context, queryParams models.GetEmailLogsParams) (
 		resp models.GetEmailLogsResponse, respDetails models.ResponseDetails, err error)
 	GetSentBulks(ctx context.Context, queryParams models.GetSentEmailBulksParams) (
@@ -59,7 +59,7 @@ func (email *Channel) Send(
 func (email *Channel) GetDeliveryReports(
 	ctx context.Context,
 	queryParams models.GetEmailDeliveryReportsParams,
-) (resp models.EmailDeliveryReportsResponse, respDetails models.ResponseDetails, err error) {
+) (resp models.GetEmailDeliveryReportsResponse, respDetails models.ResponseDetails, err error) {
 	params := []internal.QueryParameter{
 		{Name: "bulkId", Value: queryParams.BulkID},
 		{Name: "messageId", Value: queryParams.MessageID},

@@ -263,7 +263,7 @@ func (e *EmailMsg) GetMultipartBoundary() string {
 	return e.boundary
 }
 
-type EmailDeliveryReportsResponse struct {
+type GetEmailDeliveryReportsResponse struct {
 	Results []struct {
 		BulkID       string `json:"bulkId"`
 		MessageID    string `json:"messageId"`

@@ -129,10 +129,10 @@ func TestPostInvalidPayload(t *testing.T) {
 
 	handler := HTTPHandler{HTTPClient: http.Client{}, BaseURL: serv.URL}
 	msg := InvalidTestMsg{FloatField: math.Inf(1)}
-	respResource := models.SendWAMsgResponse{}
+	respResource := models.SendEmailResponse{}
 	respDetails, err := handler.PostJSONReq(context.Background(), &msg, &respResource, "some/path")
 
 	require.NotNil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.Equal(t, models.SendWAMsgResponse{}, models.SendWAMsgResponse{})
+	assert.Equal(t, models.SendEmailResponse{}, respResource)
 }

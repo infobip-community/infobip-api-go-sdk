@@ -60,8 +60,12 @@ func GenerateSendSMSRequest() SendSMSRequest {
 
 func GenerateBinarySMSMsg() BinarySMSMsg {
 	return BinarySMSMsg{
-		From:         "Gopher",
-		Destinations: []SMSDestination{},
+		From: "Gopher",
+		Destinations: []SMSDestination{
+			{
+				To: "16175551212",
+			},
+		},
 		Binary: &SMSBinary{
 			Hex:        "aa bb cc dd ff",
 			DataCoding: 0,

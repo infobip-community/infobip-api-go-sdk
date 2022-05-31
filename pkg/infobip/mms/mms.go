@@ -13,7 +13,7 @@ import (
 type MMS interface {
 	Send(context.Context, models.MMSMsg) (models.SendMMSResponse, models.ResponseDetails, error)
 	GetDeliveryReports(ctx context.Context, queryParams models.GetMMSDeliveryReportsParams) (
-		models.GetOutboundMMSDeliveryReportsResponse, models.ResponseDetails, error)
+		models.GetMMSDeliveryReportsResponse, models.ResponseDetails, error)
 	GetInboundMessages(ctx context.Context, queryParams models.GetInboundMMSParams) (
 		models.GetInboundMMSResponse, models.ResponseDetails, error)
 }
@@ -23,9 +23,9 @@ type Channel struct {
 }
 
 const (
-	sendMessagePath                   = "/mms/1/single"
-	getOutboundMMSDeliveryReportsPath = "/mms/1/reports"
-	getInboundMMSPath                 = "/mms/1/inbox/reports"
+	sendMessagePath                   = "mms/1/single"
+	getOutboundMMSDeliveryReportsPath = "mms/1/reports"
+	getInboundMMSPath                 = "mms/1/inbox/reports"
 )
 
 func (mms *Channel) Send(
@@ -39,7 +39,7 @@ func (mms *Channel) Send(
 func (mms *Channel) GetDeliveryReports(
 	ctx context.Context,
 	queryParams models.GetMMSDeliveryReportsParams,
-) (msgResp models.GetOutboundMMSDeliveryReportsResponse, respDetails models.ResponseDetails, err error) {
+) (msgResp models.GetMMSDeliveryReportsResponse, respDetails models.ResponseDetails, err error) {
 	params := []internal.QueryParameter{
 		{Name: "bulkId", Value: queryParams.BulkID},
 		{Name: "messageId", Value: queryParams.MessageID},

@@ -81,7 +81,7 @@ func TestGetDeliveryReportsValidReq(t *testing.T) {
 		}
 	`)
 
-	var expectedResp models.EmailDeliveryReportsResponse
+	var expectedResp models.GetEmailDeliveryReportsResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
@@ -108,7 +108,7 @@ func TestGetDeliveryReportsValidReq(t *testing.T) {
 	resp, respDetails, err := email.GetDeliveryReports(context.Background(), queryParams)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.EmailDeliveryReportsResponse{}, resp)
+	assert.NotEqual(t, models.GetEmailDeliveryReportsResponse{}, resp)
 	assert.Equal(t, expectedResp, resp)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
@@ -132,7 +132,7 @@ func TestGetDeliveryReportsErrors(t *testing.T) {
 		statusCode: http.StatusBadRequest,
 	}
 
-	var expectedResp models.EmailDeliveryReportsResponse
+	var expectedResp models.GetEmailDeliveryReportsResponse
 	err := json.Unmarshal(test.rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 

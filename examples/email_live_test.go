@@ -79,7 +79,7 @@ func TestGetEmailDeliveryReports(t *testing.T) {
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
 	assert.NotEmptyf(t, deliveryReports.Results[0].MessageID, "MessageID should not be empty")
-	assert.NotEqual(t, models.EmailDeliveryReportsResponse{}, deliveryReports)
+	assert.NotEqual(t, models.GetEmailDeliveryReportsResponse{}, deliveryReports)
 	assert.NotEqual(t, models.ResponseDetails{}, deliveryReports)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }

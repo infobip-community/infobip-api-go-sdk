@@ -24,14 +24,14 @@ const (
 
 // TODO:
 // [x] Implement validate for all models that have validate strings.
-// [ ] Check that models have all required fields (especially responses)
+// [x] Check that models have all required fields (especially responses)
 // [x] Check that naming is consistent for models, and short for methods.
-// [ ] All tests pass
-// [ ] Add tests
+// [x] All tests pass
+// [x] Add tests
 // [ ] Add godoc comments
 // [ ] Lint passes
-// [ ] No credentials in code.
-// [ ] Add WebRTC and RCS endpoints.
+// [x] No credentials in code.
+// [x] Review model names, (plural?)
 // [ ] There aro no TODO notes.
 
 type SMS interface {

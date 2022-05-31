@@ -8,22 +8,26 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidSMSMsg(t *testing.T) {
+func TestValidSendBinarySMSRequest(t *testing.T) {
 	tests := []struct {
 		name     string
-		instance SMSMsg
+		instance SendBinarySMSRequest
 	}{
 		{
 			name: "minimum input",
-			instance: SMSMsg{
-				Destinations: []SMSDestination{
-					{To: "1212345678"},
+			instance: SendBinarySMSRequest{
+				Messages: []BinarySMSMsg{
+					{
+						Destinations: []SMSDestination{
+							{To: "1212345678"},
+						},
+					},
 				},
 			},
 		},
 		{
 			name:     "full input",
-			instance: GenerateSMSMsg(),
+			instance: GenerateSendBinarySMSRequest(),
 		},
 	}
 
@@ -33,10 +37,10 @@ func TestValidSMSMsg(t *testing.T) {
 			require.NoError(t, err)
 
 			marshalled, err := tc.instance.Marshal()
-			require.NoError(t, err)
 			assert.NotEmpty(t, marshalled)
+			require.NoError(t, err)
 
-			var unmarshalled SMSMsg
+			var unmarshalled SendBinarySMSRequest
 			err = json.Unmarshal(marshalled.Bytes(), &unmarshalled)
 			require.NoError(t, err)
 			assert.Equal(t, tc.instance, unmarshalled)
@@ -44,14 +48,16 @@ func TestValidSMSMsg(t *testing.T) {
 	}
 }
 
-func TestInvalidSMSMsg(t *testing.T) {
+func TestInvalidSendBinarySMSRequest(t *testing.T) {
 	tests := []struct {
 		name     string
-		instance SMSMsg
+		instance SendBinarySMSRequest
 	}{
 		{
-			name:     "empty input",
-			instance: SMSMsg{},
+			name: "missing messages",
+			instance: SendBinarySMSRequest{
+				Messages: []BinarySMSMsg{},
+			},
 		},
 	}
 

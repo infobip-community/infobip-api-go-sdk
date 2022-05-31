@@ -157,10 +157,10 @@ type GetSMSLogsParams struct {
 	To            string
 	BulkID        []string
 	MessageID     []string
-	GeneralStatus string `validate:"oneof=ACCEPTED PENDING UNDELIVERABLE DELIVERED REJECTED EXPIRED"`
+	GeneralStatus string `validate:"omitempty,oneof=ACCEPTED PENDING UNDELIVERABLE DELIVERED REJECTED EXPIRED"`
 	SentSince     string
 	SentUntil     string
-	Limit         int `validate:"min=1,max=1000"`
+	Limit         int `validate:"omitempty,min=1,max=1000"`
 	MCC           string
 	MNC           string
 }
@@ -196,6 +196,14 @@ type BinarySMSMsg struct {
 	SendAt             string                 `json:"sendAt,omitempty"`
 	DeliveryTimeWindow *SMSDeliveryTimeWindow `json:"deliveryTimeWindow,omitempty"`
 	Regional           *SMSRegional           `json:"regional,omitempty"`
+}
+
+func (b *BinarySMSMsg) Validate() error {
+	return validate.Struct(b)
+}
+
+func (b *BinarySMSMsg) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(b)
 }
 
 type SendBinarySMSRequest struct {
@@ -285,7 +293,7 @@ type PreviewSMSResponse struct {
 }
 
 type GetInboundSMSParams struct {
-	Limit int `validate:"min=1,max=1000"`
+	Limit int `validate:"omitempty,min=1,max=1000"`
 }
 
 func (g *GetInboundSMSParams) Validate() error {
@@ -357,7 +365,7 @@ func (g *GetScheduledSMSStatusParams) Validate() error {
 
 type GetScheduledSMSStatusResponse struct {
 	BulkID string `json:"bulkId"`
-	Status string `json:"sendAt"`
+	Status string `json:"status"`
 }
 
 type UpdateScheduledSMSStatusParams struct {

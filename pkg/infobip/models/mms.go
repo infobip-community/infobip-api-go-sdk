@@ -177,7 +177,7 @@ type GetMMSDeliveryReportsParams struct {
 	Limit     int
 }
 
-type GetOutboundMMSDeliveryReportsResponse struct {
+type GetMMSDeliveryReportsResponse struct {
 	Results []OutboundMMSDeliveryResult `json:"results"`
 }
 
@@ -197,8 +197,8 @@ type OutboundMMSDeliveryResult struct {
 }
 
 type MMSPrice struct {
-	PricePerMessage int    `json:"pricePerMessage"`
-	Currency        string `json:"currency"`
+	PricePerMessage float64 `json:"pricePerMessage"`
+	Currency        string  `json:"currency"`
 }
 
 type GetInboundMMSResponse struct {

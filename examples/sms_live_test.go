@@ -15,7 +15,7 @@ import (
 const (
 	apiKey     = "your-api-key"
 	baseURL    = "your-base-url"
-	destNumber = "123458789123"
+	destNumber = "123456789012"
 )
 
 func TestSendSMS(t *testing.T) {
@@ -54,18 +54,17 @@ func TestSendSMSBulk(t *testing.T) {
 		},
 		From:   "Infobip Gopher",
 		Text:   "Hello from Go SDK",
-		SendAt: "2022-05-12T16:00:00.000+0000",
+		SendAt: "2022-06-02T16:00:00.000+0000",
 	}
 	sms2 := models.SMSMsg{
 		Destinations: []models.SMSDestination{
 			{To: destNumber},
 		},
-		From:   "Infobip Gopher",
-		Text:   "Hello (2) from Go SDK",
-		SendAt: "2022-05-12T17:00:00.000+0000",
+		From: "Infobip Gopher",
+		Text: "Hello (2) from Go SDK",
 	}
 	request := models.SendSMSRequest{
-		BulkID:   "some-bulk-id-999",
+		BulkID:   "f4b07b1a-a009-49d5-a94d-f8fd1bfdc985",
 		Messages: []models.SMSMsg{sms, sms2},
 	}
 
@@ -197,11 +196,10 @@ func TestGetSMSLogs(t *testing.T) {
 }
 
 func TestGetScheduledSMS(t *testing.T) {
-	// TODO: how to test this? Getting not unique bulk ID error
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.GetScheduledSMSParams{BulkID: "some-bulk-id-999"}
+	queryParams := models.GetScheduledSMSParams{BulkID: "f4b07b1a-a009-49d5-a94d-f8fd1bfdc985"}
 
 	msgResp, respDetails, err := client.SMS.GetScheduledMessages(context.Background(), queryParams)
 
@@ -219,8 +217,8 @@ func TestRescheduleSMS(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	params := models.RescheduleSMSParams{BulkID: "some-bulk-id-999"}
-	req := models.RescheduleSMSRequest{SendAt: "2022-05-11T16:00:00.000+0000"}
+	params := models.RescheduleSMSParams{BulkID: "f4b07b1a-a009-49d5-a94d-f8fd1bfdc985"}
+	req := models.RescheduleSMSRequest{SendAt: "2022-06-01T16:00:00.000+0000"}
 
 	msgResp, respDetails, err := client.SMS.RescheduleMessages(context.Background(), req, params)
 
@@ -238,7 +236,7 @@ func TestGetScheduledSMSStatus(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	params := models.GetScheduledSMSStatusParams{BulkID: "some-bulk-id-999"}
+	params := models.GetScheduledSMSStatusParams{BulkID: "f4b07b1a-a009-49d5-a94d-f8fd1bfdc985"}
 
 	msgResp, respDetails, err := client.SMS.GetScheduledMessagesStatus(context.Background(), params)
 
@@ -256,7 +254,7 @@ func TestUpdateScheduledSMSStatus(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	params := models.UpdateScheduledSMSStatusParams{BulkID: "some-bulk-id-999"}
+	params := models.UpdateScheduledSMSStatusParams{BulkID: "f4b07b1a-a009-49d5-a94d-f8fd1bfdc985"}
 	req := models.UpdateScheduledSMSStatusRequest{Status: "CANCELED"}
 
 	msgResp, respDetails, err := client.SMS.UpdateScheduledMessagesStatus(context.Background(), req, params)

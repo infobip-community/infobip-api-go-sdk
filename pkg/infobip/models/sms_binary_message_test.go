@@ -8,14 +8,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidSMSMsg(t *testing.T) {
+func TestValidBinarySMSMsg(t *testing.T) {
 	tests := []struct {
 		name     string
-		instance SMSMsg
+		instance BinarySMSMsg
 	}{
 		{
 			name: "minimum input",
-			instance: SMSMsg{
+			instance: BinarySMSMsg{
 				Destinations: []SMSDestination{
 					{To: "1212345678"},
 				},
@@ -23,7 +23,7 @@ func TestValidSMSMsg(t *testing.T) {
 		},
 		{
 			name:     "full input",
-			instance: GenerateSMSMsg(),
+			instance: GenerateBinarySMSMsg(),
 		},
 	}
 
@@ -33,10 +33,10 @@ func TestValidSMSMsg(t *testing.T) {
 			require.NoError(t, err)
 
 			marshalled, err := tc.instance.Marshal()
-			require.NoError(t, err)
 			assert.NotEmpty(t, marshalled)
+			require.NoError(t, err)
 
-			var unmarshalled SMSMsg
+			var unmarshalled BinarySMSMsg
 			err = json.Unmarshal(marshalled.Bytes(), &unmarshalled)
 			require.NoError(t, err)
 			assert.Equal(t, tc.instance, unmarshalled)
@@ -44,7 +44,7 @@ func TestValidSMSMsg(t *testing.T) {
 	}
 }
 
-func TestInvalidSMSMsg(t *testing.T) {
+func TestInvalidBinarySMSMsg(t *testing.T) {
 	tests := []struct {
 		name     string
 		instance SMSMsg

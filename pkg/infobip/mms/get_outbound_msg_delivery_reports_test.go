@@ -50,7 +50,7 @@ func TestGetOutboundMsgDeliveryReportsValidReq(t *testing.T) {
 			}
 		]	
 	}`)
-	var expectedResp models.GetOutboundMMSDeliveryReportsResponse
+	var expectedResp models.GetMMSDeliveryReportsResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
@@ -88,7 +88,7 @@ func TestGetOutboundMsgDeliveryReportsValidReq(t *testing.T) {
 				APIKey:     apiKey,
 			}}
 
-			var msgResp models.GetOutboundMMSDeliveryReportsResponse
+			var msgResp models.GetMMSDeliveryReportsResponse
 			var respDetails models.ResponseDetails
 			msgResp, respDetails, err = mms.GetDeliveryReports(
 				context.Background(),
@@ -96,7 +96,7 @@ func TestGetOutboundMsgDeliveryReportsValidReq(t *testing.T) {
 			)
 
 			require.NoError(t, err)
-			assert.NotEqual(t, models.GetOutboundMMSDeliveryReportsResponse{}, msgResp)
+			assert.NotEqual(t, models.GetMMSDeliveryReportsResponse{}, msgResp)
 			assert.Equal(t, expectedResp, msgResp)
 			assert.NotNil(t, respDetails)
 			assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)

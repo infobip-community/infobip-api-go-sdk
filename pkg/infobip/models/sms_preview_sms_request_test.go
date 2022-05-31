@@ -1,9 +1,11 @@
 package models
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestValidPreviewSMSRequest(t *testing.T) {
@@ -27,6 +29,15 @@ func TestValidPreviewSMSRequest(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.instance.Validate()
 			assert.NoError(t, err)
+
+			marshalled, err := tc.instance.Marshal()
+			require.NoError(t, err)
+			assert.NotEmpty(t, marshalled)
+
+			var unmarshalled PreviewSMSRequest
+			err = json.Unmarshal(marshalled.Bytes(), &unmarshalled)
+			require.NoError(t, err)
+			assert.Equal(t, tc.instance, unmarshalled)
 		})
 	}
 }
