@@ -24,29 +24,43 @@ type Channel struct {
 }
 
 type Email interface {
+	// GetDeliveryReports gets one-time delivery reports for all sent emails.
 	GetDeliveryReports(ctx context.Context, queryParams models.GetEmailDeliveryReportsParams) (
 		resp models.GetEmailDeliveryReportsResponse, respDetails models.ResponseDetails, err error)
+
+	// GetLogs gets email logs of sent Email messagesId for request. Logs are available for the last 48 hours.
 	GetLogs(ctx context.Context, queryParams models.GetEmailLogsParams) (
 		resp models.GetEmailLogsResponse, respDetails models.ResponseDetails, err error)
+
+	// GetSentBulks gets the scheduled time of your Email messages.
 	GetSentBulks(ctx context.Context, queryParams models.GetSentEmailBulksParams) (
 		resp models.SentEmailBulksResponse, respDetails models.ResponseDetails, err error)
+
+	// GetSentBulksStatus returns status of scheduled email messages.
 	GetSentBulksStatus(ctx context.Context, queryParams models.GetSentEmailBulksStatusParams) (
 		resp models.SentEmailBulksStatusResponse, respDetails models.ResponseDetails, err error)
+
+	// RescheduleMessages changes the date and time for scheduled messages.
 	RescheduleMessages(
 		ctx context.Context, req models.RescheduleEmailRequest, queryParams models.RescheduleEmailParams) (
 		resp models.RescheduleEmailResponse, respDetails models.ResponseDetails, err error)
+
+	// Send sends an email or multiple emails to a recipient or multiple recipients with CC/BCC enabled.
 	Send(ctx context.Context, req models.EmailMsg) (
 		resp models.SendEmailResponse, respDetails models.ResponseDetails, err error)
+
+	// UpdateScheduledMessagesStatus updates status or completely cancels sending of scheduled messages.
 	UpdateScheduledMessagesStatus(
 		ctx context.Context,
 		req models.UpdateScheduledEmailStatusRequest,
 		queryParams models.UpdateScheduledEmailStatusParams) (
 		resp models.UpdateScheduledStatusResponse, respDetails models.ResponseDetails, err error)
+
+	// ValidateAddresses validates to identify poor quality emails to clear up your recipient list.
 	ValidateAddresses(ctx context.Context, req models.ValidateEmailAddressesRequest) (
 		resp models.ValidateEmailAddressesResponse, respDetails models.ResponseDetails, err error)
 }
 
-// Send sends an email or multiple emails to a recipient or multiple recipients with CC/BCC enabled.
 func (email *Channel) Send(
 	ctx context.Context,
 	msg models.EmailMsg,
@@ -55,7 +69,6 @@ func (email *Channel) Send(
 	return msgResp, respDetails, err
 }
 
-// GetDeliveryReports gets one-time delivery reports for all sent emails.
 func (email *Channel) GetDeliveryReports(
 	ctx context.Context,
 	queryParams models.GetEmailDeliveryReportsParams,
@@ -72,7 +85,6 @@ func (email *Channel) GetDeliveryReports(
 	return resp, respDetails, err
 }
 
-// GetLogs gets email logs of sent Email messagesId for request. Logs are available for the last 48 hours.
 func (email *Channel) GetLogs(
 	ctx context.Context,
 	queryParams models.GetEmailLogsParams,
@@ -94,7 +106,6 @@ func (email *Channel) GetLogs(
 	return resp, respDetails, err
 }
 
-// GetSentBulks gets the scheduled time of your Email messages.
 func (email *Channel) GetSentBulks(ctx context.Context,
 	queryParams models.GetSentEmailBulksParams,
 ) (resp models.SentEmailBulksResponse, respDetails models.ResponseDetails, err error) {
@@ -103,7 +114,6 @@ func (email *Channel) GetSentBulks(ctx context.Context,
 	return resp, respDetails, err
 }
 
-// RescheduleMessages changes the date and time for scheduled messages.
 func (email *Channel) RescheduleMessages(
 	ctx context.Context,
 	req models.RescheduleEmailRequest,
@@ -114,7 +124,6 @@ func (email *Channel) RescheduleMessages(
 	return resp, respDetails, err
 }
 
-// GetSentBulksStatus returns status of scheduled email messages.
 func (email *Channel) GetSentBulksStatus(ctx context.Context,
 	queryParams models.GetSentEmailBulksStatusParams,
 ) (resp models.SentEmailBulksStatusResponse, respDetails models.ResponseDetails, err error) {
@@ -123,7 +132,6 @@ func (email *Channel) GetSentBulksStatus(ctx context.Context,
 	return resp, respDetails, err
 }
 
-// UpdateScheduledMessagesStatus updates status or completely cancels sending of scheduled messages.
 func (email *Channel) UpdateScheduledMessagesStatus(ctx context.Context,
 	req models.UpdateScheduledEmailStatusRequest,
 	queryParams models.UpdateScheduledEmailStatusParams,
@@ -133,7 +141,6 @@ func (email *Channel) UpdateScheduledMessagesStatus(ctx context.Context,
 	return resp, respDetails, err
 }
 
-// ValidateAddresses validates to identify poor quality emails to clear up your recipient list.
 func (email *Channel) ValidateAddresses(ctx context.Context,
 	req models.ValidateEmailAddressesRequest,
 ) (resp models.ValidateEmailAddressesResponse, respDetails models.ResponseDetails, err error) {

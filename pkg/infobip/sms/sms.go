@@ -22,40 +22,59 @@ const (
 	updateScheduledSMSStatusPath = "sms/1/bulks/status"
 )
 
-// TODO:
-// [x] Implement validate for all models that have validate strings.
-// [x] Check that models have all required fields (especially responses)
-// [x] Check that naming is consistent for models, and short for methods.
-// [x] All tests pass
-// [x] Add tests
-// [ ] Add godoc comments
-// [ ] Lint passes
-// [x] No credentials in code.
-// [x] Review model names, (plural?)
-// [ ] There aro no TODO notes.
-
 type SMS interface {
+	// Send sends everything from a simple single message to a single destination, up to batch sending of personalized
+	// messages to the thousands of recipients with a single API request.
 	Send(ctx context.Context, req models.SendSMSRequest) (
 		resp models.SendSMSResponse, respDetails models.ResponseDetails, err error)
+
+	// SendBinary sends single or multiple binary messages to one or more destination addresses.
 	SendBinary(ctx context.Context, req models.SendBinarySMSRequest) (
 		resp models.SendBinarySMSResponse, respDetails models.ResponseDetails, err error)
+
+	// SendOverQueryParams sends messages over query parameters. All message parameters of the message can be defined
+	// in the query string. Use this method only if Send message is not an option for your use case!
+	// Note: Make sure that special characters and user credentials are properly encoded. Use a URL encoding reference
+	// as a guide.
 	SendOverQueryParams(ctx context.Context, queryParams models.SendSMSOverQueryParamsParams) (
 		resp models.SendSMSOverQueryParamsResponse, respDetails models.ResponseDetails, err error)
+
+	// Preview returns information on how different message configurations will affect your message text, number of
+	// characters and message parts.
 	Preview(ctx context.Context, req models.PreviewSMSRequest) (
 		resp models.PreviewSMSResponse, respDetails models.ResponseDetails, err error)
+
+	// GetDeliveryReports returns information about if and when the message has been delivered to the recipient. Each
+	// request will return a batch of delivery reports only once. The request will return only new reports that arrived
+	// since the last request in the last 48 hours.
 	GetDeliveryReports(ctx context.Context, queryParams models.GetSMSDeliveryReportsParams) (
 		resp models.GetSMSDeliveryReportsResponse, respDetails models.ResponseDetails, err error)
+
+	// GetLogs returns logs for the last 48 hours, and you can only retrieve maximum of 1000 logs per call. See
+	// GetDeliveryReports if your use case is to verify message delivery.
 	GetLogs(ctx context.Context, queryParams models.GetSMSLogsParams) (
 		resp models.GetSMSLogsResponse, respDetails models.ResponseDetails, err error)
+
+	// GetInboundMessages returns inbound messages. If for some reason you are unable to receive incoming SMS to the
+	// endpoint of your choice in real time, you can use this call to fetch messages. Each request will return a batch of
+	// received messages only once. The API request will only return new messages that arrived since the last request.
 	GetInboundMessages(ctx context.Context, queryParams models.GetInboundSMSParams) (
 		resp models.GetInboundSMSResponse, respDetails models.ResponseDetails, err error)
+
+	// GetScheduledMessages returns the status and the scheduled time of your SMS messages.
 	GetScheduledMessages(ctx context.Context, queryParams models.GetScheduledSMSParams) (
 		resp models.GetScheduledSMSResponse, respDetails models.ResponseDetails, err error)
+
+	// RescheduleMessages changes the date and time for sending scheduled messages.
 	RescheduleMessages(
 		ctx context.Context, req models.RescheduleSMSRequest, queryParams models.RescheduleSMSParams) (
 		resp models.RescheduleSMSResponse, respDetails models.ResponseDetails, err error)
+
+	// GetScheduledMessagesStatus returns the status of scheduled messages.
 	GetScheduledMessagesStatus(ctx context.Context, queryParams models.GetScheduledSMSStatusParams) (
 		resp models.GetScheduledSMSStatusResponse, respDetails models.ResponseDetails, err error)
+
+	// UpdateScheduledMessagesStatus changes status or completely cancels sending of scheduled messages.
 	UpdateScheduledMessagesStatus(
 		ctx context.Context,
 		req models.UpdateScheduledSMSStatusRequest,
