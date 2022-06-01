@@ -24,7 +24,7 @@ func TestUpdateScheduledMessagesStatusValidReq(t *testing.T) {
 		}
 	`)
 
-	var expectedResp models.UpdateScheduledMessagesStatusResponse
+	var expectedResp models.UpdateScheduledStatusResponse
 
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
@@ -45,15 +45,15 @@ func TestUpdateScheduledMessagesStatusValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	req := models.UpdateScheduledMessagesStatusRequest{
+	req := models.UpdateScheduledEmailStatusRequest{
 		Status: "CANCELED",
 	}
-	queryParams := models.UpdateScheduledMessagesStatusOpts{}
+	queryParams := models.UpdateScheduledEmailStatusParams{}
 
 	resp, respDetails, err := email.UpdateScheduledMessagesStatus(context.Background(), req, queryParams)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.UpdateScheduledMessagesStatusResponse{}, resp)
+	assert.NotEqual(t, models.UpdateScheduledStatusResponse{}, resp)
 	assert.Equal(t, expectedResp, resp)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)

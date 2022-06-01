@@ -12,11 +12,11 @@ func TestValidInteractiveButtonsMessage(t *testing.T) {
 	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name     string
-		instance InteractiveButtonsMsg
+		instance WAInteractiveButtonsMsg
 	}{
 		{
 			name: "minimum input, no header",
-			instance: InteractiveButtonsMsg{
+			instance: WAInteractiveButtonsMsg{
 				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
@@ -34,7 +34,7 @@ func TestValidInteractiveButtonsMessage(t *testing.T) {
 		},
 		{
 			name: "complete input, text header",
-			instance: InteractiveButtonsMsg{
+			instance: WAInteractiveButtonsMsg{
 				MsgCommon: msgCommon,
 				Content: InteractiveButtonsContent{
 					Body:   InteractiveButtonsBody{Text: "Some text"},
@@ -46,7 +46,7 @@ func TestValidInteractiveButtonsMessage(t *testing.T) {
 		},
 		{
 			name: "complete input, video header",
-			instance: InteractiveButtonsMsg{
+			instance: WAInteractiveButtonsMsg{
 				MsgCommon: msgCommon,
 				Content: InteractiveButtonsContent{
 					Body:   InteractiveButtonsBody{Text: "Some text"},
@@ -58,7 +58,7 @@ func TestValidInteractiveButtonsMessage(t *testing.T) {
 		},
 		{
 			name: "complete input, image header",
-			instance: InteractiveButtonsMsg{
+			instance: WAInteractiveButtonsMsg{
 				MsgCommon: msgCommon,
 				Content: InteractiveButtonsContent{
 					Body:   InteractiveButtonsBody{Text: "Some text"},
@@ -70,7 +70,7 @@ func TestValidInteractiveButtonsMessage(t *testing.T) {
 		},
 		{
 			name: "complete input, document header",
-			instance: InteractiveButtonsMsg{
+			instance: WAInteractiveButtonsMsg{
 				MsgCommon: msgCommon,
 				Content: InteractiveButtonsContent{
 					Body:   InteractiveButtonsBody{Text: "Some text"},
@@ -324,7 +324,7 @@ func TestTextInteractiveButtonsConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := InteractiveButtonsMsg{
+			msg := WAInteractiveButtonsMsg{
 				MsgCommon: msgCommon,
 				Content:   tc.content,
 			}

@@ -263,7 +263,7 @@ func (e *EmailMsg) GetMultipartBoundary() string {
 	return e.boundary
 }
 
-type EmailDeliveryReportsResponse struct {
+type GetEmailDeliveryReportsResponse struct {
 	Results []struct {
 		BulkID       string `json:"bulkId"`
 		MessageID    string `json:"messageId"`
@@ -295,17 +295,17 @@ type EmailDeliveryReportsResponse struct {
 	} `json:"results"`
 }
 
-type GetDeliveryReportsOpts struct {
+type GetEmailDeliveryReportsParams struct {
 	BulkID    string
 	MessageID string
-	Limit     string
+	Limit     int
 }
 
-func (o *GetDeliveryReportsOpts) Validate() error {
+func (o *GetEmailDeliveryReportsParams) Validate() error {
 	return validate.Struct(o)
 }
 
-type EmailLogsResponse struct {
+type GetEmailLogsResponse struct {
 	Results []struct {
 		MessageID    string `json:"messageId"`
 		To           string `json:"to"`
@@ -331,7 +331,7 @@ type EmailLogsResponse struct {
 	} `json:"results"`
 }
 
-type GetLogsOpts struct {
+type GetEmailLogsParams struct {
 	MessageID     string
 	From          string
 	To            string
@@ -339,10 +339,10 @@ type GetLogsOpts struct {
 	GeneralStatus string
 	SentSince     string
 	SentUntil     string
-	Limit         string
+	Limit         int
 }
 
-func (o *GetLogsOpts) Validate() error {
+func (o *GetEmailLogsParams) Validate() error {
 	return validate.Struct(o)
 }
 
@@ -354,11 +354,11 @@ type SentEmailBulksResponse struct {
 	} `json:"bulks"`
 }
 
-type GetSentBulksOpts struct {
+type GetSentEmailBulksParams struct {
 	BulkID string `validate:"required"`
 }
 
-func (o *GetSentBulksOpts) Validate() error {
+func (o *GetSentEmailBulksParams) Validate() error {
 	return validate.Struct(o)
 }
 
@@ -370,60 +370,60 @@ type SentEmailBulksStatusResponse struct {
 	} `json:"bulks"`
 }
 
-type GetSentBulksStatusOpts struct {
+type GetSentEmailBulksStatusParams struct {
 	BulkID string `validate:"required"`
 }
 
-func (o *GetSentBulksStatusOpts) Validate() error {
+func (o *GetSentEmailBulksStatusParams) Validate() error {
 	return validate.Struct(o)
 }
 
-type RescheduleMessagesRequest struct {
+type RescheduleEmailRequest struct {
 	SendAt string `json:"sendAt"`
 }
 
-type RescheduleMessagesOpts struct {
+type RescheduleEmailParams struct {
 	BulkID string `validate:"required"`
 }
 
-func (o *RescheduleMessagesOpts) Validate() error {
+func (o *RescheduleEmailParams) Validate() error {
 	return validate.Struct(o)
 }
 
-type UpdateScheduledMessagesStatusRequest struct {
+type UpdateScheduledEmailStatusRequest struct {
 	Status string `json:"status" validate:"required,oneof=PENDING PAUSED PROCESSING CANCELED FINISHED FAILED"`
 }
 
-type UpdateScheduledMessagesStatusOpts struct {
+type UpdateScheduledEmailStatusParams struct {
 	BulkID string `validate:"required"`
 }
 
-func (o *UpdateScheduledMessagesStatusOpts) Validate() error {
+func (o *UpdateScheduledEmailStatusParams) Validate() error {
 	return validate.Struct(o)
 }
 
-func (r *UpdateScheduledMessagesStatusRequest) Validate() error {
+func (r *UpdateScheduledEmailStatusRequest) Validate() error {
 	return validate.Struct(r)
 }
 
-func (r *UpdateScheduledMessagesStatusRequest) Marshal() (*bytes.Buffer, error) {
+func (r *UpdateScheduledEmailStatusRequest) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(r)
 }
 
-type UpdateScheduledMessagesStatusResponse struct {
+type UpdateScheduledStatusResponse struct {
 	BulkID string `json:"bulkId"`
 	Status string `json:"status"`
 }
 
-func (r *RescheduleMessagesRequest) Validate() error {
+func (r *RescheduleEmailRequest) Validate() error {
 	return validate.Struct(r)
 }
 
-func (r *RescheduleMessagesRequest) Marshal() (*bytes.Buffer, error) {
+func (r *RescheduleEmailRequest) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(r)
 }
 
-type RescheduleMessagesResponse struct {
+type RescheduleEmailResponse struct {
 	BulkID string `json:"bulkId"`
 	SendAt int64  `json:"sendAt"`
 }
@@ -432,19 +432,19 @@ func (e *EmailMsg) Validate() error {
 	return validate.Struct(e)
 }
 
-type ValidateAddressesRequest struct {
+type ValidateEmailAddressesRequest struct {
 	To string `json:"to"`
 }
 
-func (v *ValidateAddressesRequest) Validate() error {
+func (v *ValidateEmailAddressesRequest) Validate() error {
 	return validate.Struct(v)
 }
 
-func (v *ValidateAddressesRequest) Marshal() (*bytes.Buffer, error) {
+func (v *ValidateEmailAddressesRequest) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(v)
 }
 
-type ValidateAddressesResponse struct {
+type ValidateEmailAddressesResponse struct {
 	To           string `json:"to"`
 	ValidMailbox string `json:"validMailbox"`
 	ValidSyntax  bool   `json:"validSyntax"`

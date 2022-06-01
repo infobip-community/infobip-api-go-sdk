@@ -13,11 +13,11 @@ func TestValidLocationMessage(t *testing.T) {
 	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name     string
-		instance LocationMsg
+		instance WALocationMsg
 	}{
 		{
 			name: "minimum input",
-			instance: LocationMsg{
+			instance: WALocationMsg{
 				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
@@ -27,7 +27,7 @@ func TestValidLocationMessage(t *testing.T) {
 		},
 		{
 			name: "complete input",
-			instance: LocationMsg{
+			instance: WALocationMsg{
 				MsgCommon: msgCommon,
 				Content: LocationContent{
 					Name:      "Some Place",
@@ -39,21 +39,21 @@ func TestValidLocationMessage(t *testing.T) {
 		},
 		{
 			name: "Latitude and longitude 0",
-			instance: LocationMsg{
+			instance: WALocationMsg{
 				MsgCommon: msgCommon,
 				Content:   LocationContent{Latitude: utils.Float32Ptr(0), Longitude: utils.Float32Ptr(0)},
 			},
 		},
 		{
 			name: "Latitude and longitude edge values positive",
-			instance: LocationMsg{
+			instance: WALocationMsg{
 				MsgCommon: msgCommon,
 				Content:   LocationContent{Latitude: utils.Float32Ptr(90), Longitude: utils.Float32Ptr(180)},
 			},
 		},
 		{
 			name: "Latitude and longitude edge values negative",
-			instance: LocationMsg{
+			instance: WALocationMsg{
 				MsgCommon: msgCommon,
 				Content:   LocationContent{Latitude: utils.Float32Ptr(-90), Longitude: utils.Float32Ptr(-180)},
 			},
@@ -106,7 +106,7 @@ func TestTextLocationConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := LocationMsg{
+			msg := WALocationMsg{
 				MsgCommon: msgCommon,
 				Content:   tc.content,
 			}

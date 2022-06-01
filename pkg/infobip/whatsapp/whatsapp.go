@@ -11,146 +11,149 @@ import (
 // WhatsApp provides methods to interact with the Infobip WhatsApp API.
 // WhatsApp API docs: https://www.infobip.com/docs/api#channels/whatsapp
 type WhatsApp interface {
-	SendTemplateMsgs(context.Context, models.TemplateMsgs) (models.BulkMsgResponse, models.ResponseDetails, error)
-	SendTextMsg(context.Context, models.TextMsg) (models.MsgResponse, models.ResponseDetails, error)
-	SendDocumentMsg(context.Context, models.DocumentMsg) (models.MsgResponse, models.ResponseDetails, error)
-	SendImageMsg(context.Context, models.ImageMsg) (models.MsgResponse, models.ResponseDetails, error)
-	SendAudioMsg(context.Context, models.AudioMsg) (models.MsgResponse, models.ResponseDetails, error)
-	SendVideoMsg(context.Context, models.VideoMsg) (models.MsgResponse, models.ResponseDetails, error)
-	SendStickerMsg(context.Context, models.StickerMsg) (models.MsgResponse, models.ResponseDetails, error)
-	SendLocationMsg(context.Context, models.LocationMsg) (models.MsgResponse, models.ResponseDetails, error)
-	SendContactMsg(context.Context, models.ContactMsg) (models.MsgResponse, models.ResponseDetails, error)
-	SendInteractiveButtonsMsg(context.Context, models.InteractiveButtonsMsg,
-	) (models.MsgResponse, models.ResponseDetails, error)
-	SendInteractiveListMsg(context.Context, models.InteractiveListMsg,
-	) (models.MsgResponse, models.ResponseDetails, error)
-	SendInteractiveProductMsg(context.Context, models.InteractiveProductMsg,
-	) (models.MsgResponse, models.ResponseDetails, error)
-	SendInteractiveMultiproductMsg(context.Context, models.InteractiveMultiproductMsg,
-	) (models.MsgResponse, models.ResponseDetails, error)
-	GetTemplates(context.Context, string) (models.TemplatesResponse, models.ResponseDetails, error)
-	CreateTemplate(context.Context, string, models.TemplateCreate) (models.TemplateResponse, models.ResponseDetails, error)
+	SendTemplate(context.Context, models.WATemplateMsgs) (models.BulkWAMsgResponse, models.ResponseDetails, error)
+	SendText(context.Context, models.WATextMsg) (models.SendWAMsgResponse, models.ResponseDetails, error)
+	SendDocument(context.Context, models.WADocumentMsg) (models.SendWAMsgResponse, models.ResponseDetails, error)
+	SendImage(context.Context, models.WAImageMsg) (models.SendWAMsgResponse, models.ResponseDetails, error)
+	SendAudio(context.Context, models.WAAudioMsg) (models.SendWAMsgResponse, models.ResponseDetails, error)
+	SendVideo(context.Context, models.WAVideoMsg) (models.SendWAMsgResponse, models.ResponseDetails, error)
+	SendSticker(context.Context, models.WAStickerMsg) (models.SendWAMsgResponse, models.ResponseDetails, error)
+	SendLocation(context.Context, models.WALocationMsg) (models.SendWAMsgResponse, models.ResponseDetails, error)
+	SendContact(context.Context, models.WAContactMsg) (models.SendWAMsgResponse, models.ResponseDetails, error)
+	SendInteractiveButtons(context.Context, models.WAInteractiveButtonsMsg,
+	) (models.SendWAMsgResponse, models.ResponseDetails, error)
+	SendInteractiveList(context.Context, models.WAInteractiveListMsg,
+	) (models.SendWAMsgResponse, models.ResponseDetails, error)
+	SendInteractiveProduct(context.Context, models.WAInteractiveProductMsg,
+	) (models.SendWAMsgResponse, models.ResponseDetails, error)
+	SendInteractiveMultiproduct(context.Context, models.WAInteractiveMultiproductMsg,
+	) (models.SendWAMsgResponse, models.ResponseDetails, error)
+	GetTemplates(context.Context, string) (models.GetWATemplatesResponse, models.ResponseDetails, error)
+	CreateTemplate(context.Context, string, models.TemplateCreate,
+	) (models.CreateWATemplateResponse, models.ResponseDetails, error)
 }
 
 type Channel struct {
 	ReqHandler internal.HTTPHandler
 }
 
-const sendTemplateMessagesPath = "whatsapp/1/message/template"
-const sendMessagePath = "whatsapp/1/message/text"
-const sendDocumentPath = "whatsapp/1/message/document"
-const sendImagePath = "whatsapp/1/message/image"
-const sendAudioPath = "whatsapp/1/message/audio"
-const sendVideoPath = "whatsapp/1/message/video"
-const sendStickerPath = "whatsapp/1/message/sticker"
-const sendLocationPath = "whatsapp/1/message/location"
-const sendContactPath = "whatsapp/1/message/contact"
-const sendInteractiveButtonsPath = "whatsapp/1/message/interactive/buttons"
-const sendInteractiveListPath = "whatsapp/1/message/interactive/list"
-const sendInteractiveProductPath = "whatsapp/1/message/interactive/product"
-const sendInteractiveMultiproductPath = "whatsapp/1/message/interactive/multi-product"
-const templatesPath = "whatsapp/1/senders/%s/templates"
+const (
+	sendTemplateMessagesPath        = "whatsapp/1/message/template"
+	sendMessagePath                 = "whatsapp/1/message/text"
+	sendDocumentPath                = "whatsapp/1/message/document"
+	sendImagePath                   = "whatsapp/1/message/image"
+	sendAudioPath                   = "whatsapp/1/message/audio"
+	sendVideoPath                   = "whatsapp/1/message/video"
+	sendStickerPath                 = "whatsapp/1/message/sticker"
+	sendLocationPath                = "whatsapp/1/message/location"
+	sendContactPath                 = "whatsapp/1/message/contact"
+	sendInteractiveButtonsPath      = "whatsapp/1/message/interactive/buttons"
+	sendInteractiveListPath         = "whatsapp/1/message/interactive/list"
+	sendInteractiveProductPath      = "whatsapp/1/message/interactive/product"
+	sendInteractiveMultiproductPath = "whatsapp/1/message/interactive/multi-product"
+	templatesPath                   = "whatsapp/1/senders/%s/templates"
+)
 
-func (wap *Channel) SendTemplateMsgs(
+func (wap *Channel) SendTemplate(
 	ctx context.Context,
-	messages models.TemplateMsgs,
-) (msgResp models.BulkMsgResponse, respDetails models.ResponseDetails, err error) {
+	messages models.WATemplateMsgs,
+) (msgResp models.BulkWAMsgResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &messages, &msgResp, sendTemplateMessagesPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *Channel) SendTextMsg(
+func (wap *Channel) SendText(
 	ctx context.Context,
-	msg models.TextMsg,
-) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
+	msg models.WATextMsg,
+) (msgResp models.SendWAMsgResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendMessagePath)
 	return msgResp, respDetails, err
 }
 
-func (wap *Channel) SendDocumentMsg(
+func (wap *Channel) SendDocument(
 	ctx context.Context,
-	msg models.DocumentMsg,
-) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
+	msg models.WADocumentMsg,
+) (msgResp models.SendWAMsgResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendDocumentPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *Channel) SendImageMsg(
+func (wap *Channel) SendImage(
 	ctx context.Context,
-	msg models.ImageMsg,
-) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
+	msg models.WAImageMsg,
+) (msgResp models.SendWAMsgResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendImagePath)
 	return msgResp, respDetails, err
 }
 
-func (wap *Channel) SendAudioMsg(
+func (wap *Channel) SendAudio(
 	ctx context.Context,
-	msg models.AudioMsg,
-) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
+	msg models.WAAudioMsg,
+) (msgResp models.SendWAMsgResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendAudioPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *Channel) SendVideoMsg(
+func (wap *Channel) SendVideo(
 	ctx context.Context,
-	msg models.VideoMsg,
-) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
+	msg models.WAVideoMsg,
+) (msgResp models.SendWAMsgResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendVideoPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *Channel) SendStickerMsg(
+func (wap *Channel) SendSticker(
 	ctx context.Context,
-	msg models.StickerMsg,
-) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
+	msg models.WAStickerMsg,
+) (msgResp models.SendWAMsgResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendStickerPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *Channel) SendLocationMsg(
+func (wap *Channel) SendLocation(
 	ctx context.Context,
-	msg models.LocationMsg,
-) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
+	msg models.WALocationMsg,
+) (msgResp models.SendWAMsgResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendLocationPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *Channel) SendContactMsg(
+func (wap *Channel) SendContact(
 	ctx context.Context,
-	msg models.ContactMsg,
-) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
+	msg models.WAContactMsg,
+) (msgResp models.SendWAMsgResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendContactPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *Channel) SendInteractiveButtonsMsg(
+func (wap *Channel) SendInteractiveButtons(
 	ctx context.Context,
-	msg models.InteractiveButtonsMsg,
-) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
+	msg models.WAInteractiveButtonsMsg,
+) (msgResp models.SendWAMsgResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendInteractiveButtonsPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *Channel) SendInteractiveListMsg(
+func (wap *Channel) SendInteractiveList(
 	ctx context.Context,
-	msg models.InteractiveListMsg,
-) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
+	msg models.WAInteractiveListMsg,
+) (msgResp models.SendWAMsgResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendInteractiveListPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *Channel) SendInteractiveProductMsg(
+func (wap *Channel) SendInteractiveProduct(
 	ctx context.Context,
-	msg models.InteractiveProductMsg,
-) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
+	msg models.WAInteractiveProductMsg,
+) (msgResp models.SendWAMsgResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendInteractiveProductPath)
 	return msgResp, respDetails, err
 }
 
-func (wap *Channel) SendInteractiveMultiproductMsg(
+func (wap *Channel) SendInteractiveMultiproduct(
 	ctx context.Context,
-	msg models.InteractiveMultiproductMsg,
-) (msgResp models.MsgResponse, respDetails models.ResponseDetails, err error) {
+	msg models.WAInteractiveMultiproductMsg,
+) (msgResp models.SendWAMsgResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &msg, &msgResp, sendInteractiveMultiproductPath)
 	return msgResp, respDetails, err
 }
@@ -158,7 +161,7 @@ func (wap *Channel) SendInteractiveMultiproductMsg(
 func (wap *Channel) GetTemplates(
 	ctx context.Context,
 	sender string,
-) (resp models.TemplatesResponse, respDetails models.ResponseDetails, err error) {
+) (resp models.GetWATemplatesResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.ReqHandler.GetRequest(ctx, &resp, fmt.Sprintf(templatesPath, sender), nil)
 	return resp, respDetails, err
 }
@@ -167,7 +170,7 @@ func (wap *Channel) CreateTemplate(
 	ctx context.Context,
 	sender string,
 	template models.TemplateCreate,
-) (resp models.TemplateResponse, respDetails models.ResponseDetails, err error) {
+) (resp models.CreateWATemplateResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &template, &resp, fmt.Sprintf(templatesPath, sender))
 	return resp, respDetails, err
 }

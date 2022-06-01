@@ -44,7 +44,7 @@ func TestGetSentBulksValidReq(t *testing.T) {
 	}))
 	defer serv.Close()
 
-	queryParams := models.GetSentBulksOpts{}
+	queryParams := models.GetSentEmailBulksParams{}
 
 	email := Channel{ReqHandler: internal.HTTPHandler{
 		HTTPClient: http.Client{},

@@ -21,7 +21,7 @@ import (
 
 func TestTextValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.TextMsg{
+	msg := models.WATextMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content:   models.TextContent{Text: "hello world"},
 	}
@@ -37,7 +37,7 @@ func TestTextValidReq(t *testing.T) {
 			"description": "Message sent to next instance"
 		}
 	}`)
-	var expectedResp models.MsgResponse
+	var expectedResp models.SendWAMsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
@@ -47,7 +47,7 @@ func TestTextValidReq(t *testing.T) {
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.TextMsg
+		var receivedMsg models.WATextMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -62,10 +62,10 @@ func TestTextValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendTextMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendText(context.Background(), msg)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.MsgResponse{}, msgResp)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
 	assert.Equal(t, expectedResp, msgResp)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
@@ -73,7 +73,7 @@ func TestTextValidReq(t *testing.T) {
 }
 
 func TestInvalidTextMsg(t *testing.T) {
-	msg := models.TextMsg{
+	msg := models.WATextMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content:   models.TextContent{Text: ""},
 	}
@@ -83,11 +83,11 @@ func TestInvalidTextMsg(t *testing.T) {
 		APIKey:     "secret",
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendTextMsg(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendText(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
-	assert.Equal(t, models.MsgResponse{}, msgResp)
+	assert.Equal(t, models.SendWAMsgResponse{}, msgResp)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
@@ -136,7 +136,7 @@ func TestText4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.TextMsg{
+	msg := models.WATextMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content:   models.TextContent{Text: "hello world"},
 	}
@@ -157,7 +157,7 @@ func TestText4xxErrors(t *testing.T) {
 				APIKey:     "secret",
 			}}
 
-			msgResp, respDetails, err := whatsApp.SendTextMsg(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.SendText(context.Background(), msg)
 			serv.Close()
 
 			require.NoError(t, err)
@@ -165,7 +165,7 @@ func TestText4xxErrors(t *testing.T) {
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
-			assert.Equal(t, models.MsgResponse{}, msgResp)
+			assert.Equal(t, models.SendWAMsgResponse{}, msgResp)
 		})
 	}
 }

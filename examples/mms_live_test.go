@@ -24,12 +24,12 @@ func TestSendMMSExample(t *testing.T) {
 		Text: "Some text",
 	}
 
-	msgResp, respDetails, err := client.MMS.SendMsg(context.Background(), message)
+	msgResp, respDetails, err := client.MMS.Send(context.Background(), message)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.NoError(t, err)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
-	assert.NotEqual(t, models.MMSResponse{}, msgResp)
+	assert.NotEqual(t, models.SendMMSResponse{}, msgResp)
 }
 
 func TestGetOutboundMsgDeliveryReportsExample(t *testing.T) {
@@ -37,13 +37,13 @@ func TestGetOutboundMsgDeliveryReportsExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
-	params := models.OutboundMMSDeliveryReportsOpts{
+	params := models.GetMMSDeliveryReportsParams{
 		BulkID:    "1",
 		MessageID: "1",
-		Limit:     "5",
+		Limit:     5,
 	}
 
-	msgResp, respDetails, err := client.MMS.GetOutboundMsgDeliveryReports(context.Background(), params)
+	msgResp, respDetails, err := client.MMS.GetDeliveryReports(context.Background(), params)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.NoError(t, err)
@@ -55,11 +55,11 @@ func TestGetInboundMMSExample(t *testing.T) {
 	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
-	params := models.InboundMMSOpts{
-		Limit: "5",
+	params := models.GetInboundMMSParams{
+		Limit: 5,
 	}
 
-	msgResp, respDetails, err := client.MMS.GetInboundMsgs(context.Background(), params)
+	msgResp, respDetails, err := client.MMS.GetInboundMessages(context.Background(), params)
 	fmt.Printf("%+v\n", msgResp)
 
 	require.NoError(t, err)

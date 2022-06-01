@@ -40,3 +40,113 @@ func GenerateEmailMsg() EmailMsg {
 		LandingPageID:           "123456",
 	}
 }
+
+func GenerateSendSMSRequest() SendSMSRequest {
+	return SendSMSRequest{
+		BulkID:   "some-bulk-id",
+		Messages: []SMSMsg{GenerateSMSMsg()},
+		SendingSpeedLimit: &SMSSendingSpeedLimit{
+			Amount:   1,
+			TimeUnit: "MINUTE",
+		},
+		Tracking: &SMSTracking{
+			BaseURL:    "https://tracking.com",
+			Track:      "SMS",
+			Type:       "ONE_TIME_PIN",
+			ProcessKey: "someKey",
+		},
+	}
+}
+
+func GenerateBinarySMSMsg() BinarySMSMsg {
+	return BinarySMSMsg{
+		From: "Gopher",
+		Destinations: []SMSDestination{
+			{
+				To: "16175551212",
+			},
+		},
+		Binary: &SMSBinary{
+			Hex:        "aa bb cc dd ff",
+			DataCoding: 0,
+			EsmClass:   0,
+		},
+		IntermediateReport: false,
+		NotifyURL:          "https:/some.url",
+		NotifyContentType:  "application/json",
+		CallbackData:       "some-callback-data",
+		ValidityPeriod:     0,
+		SendAt:             "10-10-2020T10:10:10Z",
+		DeliveryTimeWindow: &SMSDeliveryTimeWindow{
+			Days: []string{"MONDAY"},
+			From: SMSTime{
+				Hour:   1,
+				Minute: 0,
+			},
+			To: SMSTime{
+				Hour:   1,
+				Minute: 1,
+			},
+		},
+		Regional: &SMSRegional{
+			IndiaDLT{
+				ContentTemplateID: "some-id",
+				PrincipalEntityID: "some-principal-id",
+			},
+		},
+	}
+}
+
+func GenerateSendBinarySMSRequest() SendBinarySMSRequest {
+	return SendBinarySMSRequest{
+		BulkID:   "some-bulk-id",
+		Messages: []BinarySMSMsg{GenerateBinarySMSMsg()},
+	}
+}
+
+func GenerateSMSMsg() SMSMsg {
+	return SMSMsg{
+		CallbackData: "DLR callback data",
+		Destinations: []SMSDestination{{
+			MessageID: "some-id",
+			To:        "16175551212",
+		}},
+		Flash:              false,
+		From:               "Someone",
+		IntermediateReport: false,
+		Language: &SMSLanguage{
+			LanguageCode: "EN",
+		},
+		NotifyContentType: "application/json",
+		NotifyURL:         "https://someurl.com",
+		Text:              "Some content",
+		Transliteration:   "CENTRAL_EUROPEAN",
+		ValidityPeriod:    1,
+		DeliveryTimeWindow: &SMSDeliveryTimeWindow{
+			Days: []string{"MONDAY"},
+			From: SMSTime{
+				Hour:   1,
+				Minute: 0,
+			},
+			To: SMSTime{
+				Hour:   1,
+				Minute: 1,
+			},
+		},
+		SendAt: "10-10-2020T10:10:10Z",
+		Regional: &SMSRegional{
+			IndiaDLT{
+				ContentTemplateID: "some-id",
+				PrincipalEntityID: "some-principal-id",
+			},
+		},
+	}
+}
+
+func GeneratePreviewSMSRequest() PreviewSMSRequest {
+	return PreviewSMSRequest{
+		LanguageCode:    "TR",
+		Text:            "Let's see how many characters will remain unused in this message.",
+		Transliteration: "TURKISH",
+	}
+}

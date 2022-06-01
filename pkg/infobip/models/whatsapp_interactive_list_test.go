@@ -11,11 +11,11 @@ func TestValidInteractiveListMessage(t *testing.T) {
 	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name     string
-		instance InteractiveListMsg
+		instance WAInteractiveListMsg
 	}{
 		{
 			name: "minimum input",
-			instance: InteractiveListMsg{
+			instance: WAInteractiveListMsg{
 				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
@@ -31,7 +31,7 @@ func TestValidInteractiveListMessage(t *testing.T) {
 		},
 		{
 			name: "complete input",
-			instance: InteractiveListMsg{
+			instance: WAInteractiveListMsg{
 				MsgCommon: msgCommon,
 				Content: InteractiveListContent{
 					Body: InteractiveListBody{Text: "Some text"},
@@ -423,7 +423,7 @@ func TestInteractiveListConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := InteractiveListMsg{
+			msg := WAInteractiveListMsg{
 				MsgCommon: msgCommon,
 				Content:   tc.content,
 			}

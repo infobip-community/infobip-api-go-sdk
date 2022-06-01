@@ -20,19 +20,19 @@ func setupWhatsAppValidations() {
 	validate.RegisterStructValidation(templateCreateButtonValidation, TemplateButton{})
 	validate.RegisterStructValidation(templateMsgValidation, TemplateMsg{})
 	validate.RegisterStructValidation(templateMsgButtonValidation, TemplateMsgButton{})
-	validate.RegisterStructValidation(textMsgValidation, TextMsg{})
+	validate.RegisterStructValidation(textMsgValidation, WATextMsg{})
 	validate.RegisterStructValidation(contactValidation, Contact{})
-	validate.RegisterStructValidation(interactiveButtonsMsgValidation, InteractiveButtonsMsg{})
-	validate.RegisterStructValidation(interactiveListMsgValidation, InteractiveListMsg{})
-	validate.RegisterStructValidation(multiproductMsgValidation, InteractiveMultiproductMsg{})
+	validate.RegisterStructValidation(interactiveButtonsMsgValidation, WAInteractiveButtonsMsg{})
+	validate.RegisterStructValidation(interactiveListMsgValidation, WAInteractiveListMsg{})
+	validate.RegisterStructValidation(multiproductMsgValidation, WAInteractiveMultiproductMsg{})
 }
 
-type BulkMsgResponse struct {
-	Messages []MsgResponse `json:"messages"`
-	BulkID   string        `json:"bulkId"`
+type BulkWAMsgResponse struct {
+	Messages []SendWAMsgResponse `json:"messages"`
+	BulkID   string              `json:"bulkId"`
 }
 
-type MsgResponse struct {
+type SendWAMsgResponse struct {
 	To           string `json:"to"`
 	MessageCount int32  `json:"messageCount"`
 	MessageID    string `json:"messageId"`
@@ -48,11 +48,11 @@ type Status struct {
 	Action      string `json:"action"`
 }
 
-type TemplatesResponse struct {
-	Templates []TemplateResponse `json:"templates"`
+type GetWATemplatesResponse struct {
+	Templates []CreateWATemplateResponse `json:"templates"`
 }
 
-type TemplateResponse struct {
+type CreateWATemplateResponse struct {
 	ID                string            `json:"ID"`
 	BusinessAccountID int64             `json:"businessAccountID"`
 	Name              string            `json:"name"`
@@ -177,16 +177,16 @@ type MsgCommon struct {
 	NotifyURL    string `json:"notifyUrl,omitempty" validate:"omitempty,url,lte=2048"`
 }
 
-type TemplateMsgs struct {
+type WATemplateMsgs struct {
 	Messages []TemplateMsg `json:"messages" validate:"required,min=1,dive"`
 	BulkID   string        `json:"bulkId,omitempty" validate:"lte=100"`
 }
 
-func (t *TemplateMsgs) Validate() error {
+func (t *WATemplateMsgs) Validate() error {
 	return validate.Struct(t)
 }
 
-func (t *TemplateMsgs) Marshal() (*bytes.Buffer, error) {
+func (t *WATemplateMsgs) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(t)
 }
 
@@ -309,21 +309,21 @@ type SMSFailover struct {
 	Text string `json:"text" validate:"required,lte=4096"`
 }
 
-type TextMsg struct {
+type WATextMsg struct {
 	MsgCommon
 	Content TextContent `json:"content" validate:"required"`
 }
 
-func (t *TextMsg) Validate() error {
+func (t *WATextMsg) Validate() error {
 	return validate.Struct(t)
 }
 
-func (t *TextMsg) Marshal() (*bytes.Buffer, error) {
+func (t *WATextMsg) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(t)
 }
 
 func textMsgValidation(sl validator.StructLevel) {
-	msg, _ := sl.Current().Interface().(TextMsg)
+	msg, _ := sl.Current().Interface().(WATextMsg)
 	previewURLValidation(sl, msg)
 }
 
@@ -332,7 +332,7 @@ type TextContent struct {
 	PreviewURL bool   `json:"previewURL,omitempty"`
 }
 
-func previewURLValidation(sl validator.StructLevel, msg TextMsg) {
+func previewURLValidation(sl validator.StructLevel, msg WATextMsg) {
 	content := msg.Content
 	containsURL := xurls.Relaxed().FindString(content.Text)
 	if content.PreviewURL && containsURL == "" {
@@ -340,16 +340,16 @@ func previewURLValidation(sl validator.StructLevel, msg TextMsg) {
 	}
 }
 
-type DocumentMsg struct {
+type WADocumentMsg struct {
 	MsgCommon
 	Content DocumentContent `json:"content" validate:"required"`
 }
 
-func (t *DocumentMsg) Validate() error {
+func (t *WADocumentMsg) Validate() error {
 	return validate.Struct(t)
 }
 
-func (t *DocumentMsg) Marshal() (*bytes.Buffer, error) {
+func (t *WADocumentMsg) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(t)
 }
 
@@ -359,16 +359,16 @@ type DocumentContent struct {
 	Filename string `json:"filename,omitempty" validate:"lte=240"`
 }
 
-type ImageMsg struct {
+type WAImageMsg struct {
 	MsgCommon
 	Content ImageContent `json:"content" validate:"required"`
 }
 
-func (t *ImageMsg) Validate() error {
+func (t *WAImageMsg) Validate() error {
 	return validate.Struct(t)
 }
 
-func (t *ImageMsg) Marshal() (*bytes.Buffer, error) {
+func (t *WAImageMsg) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(t)
 }
 
@@ -377,16 +377,16 @@ type ImageContent struct {
 	Caption  string `json:"caption,omitempty" validate:"lte=3000"`
 }
 
-type AudioMsg struct {
+type WAAudioMsg struct {
 	MsgCommon
 	Content AudioContent `json:"content" validate:"required"`
 }
 
-func (t *AudioMsg) Validate() error {
+func (t *WAAudioMsg) Validate() error {
 	return validate.Struct(t)
 }
 
-func (t *AudioMsg) Marshal() (*bytes.Buffer, error) {
+func (t *WAAudioMsg) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(t)
 }
 
@@ -394,16 +394,16 @@ type AudioContent struct {
 	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
 }
 
-type VideoMsg struct {
+type WAVideoMsg struct {
 	MsgCommon
 	Content VideoContent `json:"content" validate:"required"`
 }
 
-func (t *VideoMsg) Validate() error {
+func (t *WAVideoMsg) Validate() error {
 	return validate.Struct(t)
 }
 
-func (t *VideoMsg) Marshal() (*bytes.Buffer, error) {
+func (t *WAVideoMsg) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(t)
 }
 
@@ -412,16 +412,16 @@ type VideoContent struct {
 	Caption  string `json:"caption,omitempty" validate:"lte=3000"`
 }
 
-type StickerMsg struct {
+type WAStickerMsg struct {
 	MsgCommon
 	Content StickerContent `json:"content" validate:"required"`
 }
 
-func (t *StickerMsg) Validate() error {
+func (t *WAStickerMsg) Validate() error {
 	return validate.Struct(t)
 }
 
-func (t *StickerMsg) Marshal() (*bytes.Buffer, error) {
+func (t *WAStickerMsg) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(t)
 }
 
@@ -429,16 +429,16 @@ type StickerContent struct {
 	MediaURL string `json:"mediaUrl" validate:"required,url,lte=2048"`
 }
 
-type LocationMsg struct {
+type WALocationMsg struct {
 	MsgCommon
 	Content LocationContent `json:"content" validate:"required"`
 }
 
-func (t *LocationMsg) Validate() error {
+func (t *WALocationMsg) Validate() error {
 	return validate.Struct(t)
 }
 
-func (t *LocationMsg) Marshal() (*bytes.Buffer, error) {
+func (t *WALocationMsg) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(t)
 }
 
@@ -449,16 +449,16 @@ type LocationContent struct {
 	Address   string   `json:"address" validate:"lte=1000"`
 }
 
-type ContactMsg struct {
+type WAContactMsg struct {
 	MsgCommon
 	Content ContactContent `json:"content" validate:"required"`
 }
 
-func (t *ContactMsg) Validate() error {
+func (t *WAContactMsg) Validate() error {
 	return validate.Struct(t)
 }
 
-func (t *ContactMsg) Marshal() (*bytes.Buffer, error) {
+func (t *WAContactMsg) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(t)
 }
 
@@ -528,25 +528,25 @@ type ContactURL struct {
 	Type string `json:"type,omitempty" validate:"omitempty,oneof=HOME WORK"`
 }
 
-type InteractiveButtonsMsg struct {
+type WAInteractiveButtonsMsg struct {
 	MsgCommon
 	Content InteractiveButtonsContent `json:"content" validate:"required"`
 }
 
-func (t *InteractiveButtonsMsg) Validate() error {
+func (t *WAInteractiveButtonsMsg) Validate() error {
 	return validate.Struct(t)
 }
 
-func (t *InteractiveButtonsMsg) Marshal() (*bytes.Buffer, error) {
+func (t *WAInteractiveButtonsMsg) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(t)
 }
 
 func interactiveButtonsMsgValidation(sl validator.StructLevel) {
-	msg, _ := sl.Current().Interface().(InteractiveButtonsMsg)
+	msg, _ := sl.Current().Interface().(WAInteractiveButtonsMsg)
 	validateInteractiveButtonsHeader(sl, msg)
 }
 
-func validateInteractiveButtonsHeader(sl validator.StructLevel, msg InteractiveButtonsMsg) {
+func validateInteractiveButtonsHeader(sl validator.StructLevel, msg WAInteractiveButtonsMsg) {
 	header := msg.Content.Header
 	if header == nil {
 		return
@@ -596,27 +596,27 @@ type InteractiveButtonsFooter struct {
 	Text string `json:"text" validate:"required,lte=60"`
 }
 
-type InteractiveListMsg struct {
+type WAInteractiveListMsg struct {
 	MsgCommon
 	Content InteractiveListContent `json:"content" validate:"required"`
 }
 
-func (t *InteractiveListMsg) Validate() error {
+func (t *WAInteractiveListMsg) Validate() error {
 	return validate.Struct(t)
 }
 
-func (t *InteractiveListMsg) Marshal() (*bytes.Buffer, error) {
+func (t *WAInteractiveListMsg) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(t)
 }
 
 func interactiveListMsgValidation(sl validator.StructLevel) {
-	msg, _ := sl.Current().Interface().(InteractiveListMsg)
+	msg, _ := sl.Current().Interface().(WAInteractiveListMsg)
 	validateListSectionRowCount(sl, msg)
 	validateListDuplicateRows(sl, msg)
 	validateListSectionTitles(sl, msg)
 }
 
-func validateListSectionRowCount(sl validator.StructLevel, msg InteractiveListMsg) {
+func validateListSectionRowCount(sl validator.StructLevel, msg WAInteractiveListMsg) {
 	var rowCount int
 	sections := msg.Content.Action.Sections
 
@@ -634,7 +634,7 @@ func validateListSectionRowCount(sl validator.StructLevel, msg InteractiveListMs
 	}
 }
 
-func validateListDuplicateRows(sl validator.StructLevel, msg InteractiveListMsg) {
+func validateListDuplicateRows(sl validator.StructLevel, msg WAInteractiveListMsg) {
 	rowIDs := make(map[string]int)
 	sections := msg.Content.Action.Sections
 
@@ -654,7 +654,7 @@ func validateListDuplicateRows(sl validator.StructLevel, msg InteractiveListMsg)
 	}
 }
 
-func validateListSectionTitles(sl validator.StructLevel, msg InteractiveListMsg) {
+func validateListSectionTitles(sl validator.StructLevel, msg WAInteractiveListMsg) {
 	sections := msg.Content.Action.Sections
 
 	if len(sections) > 1 {
@@ -708,16 +708,16 @@ type InteractiveListFooter struct {
 	Text string `json:"text" validate:"required,lte=60"`
 }
 
-type InteractiveProductMsg struct {
+type WAInteractiveProductMsg struct {
 	MsgCommon
 	Content InteractiveProductContent `json:"content" validate:"required"`
 }
 
-func (t *InteractiveProductMsg) Validate() error {
+func (t *WAInteractiveProductMsg) Validate() error {
 	return validate.Struct(t)
 }
 
-func (t *InteractiveProductMsg) Marshal() (*bytes.Buffer, error) {
+func (t *WAInteractiveProductMsg) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(t)
 }
 
@@ -740,25 +740,25 @@ type InteractiveProductFooter struct {
 	Text string `json:"text" validate:"required,lte=60"`
 }
 
-type InteractiveMultiproductMsg struct {
+type WAInteractiveMultiproductMsg struct {
 	MsgCommon
 	Content InteractiveMultiproductContent `json:"content" validate:"required"`
 }
 
-func (t *InteractiveMultiproductMsg) Validate() error {
+func (t *WAInteractiveMultiproductMsg) Validate() error {
 	return validate.Struct(t)
 }
 
-func (t *InteractiveMultiproductMsg) Marshal() (*bytes.Buffer, error) {
+func (t *WAInteractiveMultiproductMsg) Marshal() (*bytes.Buffer, error) {
 	return marshalJSON(t)
 }
 
 func multiproductMsgValidation(sl validator.StructLevel) {
-	msg, _ := sl.Current().Interface().(InteractiveMultiproductMsg)
+	msg, _ := sl.Current().Interface().(WAInteractiveMultiproductMsg)
 	validateMultiproductSectionTitles(sl, msg)
 }
 
-func validateMultiproductSectionTitles(sl validator.StructLevel, msg InteractiveMultiproductMsg) {
+func validateMultiproductSectionTitles(sl validator.StructLevel, msg WAInteractiveMultiproductMsg) {
 	sections := msg.Content.Action.Sections
 	if len(sections) > 1 {
 		for _, section := range sections {

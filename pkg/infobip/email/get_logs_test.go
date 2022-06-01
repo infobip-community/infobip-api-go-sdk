@@ -108,7 +108,7 @@ func TestGetLogsValidReq(t *testing.T) {
 		}
 	`)
 
-	var expectedResp models.EmailLogsResponse
+	var expectedResp models.GetEmailLogsResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
@@ -122,7 +122,9 @@ func TestGetLogsValidReq(t *testing.T) {
 	}))
 	defer serv.Close()
 
-	queryParams := models.GetLogsOpts{}
+	queryParams := models.GetEmailLogsParams{
+		Limit: 1,
+	}
 
 	email := Channel{ReqHandler: internal.HTTPHandler{
 		HTTPClient: http.Client{},
@@ -133,7 +135,7 @@ func TestGetLogsValidReq(t *testing.T) {
 	resp, respDetails, err := email.GetLogs(context.Background(), queryParams)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.EmailLogsResponse{}, resp)
+	assert.NotEqual(t, models.GetEmailLogsResponse{}, resp)
 	assert.Equal(t, expectedResp, resp)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)

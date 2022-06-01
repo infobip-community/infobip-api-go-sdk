@@ -21,7 +21,7 @@ import (
 
 func TestInteractiveListValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.InteractiveListMsg{
+	msg := models.WAInteractiveListMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content: models.InteractiveListContent{
 			Body: models.InteractiveListBody{Text: "Some text"},
@@ -43,7 +43,7 @@ func TestInteractiveListValidReq(t *testing.T) {
 			"description": "Message sent to next instance"
 		}
 	}`)
-	var expectedResp models.MsgResponse
+	var expectedResp models.SendWAMsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
@@ -53,7 +53,7 @@ func TestInteractiveListValidReq(t *testing.T) {
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.InteractiveListMsg
+		var receivedMsg models.WAInteractiveListMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -68,10 +68,10 @@ func TestInteractiveListValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	msgResponse, respDetails, err := whatsApp.SendInteractiveListMsg(context.Background(), msg)
+	msgResponse, respDetails, err := whatsApp.SendInteractiveList(context.Background(), msg)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.MsgResponse{}, msgResponse)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResponse)
 	assert.Equal(t, expectedResp, msgResponse)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
@@ -79,7 +79,7 @@ func TestInteractiveListValidReq(t *testing.T) {
 }
 
 func TestInvalidInteractiveListMsg(t *testing.T) {
-	msg := models.InteractiveListMsg{
+	msg := models.WAInteractiveListMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content: models.InteractiveListContent{
 			Body: models.InteractiveListBody{Text: "Some text"},
@@ -95,11 +95,11 @@ func TestInvalidInteractiveListMsg(t *testing.T) {
 		APIKey:     "secret",
 	}}
 
-	msgResponse, respDetails, err := whatsApp.SendInteractiveListMsg(context.Background(), msg)
+	msgResponse, respDetails, err := whatsApp.SendInteractiveList(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
-	assert.Equal(t, models.MsgResponse{}, msgResponse)
+	assert.Equal(t, models.SendWAMsgResponse{}, msgResponse)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
@@ -148,7 +148,7 @@ func TestInteractiveList4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.InteractiveListMsg{
+	msg := models.WAInteractiveListMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content: models.InteractiveListContent{
 			Body: models.InteractiveListBody{Text: "Some text"},
@@ -175,7 +175,7 @@ func TestInteractiveList4xxErrors(t *testing.T) {
 				APIKey:     "secret",
 			}}
 
-			messageResponse, respDetails, err := whatsApp.SendInteractiveListMsg(context.Background(), msg)
+			messageResponse, respDetails, err := whatsApp.SendInteractiveList(context.Background(), msg)
 			serv.Close()
 
 			require.NoError(t, err)
@@ -183,7 +183,7 @@ func TestInteractiveList4xxErrors(t *testing.T) {
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
-			assert.Equal(t, models.MsgResponse{}, messageResponse)
+			assert.Equal(t, models.SendWAMsgResponse{}, messageResponse)
 		})
 	}
 }

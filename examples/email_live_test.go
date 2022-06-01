@@ -14,11 +14,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	apiKey  = "your-key"
-	baseURL = "your-base-url"
-)
-
 func TestSendEmail(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
@@ -71,10 +66,10 @@ func TestGetEmailDeliveryReports(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.GetDeliveryReportsOpts{
+	queryParams := models.GetEmailDeliveryReportsParams{
 		BulkID:    "",
 		MessageID: "",
-		Limit:     "",
+		Limit:     1,
 	}
 	deliveryReports, respDetails, err := client.Email.GetDeliveryReports(context.Background(), queryParams)
 
@@ -84,7 +79,7 @@ func TestGetEmailDeliveryReports(t *testing.T) {
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
 	assert.NotEmptyf(t, deliveryReports.Results[0].MessageID, "MessageID should not be empty")
-	assert.NotEqual(t, models.EmailDeliveryReportsResponse{}, deliveryReports)
+	assert.NotEqual(t, models.GetEmailDeliveryReportsResponse{}, deliveryReports)
 	assert.NotEqual(t, models.ResponseDetails{}, deliveryReports)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
@@ -93,7 +88,7 @@ func TestGetLogs(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.GetLogsOpts{
+	queryParams := models.GetEmailLogsParams{
 		MessageID:     "",
 		From:          "",
 		To:            "",
@@ -101,7 +96,7 @@ func TestGetLogs(t *testing.T) {
 		GeneralStatus: "",
 		SentSince:     "",
 		SentUntil:     "",
-		Limit:         "",
+		Limit:         1,
 	}
 
 	logs, respDetails, err := client.Email.GetLogs(context.Background(), queryParams)
@@ -111,7 +106,7 @@ func TestGetLogs(t *testing.T) {
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEqual(t, models.EmailLogsResponse{}, logs)
+	assert.NotEqual(t, models.GetEmailLogsResponse{}, logs)
 	assert.NotEqual(t, models.ResponseDetails{}, logs)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
@@ -120,7 +115,7 @@ func TestGetSentBulks(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.GetSentBulksOpts{
+	queryParams := models.GetSentEmailBulksParams{
 		BulkID: "test-bulk-78",
 	}
 
@@ -140,7 +135,7 @@ func TestGetSentBulksStatus(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.GetSentBulksStatusOpts{
+	queryParams := models.GetSentEmailBulksStatusParams{
 		BulkID: "test-bulk-78",
 	}
 
@@ -160,11 +155,11 @@ func TestRescheduleMessages(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.RescheduleMessagesOpts{
+	queryParams := models.RescheduleEmailParams{
 		BulkID: "test-bulk-78",
 	}
 
-	req := models.RescheduleMessagesRequest{
+	req := models.RescheduleEmailRequest{
 		SendAt: "2022-04-13T17:56:07Z",
 	}
 
@@ -175,7 +170,7 @@ func TestRescheduleMessages(t *testing.T) {
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEqual(t, models.RescheduleMessagesResponse{}, rescheduleResp)
+	assert.NotEqual(t, models.RescheduleEmailResponse{}, rescheduleResp)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
@@ -184,11 +179,11 @@ func TestUpdateScheduledMessagesStatus(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	queryParams := models.UpdateScheduledMessagesStatusOpts{
+	queryParams := models.UpdateScheduledEmailStatusParams{
 		BulkID: "test-bulk-78",
 	}
 
-	req := models.UpdateScheduledMessagesStatusRequest{
+	req := models.UpdateScheduledEmailStatusRequest{
 		Status: "CANCELED",
 	}
 
@@ -199,7 +194,7 @@ func TestUpdateScheduledMessagesStatus(t *testing.T) {
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEqual(t, models.UpdateScheduledMessagesStatusResponse{}, updateResp)
+	assert.NotEqual(t, models.UpdateScheduledStatusResponse{}, updateResp)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
@@ -208,7 +203,7 @@ func TestValidateAddresses(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	req := models.ValidateAddressesRequest{
+	req := models.ValidateEmailAddressesRequest{
 		To: "somemail@domain.com",
 	}
 
@@ -219,7 +214,7 @@ func TestValidateAddresses(t *testing.T) {
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEqual(t, models.ValidateAddressesResponse{}, validateResp)
+	assert.NotEqual(t, models.ValidateEmailAddressesResponse{}, validateResp)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }

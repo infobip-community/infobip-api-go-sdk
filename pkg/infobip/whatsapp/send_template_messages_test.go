@@ -21,7 +21,7 @@ import (
 
 func TestTemplateMsgValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.TemplateMsgs{
+	msg := models.WATemplateMsgs{
 		Messages: []models.TemplateMsg{
 			{
 				MsgCommon: models.MsgCommon{From: "16175551213", To: "16175551212"},
@@ -52,7 +52,7 @@ func TestTemplateMsgValidReq(t *testing.T) {
 		],
 		"bulkId": "2034072219640523073"
 	}`)
-	var expectedResp models.BulkMsgResponse
+	var expectedResp models.BulkWAMsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
@@ -62,7 +62,7 @@ func TestTemplateMsgValidReq(t *testing.T) {
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.TemplateMsgs
+		var receivedMsg models.WATemplateMsgs
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -77,10 +77,10 @@ func TestTemplateMsgValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendTemplateMsgs(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendTemplate(context.Background(), msg)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.BulkMsgResponse{}, msgResp)
+	assert.NotEqual(t, models.BulkWAMsgResponse{}, msgResp)
 	assert.Equal(t, expectedResp, msgResp)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
@@ -88,7 +88,7 @@ func TestTemplateMsgValidReq(t *testing.T) {
 }
 
 func TestInvalidTemplateMsg(t *testing.T) {
-	msg := models.TemplateMsgs{
+	msg := models.WATemplateMsgs{
 		Messages: []models.TemplateMsg{
 			{
 				MsgCommon: models.MsgCommon{From: "16175551213", To: "16175551212"},
@@ -108,11 +108,11 @@ func TestInvalidTemplateMsg(t *testing.T) {
 		APIKey:     "secret",
 	}}
 
-	msgResp, respDetails, err := whatsApp.SendTemplateMsgs(context.Background(), msg)
+	msgResp, respDetails, err := whatsApp.SendTemplate(context.Background(), msg)
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
-	assert.Equal(t, models.BulkMsgResponse{}, msgResp)
+	assert.Equal(t, models.BulkWAMsgResponse{}, msgResp)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
@@ -160,7 +160,7 @@ func TestTemplateMsg4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.TemplateMsgs{
+	msg := models.WATemplateMsgs{
 		Messages: []models.TemplateMsg{
 			{
 				MsgCommon: models.MsgCommon{From: "16175551213", To: "16175551212"},
@@ -191,7 +191,7 @@ func TestTemplateMsg4xxErrors(t *testing.T) {
 				APIKey:     "secret",
 			}}
 
-			msgResp, respDetails, err := whatsApp.SendTemplateMsgs(context.Background(), msg)
+			msgResp, respDetails, err := whatsApp.SendTemplate(context.Background(), msg)
 			serv.Close()
 
 			require.NoError(t, err)
@@ -199,7 +199,7 @@ func TestTemplateMsg4xxErrors(t *testing.T) {
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
-			assert.Equal(t, models.BulkMsgResponse{}, msgResp)
+			assert.Equal(t, models.BulkWAMsgResponse{}, msgResp)
 		})
 	}
 }

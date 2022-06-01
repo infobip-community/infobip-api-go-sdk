@@ -11,6 +11,7 @@ Go client SDK for Infobip's API Channels
 
 ## 📡 Supported Channels
 
+- [SMS](https://www.infobip.com/docs/api#channels/sms)
 - [WhatsApp](https://www.infobip.com/docs/api#channels/whatsapp)
 - [Email](https://www.infobip.com/docs/api#channels/email)
 - [MMS](https://www.infobip.com/docs/api#channels/mms)

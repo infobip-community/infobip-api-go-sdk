@@ -11,11 +11,11 @@ func TestValidInteractiveMultiproductMessage(t *testing.T) {
 	msgCommon := GenerateTestMsgCommon()
 	tests := []struct {
 		name     string
-		instance InteractiveMultiproductMsg
+		instance WAInteractiveMultiproductMsg
 	}{
 		{
 			name: "minimum input",
-			instance: InteractiveMultiproductMsg{
+			instance: WAInteractiveMultiproductMsg{
 				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
@@ -34,7 +34,7 @@ func TestValidInteractiveMultiproductMessage(t *testing.T) {
 		},
 		{
 			name: "complete input",
-			instance: InteractiveMultiproductMsg{
+			instance: WAInteractiveMultiproductMsg{
 				MsgCommon: msgCommon,
 				Content: InteractiveMultiproductContent{
 					Header: InteractiveMultiproductHeader{Type: "TEXT", Text: "Header"},
@@ -296,7 +296,7 @@ func TestTextInteractiveMultiproductConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := InteractiveMultiproductMsg{
+			msg := WAInteractiveMultiproductMsg{
 				MsgCommon: msgCommon,
 				Content:   tc.content,
 			}

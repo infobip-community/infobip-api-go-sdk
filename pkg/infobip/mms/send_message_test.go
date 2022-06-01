@@ -76,7 +76,7 @@ func TestSendMsgValidReq(t *testing.T) {
 		],
 		"errorMessage": "string"
 	}`)
-	var expectedResp models.MMSResponse
+	var expectedResp models.SendMMSResponse
 	err = json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
@@ -110,10 +110,10 @@ func TestSendMsgValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	msgResp, respDetails, err := mms.SendMsg(context.Background(), msg)
+	msgResp, respDetails, err := mms.Send(context.Background(), msg)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.MMSResponse{}, msgResp)
+	assert.NotEqual(t, models.SendMMSResponse{}, msgResp)
 	assert.Equal(t, expectedResp, msgResp)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
@@ -126,11 +126,11 @@ func TestInvalidMsg(t *testing.T) {
 		BaseURL:    "https://something.api.infobip.com",
 		APIKey:     "secret",
 	}}
-	msgResp, respDetails, err := mms.SendMsg(context.Background(), models.MMSMsg{Text: "Some text"})
+	msgResp, respDetails, err := mms.Send(context.Background(), models.MMSMsg{Text: "Some text"})
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
-	assert.Equal(t, models.MMSResponse{}, msgResp)
+	assert.Equal(t, models.SendMMSResponse{}, msgResp)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
@@ -163,7 +163,7 @@ func TestSendMsgErrors(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(strconv.Itoa(tc.statusCode), func(t *testing.T) {
-			var expectedResp models.MMSResponse
+			var expectedResp models.SendMMSResponse
 			err := json.Unmarshal(tc.rawJSONResp, &expectedResp)
 			require.NoError(t, err)
 			serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -177,7 +177,7 @@ func TestSendMsgErrors(t *testing.T) {
 				APIKey:     "secret",
 			}}
 
-			msgResp, respDetails, err := mms.SendMsg(context.Background(), msg)
+			msgResp, respDetails, err := mms.Send(context.Background(), msg)
 			serv.Close()
 
 			require.NoError(t, err)

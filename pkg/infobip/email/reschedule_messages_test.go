@@ -24,7 +24,7 @@ func TestRescheduleMessagesValidReq(t *testing.T) {
 		}
 	`)
 
-	var expectedResp models.RescheduleMessagesResponse
+	var expectedResp models.RescheduleEmailResponse
 
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
@@ -45,15 +45,15 @@ func TestRescheduleMessagesValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	req := models.RescheduleMessagesRequest{
+	req := models.RescheduleEmailRequest{
 		SendAt: "2022-04-12T17:56:07Z",
 	}
-	queryParams := models.RescheduleMessagesOpts{}
+	queryParams := models.RescheduleEmailParams{}
 
 	resp, respDetails, err := email.RescheduleMessages(context.Background(), req, queryParams)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.RescheduleMessagesResponse{}, resp)
+	assert.NotEqual(t, models.RescheduleEmailResponse{}, resp)
 	assert.Equal(t, expectedResp, resp)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)

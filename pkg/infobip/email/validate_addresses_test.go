@@ -28,7 +28,7 @@ func TestValidateAddressesValidReq(t *testing.T) {
 		}
 	`)
 
-	var expectedResp models.ValidateAddressesResponse
+	var expectedResp models.ValidateEmailAddressesResponse
 
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
@@ -49,14 +49,14 @@ func TestValidateAddressesValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	req := models.ValidateAddressesRequest{
+	req := models.ValidateEmailAddressesRequest{
 		To: "someone@infobip.com",
 	}
 
 	resp, respDetails, err := email.ValidateAddresses(context.Background(), req)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.ValidateAddressesResponse{}, resp)
+	assert.NotEqual(t, models.ValidateEmailAddressesResponse{}, resp)
 	assert.Equal(t, expectedResp, resp)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)

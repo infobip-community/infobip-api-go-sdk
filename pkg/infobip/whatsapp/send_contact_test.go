@@ -21,7 +21,7 @@ import (
 
 func TestContactValidReq(t *testing.T) {
 	apiKey := "secret"
-	msg := models.ContactMsg{
+	msg := models.WAContactMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content: models.ContactContent{
 			Contacts: []models.Contact{{Name: models.ContactName{FirstName: "John", FormattedName: "Mr. John Smith"}}},
@@ -39,7 +39,7 @@ func TestContactValidReq(t *testing.T) {
 			"description": "Message sent to next instance"
 		}
 	}`)
-	var expectedResp models.MsgResponse
+	var expectedResp models.SendWAMsgResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
@@ -49,7 +49,7 @@ func TestContactValidReq(t *testing.T) {
 		parsedBody, servErr := ioutil.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedMsg models.ContactMsg
+		var receivedMsg models.WAContactMsg
 		servErr = json.Unmarshal(parsedBody, &receivedMsg)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedMsg, msg)
@@ -64,10 +64,10 @@ func TestContactValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	messageResponse, respDetails, err := whatsApp.SendContactMsg(context.Background(), msg)
+	messageResponse, respDetails, err := whatsApp.SendContact(context.Background(), msg)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.MsgResponse{}, messageResponse)
+	assert.NotEqual(t, models.SendWAMsgResponse{}, messageResponse)
 	assert.Equal(t, expectedResp, messageResponse)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
@@ -75,7 +75,7 @@ func TestContactValidReq(t *testing.T) {
 }
 
 func TestInvalidContactMsg(t *testing.T) {
-	msg := models.ContactMsg{
+	msg := models.WAContactMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content: models.ContactContent{
 			Contacts: []models.Contact{{Name: models.ContactName{FormattedName: "Mr. John Smith"}}},
@@ -87,11 +87,11 @@ func TestInvalidContactMsg(t *testing.T) {
 		APIKey:     "secret",
 	}}
 
-	messageResponse, respDetails, err := whatsApp.SendContactMsg(context.Background(), msg)
+	messageResponse, respDetails, err := whatsApp.SendContact(context.Background(), msg)
 	require.NotNil(t, err)
 
 	assert.IsType(t, err, validator.ValidationErrors{})
-	assert.Equal(t, models.MsgResponse{}, messageResponse)
+	assert.Equal(t, models.SendWAMsgResponse{}, messageResponse)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
@@ -139,7 +139,7 @@ func TestContact4xxErrors(t *testing.T) {
 			statusCode: http.StatusTooManyRequests,
 		},
 	}
-	msg := models.ContactMsg{
+	msg := models.WAContactMsg{
 		MsgCommon: models.GenerateTestMsgCommon(),
 		Content: models.ContactContent{
 			Contacts: []models.Contact{{Name: models.ContactName{FirstName: "John", FormattedName: "Mr. John Smith"}}},
@@ -162,7 +162,7 @@ func TestContact4xxErrors(t *testing.T) {
 				APIKey:     "secret",
 			}}
 
-			messageResponse, respDetails, err := whatsApp.SendContactMsg(context.Background(), msg)
+			messageResponse, respDetails, err := whatsApp.SendContact(context.Background(), msg)
 			serv.Close()
 
 			require.NoError(t, err)
@@ -170,7 +170,7 @@ func TestContact4xxErrors(t *testing.T) {
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
-			assert.Equal(t, models.MsgResponse{}, messageResponse)
+			assert.Equal(t, models.SendWAMsgResponse{}, messageResponse)
 		})
 	}
 }

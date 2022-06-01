@@ -97,7 +97,7 @@ func deliveryWindowIsValid(from MMSTime, to MMSTime) bool {
 	return diff >= MinDeliveryWindow
 }
 
-type MMSResponse struct {
+type SendMMSResponse struct {
 	BulkID       string    `json:"bulkId"`
 	Messages     []SentMMS `json:"messages"`
 	ErrorMessage string    `json:"errorMessage"`
@@ -171,13 +171,13 @@ func (t *MMSMsg) GetMultipartBoundary() string {
 	return t.boundary
 }
 
-type OutboundMMSDeliveryReportsOpts struct {
+type GetMMSDeliveryReportsParams struct {
 	BulkID    string
 	MessageID string
-	Limit     string
+	Limit     int
 }
 
-type OutboundMMSDeliveryReportsResponse struct {
+type GetMMSDeliveryReportsResponse struct {
 	Results []OutboundMMSDeliveryResult `json:"results"`
 }
 
@@ -197,11 +197,11 @@ type OutboundMMSDeliveryResult struct {
 }
 
 type MMSPrice struct {
-	PricePerMessage int    `json:"pricePerMessage"`
-	Currency        string `json:"currency"`
+	PricePerMessage float64 `json:"pricePerMessage"`
+	Currency        string  `json:"currency"`
 }
 
-type InboundMMSResponse struct {
+type GetInboundMMSResponse struct {
 	Results []InboundMMSResult `json:"results"`
 }
 
@@ -216,6 +216,6 @@ type InboundMMSResult struct {
 	Price        MMSPrice `json:"price"`
 }
 
-type InboundMMSOpts struct {
-	Limit string
+type GetInboundMMSParams struct {
+	Limit int
 }

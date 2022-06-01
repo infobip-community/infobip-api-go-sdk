@@ -9,11 +9,11 @@ import (
 func TestValidContactMessage(t *testing.T) {
 	tests := []struct {
 		name     string
-		instance ContactMsg
+		instance WAContactMsg
 	}{
 		{
 			name: "minimum input",
-			instance: ContactMsg{
+			instance: WAContactMsg{
 				MsgCommon: MsgCommon{
 					From: "16175551213",
 					To:   "16175551212",
@@ -25,7 +25,7 @@ func TestValidContactMessage(t *testing.T) {
 		},
 		{
 			name: "complete input",
-			instance: ContactMsg{
+			instance: WAContactMsg{
 				MsgCommon: GenerateTestMsgCommon(),
 				Content: ContactContent{
 					Contacts: []Contact{
@@ -187,7 +187,7 @@ func TestContactMessageConstraints(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := ContactMsg{
+			msg := WAContactMsg{
 				MsgCommon: msgCommon,
 				Content:   tc.content,
 			}

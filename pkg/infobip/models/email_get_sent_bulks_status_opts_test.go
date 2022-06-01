@@ -6,9 +6,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidGetSentBulksStatusOpts(t *testing.T) {
-	t.Run("ValidGetSentBulksStatusOpts", func(t *testing.T) {
-		test := GetSentBulksStatusOpts{
+func TestValidGetSentBulksStatusParams(t *testing.T) {
+	t.Run("ValidGetSentBulksStatusParams", func(t *testing.T) {
+		test := GetSentEmailBulksStatusParams{
 			BulkID: "some-bulk-id",
 		}
 		err := test.Validate()
@@ -16,9 +16,9 @@ func TestValidGetSentBulksStatusOpts(t *testing.T) {
 	})
 }
 
-func TestInvalidGetSentBulksStatusOpts(t *testing.T) {
-	t.Run("InvalidGetSentBulksStatusOpts", func(t *testing.T) {
-		test := GetSentBulksStatusOpts{}
+func TestInvalidGetSentBulksStatusParams(t *testing.T) {
+	t.Run("InvalidGetSentBulksStatusParams", func(t *testing.T) {
+		test := GetSentEmailBulksStatusParams{}
 		err := test.Validate()
 		require.Error(t, err)
 	})

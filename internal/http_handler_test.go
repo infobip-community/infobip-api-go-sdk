@@ -184,21 +184,31 @@ func TestReqInvalidHost(t *testing.T) {
 func TestGenerateQueryParams(t *testing.T) {
 	tests := []struct {
 		scenario string
-		params   map[string]string
+		params   []QueryParameter
 		expected string
 	}{
 		{
 			scenario: "params passed",
-			params:   map[string]string{"key1": "value1", "key2": "value2"},
-			expected: "key1=value1&key2=value2",
+			params:   []QueryParameter{{Name: "name1", Value: "value1"}, {Name: "name2", Value: "value2"}},
+			expected: "name1=value1&name2=value2",
 		},
 		{
 			scenario: "empty values passed",
-			params:   map[string]string{"key1": "", "key2": ""},
+			params:   []QueryParameter{{Name: "name1", Value: ""}, {Name: "name2", Value: ""}},
 			expected: "",
 		},
 		{
+			scenario: "array parameters passed",
+			params: []QueryParameter{
+				{Name: "name1", Value: "value1"},
+				{Name: "array", Value: "value2"},
+				{Name: "array", Value: "value3"},
+			},
+			expected: "array=value2&array=value3&name1=value1",
+		},
+		{
 			scenario: "empty params",
+			expected: "",
 		},
 	}
 

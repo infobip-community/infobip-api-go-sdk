@@ -45,7 +45,7 @@ func TestCreateTemplateValidReq(t *testing.T) {
 			"type": "MEDIA"
 		}
 	}`)
-	var expectedResp models.TemplateResponse
+	var expectedResp models.CreateWATemplateResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
@@ -75,7 +75,7 @@ func TestCreateTemplateValidReq(t *testing.T) {
 	messageResponse, respDetails, err := whatsApp.CreateTemplate(context.Background(), sender, template)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.TemplateResponse{}, messageResponse)
+	assert.NotEqual(t, models.CreateWATemplateResponse{}, messageResponse)
 	assert.Equal(t, expectedResp, messageResponse)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusCreated, respDetails.HTTPResponse.StatusCode)
@@ -102,7 +102,7 @@ func TestInvalidCreateTemplate(t *testing.T) {
 
 	require.NotNil(t, err)
 	assert.IsType(t, err, validator.ValidationErrors{})
-	assert.Equal(t, models.TemplateResponse{}, messageResponse)
+	assert.Equal(t, models.CreateWATemplateResponse{}, messageResponse)
 	assert.Equal(t, models.ResponseDetails{}, respDetails)
 }
 
@@ -180,7 +180,7 @@ func TestCreateTemplate4xxErrors(t *testing.T) {
 			assert.NotEqual(t, models.ErrorDetails{}, respDetails.ErrorResponse)
 			assert.Equal(t, expectedResp, respDetails.ErrorResponse)
 			assert.Equal(t, tc.statusCode, respDetails.HTTPResponse.StatusCode)
-			assert.Equal(t, models.TemplateResponse{}, msgResp)
+			assert.Equal(t, models.CreateWATemplateResponse{}, msgResp)
 		})
 	}
 }
