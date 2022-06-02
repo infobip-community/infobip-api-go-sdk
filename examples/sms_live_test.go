@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	apiKey     = "your-api-key"
-	baseURL    = "your-base-url"
+	//	apiKey     = "your-api-key"
+	//	baseURL    = "your-base-url"
 	destNumber = "123456789012"
 )
 
@@ -41,7 +41,6 @@ func TestSendSMS(t *testing.T) {
 	assert.NotNil(t, respDetails)
 	assert.NotEmptyf(t, msgResp.Messages[0].MessageID, "MessageID should not be empty")
 	assert.NotEqual(t, models.SendSMSResponse{}, msgResp)
-	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
 

@@ -141,6 +141,26 @@ func (h *HTTPHandler) PostMultipartReq(
 	)
 }
 
+func (h *HTTPHandler) DeleteRequest(
+	ctx context.Context,
+	reqPath string,
+	queryParams []QueryParameter,
+) (respDetails models.ResponseDetails, err error) {
+	req, err := h.createReq(ctx, http.MethodDelete, reqPath, nil, queryParams)
+	if err != nil {
+		return respDetails, err
+	}
+
+	resp, parsedBody, err := h.executeReq(req) //nolint: bodyclose // closed in the method itself
+	if err != nil {
+		_ = json.Unmarshal(parsedBody, &respDetails.ErrorResponse)
+		return respDetails, err
+	}
+	respDetails.HTTPResponse = *resp
+
+	return respDetails, err
+}
+
 func (h *HTTPHandler) postRequest(
 	ctx context.Context,
 	payload *bytes.Buffer,
