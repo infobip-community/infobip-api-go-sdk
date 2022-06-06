@@ -150,3 +150,40 @@ func GeneratePreviewSMSRequest() PreviewSMSRequest {
 		Transliteration: "TURKISH",
 	}
 }
+
+func GenerateReplyRCSSuggestion() RCSSuggestion {
+	return RCSSuggestion{
+		Text:         "some-text",
+		PostbackData: "some-postback-data",
+		Type:         "REPLY",
+	}
+}
+
+func GenerateOpenURLRCSSuggestion() RCSSuggestion {
+	return RCSSuggestion{
+		Text:         "some-text",
+		PostbackData: "some-postback-data",
+		Type:         "OPEN_URL",
+		URL:          "https://some-url.com",
+	}
+}
+
+func GenerateDialPhoneRCSSuggestion() RCSSuggestion {
+	return RCSSuggestion{
+		Text:         "some-text",
+		PostbackData: "some-postback-data",
+		Type:         "DIAL_PHONE",
+		PhoneNumber:  "12345678910",
+	}
+}
+
+func GenerateShowLocationRCSSuggestion() RCSSuggestion {
+	return RCSSuggestion{
+		Text:         "some-text",
+		PostbackData: "some-postback-data",
+		Type:         "SHOW_LOCATION",
+		Latitude:     82.123,
+		Longitude:    123.123,
+		Label:        "some-label",
+	}
+}

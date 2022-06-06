@@ -13,7 +13,7 @@ const (
 	saveApplicationPath   = "webrtc/1/applications"
 	getApplicationPath    = "webrtc/1/applications"
 	updateApplicationPath = "webrtc/1/applications"
-	generateTokenPath     = "webrtc/1/token"
+	generateTokenPath     = "webrtc/1/token" //nolint:gosec
 )
 
 type WebRTC interface {
