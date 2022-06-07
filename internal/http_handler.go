@@ -158,6 +158,10 @@ func (h *HTTPHandler) DeleteRequest(
 	}
 	respDetails.HTTPResponse = *resp
 
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
+		_ = json.Unmarshal(parsedBody, &respDetails.ErrorResponse)
+	}
+
 	return respDetails, err
 }
 

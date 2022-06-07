@@ -182,8 +182,26 @@ func GenerateShowLocationRCSSuggestion() RCSSuggestion {
 		Text:         "some-text",
 		PostbackData: "some-postback-data",
 		Type:         "SHOW_LOCATION",
-		Latitude:     82.123,
-		Longitude:    123.123,
+		Latitude:     1.0,
+		Longitude:    1.0,
 		Label:        "some-label",
+	}
+}
+
+func GenerateWebRTCApplication() WebRTCApplication {
+	return WebRTCApplication{
+		Name:        "some-name",
+		Description: "some-description",
+		IOS: &WebRTCIOS{
+			ApnsCertificateFileName:    "some-file.cert",
+			ApnsCertificateFileContent: "some-content",
+			ApnsCertificatePassword:    "some-password",
+		},
+		Android: &WebRTCAndroid{
+			FcmServerKey: "some-key",
+		},
+		AppToApp:           false,
+		AppToConversations: false,
+		AppToPhone:         false,
 	}
 }

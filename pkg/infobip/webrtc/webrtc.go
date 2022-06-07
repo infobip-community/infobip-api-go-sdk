@@ -13,7 +13,8 @@ const (
 	saveApplicationPath   = "webrtc/1/applications"
 	getApplicationPath    = "webrtc/1/applications"
 	updateApplicationPath = "webrtc/1/applications"
-	generateTokenPath     = "webrtc/1/token" //nolint:gosec
+	deleteApplicationPath = "webrtc/1/applications"
+	generateTokenPath     = "webrtc/1/token" //nolint:gosec // Just a path, not a secret
 )
 
 type WebRTC interface {
@@ -96,7 +97,7 @@ func (wrtc *Channel) DeleteApplication(
 	ctx context.Context,
 	applicationID string,
 ) (respDetails models.ResponseDetails, err error) {
-	respDetails, err = wrtc.ReqHandler.DeleteRequest(ctx, fmt.Sprint(getApplicationPath, "/", applicationID), nil)
+	respDetails, err = wrtc.ReqHandler.DeleteRequest(ctx, fmt.Sprint(deleteApplicationPath, "/", applicationID), nil)
 	return respDetails, err
 }
 

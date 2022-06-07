@@ -45,16 +45,8 @@ type WebRTCTokenCapabilities struct {
 	Recording string `json:"recording" validate:"omitempty,oneof=ALWAYS ON_DEMAND DISABLED"`
 }
 
-func (t *WebRTCTokenCapabilities) Validate() error {
-	return validate.Struct(t)
-}
-
-func (t *WebRTCTokenCapabilities) Marshal() (*bytes.Buffer, error) {
-	return marshalJSON(t)
-}
-
 type GenerateWebRTCTokenRequest struct {
-	Identity      string                   `json:"identity" validate:"required"`
+	Identity      string                   `json:"identity" validate:"required,min=3,max=64"`
 	ApplicationID string                   `json:"applicationId"`
 	DisplayName   string                   `json:"displayName"`
 	Capabilities  *WebRTCTokenCapabilities `json:"capabilities"`
