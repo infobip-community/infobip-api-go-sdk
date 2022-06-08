@@ -12,10 +12,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	apiKey  = "your-api-key"
-	baseURL = "your-base-url"
-)
+// const (
+//	apiKey  = "your-api-key"
+//	baseURL = "your-base-url"
+// )
 
 func TestGetApplications(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)

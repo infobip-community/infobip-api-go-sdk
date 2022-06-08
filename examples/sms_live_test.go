@@ -12,11 +12,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	//	apiKey     = "your-api-key"
-	//	baseURL    = "your-base-url"
-	destNumber = "123456789012"
-)
+//const (
+//	apiKey     = "your-api-key"
+//	baseURL    = "your-base-url"
+//  destNumber = "123456789012"
+//)
 
 func TestSendSMS(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)

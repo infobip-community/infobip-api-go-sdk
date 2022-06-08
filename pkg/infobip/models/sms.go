@@ -27,7 +27,7 @@ type SMSDeliveryTimeWindow struct {
 type SMSMsg struct {
 	CallbackData       string                 `json:"callbackData,omitempty"`
 	DeliveryTimeWindow *SMSDeliveryTimeWindow `json:"deliveryTimeWindow,omitempty"`
-	Destinations       []SMSDestination       `json:"destinations" validate:"required,min=1"`
+	Destinations       []SMSDestination       `json:"destinations" validate:"required,min=1,dive"`
 	Flash              bool                   `json:"flash,omitempty"`
 	From               string                 `json:"from"`
 	IntermediateReport bool                   `json:"intermediateReport,omitempty"`
@@ -63,7 +63,7 @@ type SMSSendingSpeedLimit struct {
 
 type SendSMSRequest struct {
 	BulkID            string                `json:"bulkId"`
-	Messages          []SMSMsg              `json:"messages" validate:"required,min=1"`
+	Messages          []SMSMsg              `json:"messages" validate:"required,min=1,dive"`
 	SendingSpeedLimit *SMSSendingSpeedLimit `json:"sendingSpeedLimit,omitempty"`
 	Tracking          *SMSTracking          `json:"tracking,omitempty"`
 }
@@ -186,7 +186,7 @@ type SMSRegional struct {
 
 type BinarySMSMsg struct {
 	From               string                 `json:"from"`
-	Destinations       []SMSDestination       `json:"destinations" validate:"min=1"`
+	Destinations       []SMSDestination       `json:"destinations" validate:"min=1,dive"`
 	Binary             *SMSBinary             `json:"binary"`
 	IntermediateReport bool                   `json:"intermediateReport,omitempty"`
 	NotifyURL          string                 `json:"notifyUrl,omitempty"`
@@ -208,7 +208,7 @@ func (b *BinarySMSMsg) Marshal() (*bytes.Buffer, error) {
 
 type SendBinarySMSRequest struct {
 	BulkID                string         `json:"bulkId"`
-	Messages              []BinarySMSMsg `json:"messages" validate:"required,min=1"`
+	Messages              []BinarySMSMsg `json:"messages" validate:"required,min=1,dive"`
 	*SMSSendingSpeedLimit `json:"sendingSpeedLimit,omitempty"`
 }
 

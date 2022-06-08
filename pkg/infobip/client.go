@@ -8,6 +8,7 @@ import (
 	"net/url"
 
 	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/email"
+	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/rcs"
 	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/sms"
 	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/webrtc"
 
@@ -26,6 +27,7 @@ type Client struct {
 	Email      email.Email
 	SMS        sms.SMS
 	WebRTC     webrtc.WebRTC
+	RCS        rcs.RCS
 }
 
 // NewClient returns a client object using the provided baseURL and apiKey.
@@ -57,6 +59,10 @@ func NewClient(baseURL string, apiKey string, options ...func(*Client)) (Client,
 	}
 
 	c.WebRTC = &webrtc.Channel{
+		ReqHandler: internal.HTTPHandler{APIKey: apiKey, BaseURL: baseURL, HTTPClient: c.httpClient},
+	}
+
+	c.RCS = &rcs.Channel{
 		ReqHandler: internal.HTTPHandler{APIKey: apiKey, BaseURL: baseURL, HTTPClient: c.httpClient},
 	}
 

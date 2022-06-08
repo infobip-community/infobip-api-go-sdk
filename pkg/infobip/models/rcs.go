@@ -33,44 +33,53 @@ type RCSCardContent struct {
 	Title       string               `json:"title" validate:"omitempty,min=1,max=200"`
 	Description string               `json:"description" validate:"omitempty,min=1,max=2000"`
 	Media       *RCSCardContentMedia `json:"media,omitempty"`
-	Suggestions []RCSSuggestion      `json:"suggestions,omitempty" validate:"max=4"`
+	Suggestions []RCSSuggestion      `json:"suggestions,omitempty" validate:"omitempty,max=4,dive"`
+}
+
+func (r *RCSCardContent) Validate() error {
+	return validate.Struct(r)
+}
+
+func (r *RCSCardContent) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(r)
 }
 
 type RCSCardContentMedia struct {
-	File      *RCSFile      `json:"file"`
+	File      *RCSFile      `json:"file" validate:"required"`
 	Thumbnail *RCSThumbnail `json:"thumbnail"`
-	Height    string        `json:"height" validate:"omitempty,oneof=SHORT MEDIUM TALL"`
+	Height    string        `json:"height" validate:"required,oneof=SHORT MEDIUM TALL"`
 }
 
 type RCSContent struct {
 	Type        string           `json:"type" validate:"oneof=TEXT FILE CARD CAROUSEL"`
-	File        *RCSFile         `json:"file,omitempty" validate:"required_if=Type FILE"`
+	File        *RCSFile         `json:"file,omitempty" validate:"required_if=Type FILE,omitempty"`
 	Thumbnail   *RCSThumbnail    `json:"thumbnail,omitempty"`
-	Text        string           `json:"text" validator:"min=1,max=2048,required_if=Type TEXT"`
-	Suggestions []RCSSuggestion  `json:"suggestions"`
-	Orientation string           `json:"orientation" validate:"required_if=Type CARD,oneof=HORIZONTAL VERTICAL"`
-	Alignment   string           `json:"alignment" validate:"required_if=Type CARD,oneof=LEFT RIGHT"`
-	CardWidth   string           `json:"cardWidth" validate:"required_if=Type CAROUSEL,oneof=SMALL MEDIUM"`
-	Contents    []RCSCardContent `json:"contents" validate:"required_if=Type CAROUSEL,min=2,max=10"`
+	Text        string           `json:"text,omitempty" validator:"required_if=Type TEXT,omitempty,min=1,max=2048"`
+	Suggestions []RCSSuggestion  `json:"suggestions,omitempty" validate:"omitempty,dive"`
+	Orientation string           `json:"orientation,omitempty" validate:"required_if=Type CARD,omitempty,oneof=HORIZONTAL VERTICAL"` //nolint:lll
+	Alignment   string           `json:"alignment,omitempty" validate:"required_if=Type CARD,omitempty,oneof=LEFT RIGHT"`            //nolint:lll
+	CardWidth   string           `json:"cardWidth,omitempty" validate:"required_if=Type CAROUSEL,omitempty,oneof=SMALL MEDIUM"`      //nolint:lll
+	Content     *RCSCardContent  `json:"content,omitempty" validate:"required_if=Type CARD"`
+	Contents    []RCSCardContent `json:"contents,omitempty" validate:"required_if=Type CAROUSEL,omitempty,min=2,max=10,dive"` //nolint:lll
 }
 
 type RCSSMSFailover struct {
 	From                   string `json:"from" validate:"required"`
 	Text                   string `json:"text" validate:"required"`
-	ValidityPeriod         int    `json:"validityPeriod"`
-	ValidityPeriodTimeUnit string `json:"validityPeriodTimeUnit" validate:"omitempty,oneof=SECONDS MINUTES HOURS DAYS"`
+	ValidityPeriod         int    `json:"validityPeriod,omitempty"`
+	ValidityPeriodTimeUnit string `json:"validityPeriodTimeUnit,omitempty" validate:"omitempty,oneof=SECONDS MINUTES HOURS DAYS"` //nolint:lll
 }
 
 type RCSMsg struct {
-	From                   string          `json:"from"`
+	From                   string          `json:"from,omitempty"`
 	To                     string          `json:"to" validate:"required"`
-	ValidityPeriod         int             `json:"validityPeriod"`
-	ValidityPeriodTimeUnit string          `json:"validityPeriodTimeUnit" validate:"omitempty,oneof=SECONDS MINUTES HOURS DAYS"` //nolint:lll
-	Content                *RCSContent     `json:"content" validate:"required"`
-	SMSFailover            *RCSSMSFailover `json:"smsFailover"`
-	NotifyURL              string          `json:"notifyUrl"`
-	CallbackData           string          `json:"callbackData"`
-	MessageID              string          `json:"messageId"`
+	ValidityPeriod         int             `json:"validityPeriod,omitempty"`
+	ValidityPeriodTimeUnit string          `json:"validityPeriodTimeUnit,omitempty" validate:"omitempty,oneof=SECONDS MINUTES HOURS DAYS"` //nolint:lll
+	Content                *RCSContent     `json:"content,omitempty" validate:"required"`
+	SMSFailover            *RCSSMSFailover `json:"smsFailover,omitempty"`
+	NotifyURL              string          `json:"notifyUrl,omitempty"`
+	CallbackData           string          `json:"callbackData,omitempty"`
+	MessageID              string          `json:"messageId,omitempty"`
 }
 
 func (r *RCSMsg) Validate() error {
@@ -97,10 +106,10 @@ type SendRCSResponse struct {
 	} `json:"messages"`
 }
 
-type SendRCSBulkResponse SendRCSResponse
+type SendRCSBulkResponse []SendRCSResponse
 
 type SendRCSBulkRequest struct {
-	Messages []RCSMsg `json:"messages"`
+	Messages []RCSMsg `json:"messages" validate:"dive"`
 }
 
 func (s *SendRCSBulkRequest) Validate() error {
