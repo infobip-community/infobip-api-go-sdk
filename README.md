@@ -15,6 +15,8 @@ Go client SDK for Infobip's API Channels
 - [WhatsApp](https://www.infobip.com/docs/api#channels/whatsapp)
 - [Email](https://www.infobip.com/docs/api#channels/email)
 - [MMS](https://www.infobip.com/docs/api#channels/mms)
+- [RCS](https://www.infobip.com/docs/api#channels/rcs)
+- [WebRTC](https://www.infobip.com/docs/api#channels/webrtc)
 
 More channels to be added in the near future.
 
