@@ -93,7 +93,7 @@ to the underlying requests that the client makes. If you don't want to use this 
 should be sufficient.
 
 
-### Examples
+## 👀 Examples
 
 The best way to learn how to use the library is to check the examples. The [examples](https://github.com/infobip-community/infobip-api-go-sdk/tree/main/examples) directory
 contains tests intended to be used for live testing all endpoints of available channels. The prerequisite for running an individual test is changing
