@@ -150,3 +150,108 @@ func GeneratePreviewSMSRequest() PreviewSMSRequest {
 		Transliteration: "TURKISH",
 	}
 }
+
+func GenerateReplyRCSSuggestion() RCSSuggestion {
+	return RCSSuggestion{
+		Text:         "some-text",
+		PostbackData: "some-postback-data",
+		Type:         "REPLY",
+	}
+}
+
+func GenerateOpenURLRCSSuggestion() RCSSuggestion {
+	return RCSSuggestion{
+		Text:         "some-text",
+		PostbackData: "some-postback-data",
+		Type:         "OPEN_URL",
+		URL:          "https://some-url.com",
+	}
+}
+
+func GenerateDialPhoneRCSSuggestion() RCSSuggestion {
+	return RCSSuggestion{
+		Text:         "some-text",
+		PostbackData: "some-postback-data",
+		Type:         "DIAL_PHONE",
+		PhoneNumber:  "12345678910",
+	}
+}
+
+func GenerateShowLocationRCSSuggestion() RCSSuggestion {
+	return RCSSuggestion{
+		Text:         "some-text",
+		PostbackData: "some-postback-data",
+		Type:         "SHOW_LOCATION",
+		Latitude:     1.0,
+		Longitude:    1.0,
+		Label:        "some-label",
+	}
+}
+
+func GenerateWebRTCApplication() WebRTCApplication {
+	return WebRTCApplication{
+		Name:        "some-name",
+		Description: "some-description",
+		IOS: &WebRTCIOS{
+			ApnsCertificateFileName:    "some-file.cert",
+			ApnsCertificateFileContent: "some-content",
+			ApnsCertificatePassword:    "some-password",
+		},
+		Android: &WebRTCAndroid{
+			FcmServerKey: "some-key",
+		},
+		AppToApp:           false,
+		AppToConversations: false,
+		AppToPhone:         false,
+	}
+}
+
+func GenerateRCSFileMsg() RCSMsg {
+	return RCSMsg{
+		From:                   "some gopher",
+		To:                     "12345678910",
+		ValidityPeriod:         1,
+		ValidityPeriodTimeUnit: "HOURS",
+		Content: &RCSContent{
+			Type: "FILE",
+			File: &RCSFile{
+				URL: "https://some-url.com",
+			},
+			Thumbnail: &RCSThumbnail{
+				URL: "https://some-url.com",
+			},
+		},
+		SMSFailover: &RCSSMSFailover{
+			From:                   "some-gopher",
+			Text:                   "some-text",
+			ValidityPeriod:         1,
+			ValidityPeriodTimeUnit: "MINUTES",
+		},
+		NotifyURL:    "https://some.url",
+		CallbackData: "some-callback-data",
+		MessageID:    "some-id",
+	}
+}
+
+func GenerateRCSCardContent() *RCSCardContent {
+	return &RCSCardContent{
+		Title:       "some-title",
+		Description: "some-description",
+		Media: &RCSCardContentMedia{
+			File: &RCSFile{
+				URL: "https://some-url.com",
+			},
+			Thumbnail: &RCSThumbnail{
+				URL: "https://some-url.com",
+			},
+			Height: "MEDIUM",
+		},
+		Suggestions: []RCSSuggestion{
+			{
+				Text:         "some-text",
+				PostbackData: "some-postback-data",
+				Type:         "REPLY",
+			},
+		},
+	}
+}
