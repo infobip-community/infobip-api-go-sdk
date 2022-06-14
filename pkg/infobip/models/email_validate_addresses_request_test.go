@@ -8,10 +8,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidUpdateScheduledMessagesStatusRequest(t *testing.T) {
+func TestValidValidateEmailAddresses(t *testing.T) {
 	t.Run("valid input", func(t *testing.T) {
-		instance := UpdateScheduledEmailStatusRequest{
-			Status: "PENDING",
+		instance := ValidateEmailAddressesRequest{
+			To: "some@email.com",
 		}
 		err := instance.Validate()
 		require.NoError(t, err)
@@ -20,17 +20,17 @@ func TestValidUpdateScheduledMessagesStatusRequest(t *testing.T) {
 		require.NoError(t, err)
 		assert.NotEmpty(t, marshalled)
 
-		var unmarshalled UpdateScheduledEmailStatusRequest
+		var unmarshalled ValidateEmailAddressesRequest
 		err = json.Unmarshal(marshalled.Bytes(), &unmarshalled)
 		require.NoError(t, err)
 		assert.Equal(t, instance, unmarshalled)
 	})
 }
 
-func TestInvalidUpdateScheduledMessagesStatusRequest(t *testing.T) {
-	t.Run("invalid status", func(t *testing.T) {
-		instance := UpdateScheduledEmailStatusRequest{
-			Status: "SOMETHING",
+func TestInvalidValidateEmailAddresses(t *testing.T) {
+	t.Run("empty to", func(t *testing.T) {
+		instance := ValidateEmailAddressesRequest{
+			To: "",
 		}
 		err := instance.Validate()
 		require.Error(t, err)

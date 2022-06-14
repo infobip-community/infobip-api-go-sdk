@@ -222,7 +222,8 @@ func (h *HTTPHandler) postNoBodyRequest(
 	}
 	respDetails.HTTPResponse = *resp
 
-	if resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusOK {
+	if resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusOK ||
+		resp.StatusCode == http.StatusAccepted {
 		if len(parsedBody) > 0 {
 			err = json.Unmarshal(parsedBody, &respResource)
 		}

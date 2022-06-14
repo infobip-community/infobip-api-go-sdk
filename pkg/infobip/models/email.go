@@ -301,10 +301,6 @@ type GetEmailDeliveryReportsParams struct {
 	Limit     int
 }
 
-func (o *GetEmailDeliveryReportsParams) Validate() error {
-	return validate.Struct(o)
-}
-
 type GetEmailLogsResponse struct {
 	Results []struct {
 		MessageID    string `json:"messageId"`
@@ -340,10 +336,6 @@ type GetEmailLogsParams struct {
 	SentSince     string
 	SentUntil     string
 	Limit         int
-}
-
-func (o *GetEmailLogsParams) Validate() error {
-	return validate.Struct(o)
 }
 
 type SentEmailBulksResponse struct {
@@ -433,7 +425,7 @@ func (e *EmailMsg) Validate() error {
 }
 
 type ValidateEmailAddressesRequest struct {
-	To string `json:"to"`
+	To string `json:"to" validate:"required,min=1,max=2147483647"`
 }
 
 func (v *ValidateEmailAddressesRequest) Validate() error {
@@ -469,7 +461,7 @@ type GetEmailDomainsResponse struct {
 }
 
 type AddEmailDomainRequest struct {
-	DomainName string `json:"domainName"`
+	DomainName string `json:"domainName" validate:"required"`
 }
 
 func (a *AddEmailDomainRequest) Validate() error {

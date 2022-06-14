@@ -48,6 +48,11 @@ func TestValidEmailMessage(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			err = tc.instance.Validate()
 			require.NoError(t, err)
+
+			_, err = tc.instance.Marshal()
+			require.NoError(t, err)
+
+			require.NotEmpty(t, tc.instance.GetMultipartBoundary())
 		})
 	}
 }
