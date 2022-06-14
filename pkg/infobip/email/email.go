@@ -17,6 +17,12 @@ const (
 	getSentEmailBulksStatusPath       = "email/1/bulks/status"
 	updateScheduledMessagesStatusPath = "email/1/bulks/status"
 	validateAddressesPath             = "email/2/validation"
+	getDomainsPath                    = "email/1/domains"
+	addDomainPath                     = "email/1/domains"
+	getDomainPath                     = "email/1/domains"
+	deleteDomainPath                  = "email/1/domains"
+	updateDomainTrackingPath          = "email/1/domains"
+	verifyDomainPath                  = "email/1/domains"
 )
 
 type Channel struct {
@@ -59,6 +65,32 @@ type Email interface {
 	// ValidateAddresses validates to identify poor quality emails to clear up your recipient list.
 	ValidateAddresses(ctx context.Context, req models.ValidateEmailAddressesRequest) (
 		resp models.ValidateEmailAddressesResponse, respDetails models.ResponseDetails, err error)
+
+	// GetDomains returns all domains associated with the account. It also provides details of the retrieved domain
+	// like the DNS records, tracking details, active/blocked status, etc.
+	GetDomains(ctx context.Context, queryParams models.GetEmailDomainsParams) (
+		resp models.GetEmailDomainsResponse, respDetails models.ResponseDetails, err error)
+
+	// AddDomain adds new domains with a limit to create a maximum of 10 domains in a day.
+	AddDomain(ctx context.Context, req models.AddEmailDomainRequest) (
+		resp models.AddEmailDomainResponse, respDetails models.ResponseDetails, err error)
+
+	// GetDomain returns the details of the domain like the DNS records, tracking details, active/blocked status, etc.
+	GetDomain(ctx context.Context, domainName string) (
+		resp models.GetEmailDomainResponse, respDetails models.ResponseDetails, err error)
+
+	// DeleteDomain deletes an existing domain.
+	DeleteDomain(ctx context.Context, domainName string) (
+		respDetails models.ResponseDetails, err error)
+
+	// UpdateDomainTracking updates the tracking events for the provided domain. Tracking events can be updated
+	// only for CLICKS, OPENS and UNSUBSCRIBES.
+	UpdateDomainTracking(ctx context.Context, domainName string, req models.UpdateEmailDomainTrackingRequest) (
+		resp models.UpdateEmailDomainTrackingResponse, respDetails models.ResponseDetails, err error)
+
+	// VerifyDomain verifies records(TXT, MX, DKIM) associated with the provided domain.
+	VerifyDomain(ctx context.Context, domainName string) (
+		respDetails models.ResponseDetails, err error)
 }
 
 func (email *Channel) Send(
@@ -106,7 +138,8 @@ func (email *Channel) GetLogs(
 	return resp, respDetails, err
 }
 
-func (email *Channel) GetSentBulks(ctx context.Context,
+func (email *Channel) GetSentBulks(
+	ctx context.Context,
 	queryParams models.GetSentEmailBulksParams,
 ) (resp models.SentEmailBulksResponse, respDetails models.ResponseDetails, err error) {
 	params := []internal.QueryParameter{{Name: "bulkId", Value: queryParams.BulkID}}
@@ -124,7 +157,8 @@ func (email *Channel) RescheduleMessages(
 	return resp, respDetails, err
 }
 
-func (email *Channel) GetSentBulksStatus(ctx context.Context,
+func (email *Channel) GetSentBulksStatus(
+	ctx context.Context,
 	queryParams models.GetSentEmailBulksStatusParams,
 ) (resp models.SentEmailBulksStatusResponse, respDetails models.ResponseDetails, err error) {
 	params := []internal.QueryParameter{{Name: "bulkId", Value: queryParams.BulkID}}
@@ -132,7 +166,8 @@ func (email *Channel) GetSentBulksStatus(ctx context.Context,
 	return resp, respDetails, err
 }
 
-func (email *Channel) UpdateScheduledMessagesStatus(ctx context.Context,
+func (email *Channel) UpdateScheduledMessagesStatus(
+	ctx context.Context,
 	req models.UpdateScheduledEmailStatusRequest,
 	queryParams models.UpdateScheduledEmailStatusParams,
 ) (resp models.UpdateScheduledStatusResponse, respDetails models.ResponseDetails, err error) {
@@ -141,9 +176,65 @@ func (email *Channel) UpdateScheduledMessagesStatus(ctx context.Context,
 	return resp, respDetails, err
 }
 
-func (email *Channel) ValidateAddresses(ctx context.Context,
+func (email *Channel) ValidateAddresses(
+	ctx context.Context,
 	req models.ValidateEmailAddressesRequest,
 ) (resp models.ValidateEmailAddressesResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = email.ReqHandler.PostJSONReq(ctx, &req, &resp, validateAddressesPath)
 	return resp, respDetails, err
+}
+
+func (email *Channel) GetDomains(
+	ctx context.Context,
+	queryParams models.GetEmailDomainsParams,
+) (resp models.GetEmailDomainsResponse, respDetails models.ResponseDetails, err error) {
+	params := []internal.QueryParameter{
+		{Name: "size", Value: fmt.Sprint(queryParams.Size)},
+		{Name: "page", Value: fmt.Sprint(queryParams.Page)},
+	}
+	respDetails, err = email.ReqHandler.GetRequest(ctx, &resp, getDomainsPath, params)
+	return resp, respDetails, err
+}
+
+func (email *Channel) AddDomain(
+	ctx context.Context,
+	req models.AddEmailDomainRequest,
+) (resp models.AddEmailDomainResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = email.ReqHandler.PostJSONReq(ctx, &req, &resp, addDomainPath)
+	return resp, respDetails, err
+}
+
+func (email *Channel) GetDomain(
+	ctx context.Context,
+	domainName string,
+) (resp models.GetEmailDomainResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = email.ReqHandler.GetRequest(ctx, &resp, fmt.Sprint(getDomainPath, "/", domainName), nil)
+	return resp, respDetails, err
+}
+
+func (email *Channel) DeleteDomain(
+	ctx context.Context,
+	domainName string,
+) (respDetails models.ResponseDetails, err error) {
+	respDetails, err = email.ReqHandler.DeleteRequest(ctx, fmt.Sprint(deleteDomainPath, "/", domainName), nil)
+	return respDetails, err
+}
+
+func (email *Channel) UpdateDomainTracking(
+	ctx context.Context,
+	domainName string,
+	req models.UpdateEmailDomainTrackingRequest,
+) (resp models.UpdateEmailDomainTrackingResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = email.ReqHandler.PutJSONReq(ctx, &req, &resp,
+		fmt.Sprint(updateDomainTrackingPath, "/", domainName, "/tracking"), nil)
+	return resp, respDetails, err
+}
+
+func (email *Channel) VerifyDomain(
+	ctx context.Context,
+	domainName string,
+) (respDetails models.ResponseDetails, err error) {
+	respDetails, err = email.ReqHandler.PostNoBodyReq(ctx, nil,
+		fmt.Sprint(verifyDomainPath, "/", domainName, "/verify"))
+	return respDetails, err
 }

@@ -452,3 +452,69 @@ type ValidateEmailAddressesResponse struct {
 	Disposable   bool   `json:"disposable"`
 	RoleBased    bool   `json:"roleBased"`
 }
+
+type GetEmailDomainsParams struct {
+	Size int `validate:"omitempty,min=1,max=20"`
+	Page int `validate:"omitempty,min=0"`
+}
+
+type GetEmailDomainsResponse struct {
+	Paging struct {
+		Page         int `json:"page"`
+		Size         int `json:"size"`
+		TotalPages   int `json:"totalPages"`
+		TotalResults int `json:"totalResults"`
+	} `json:"paging"`
+	Results []EmailDomain `json:"results"`
+}
+
+type AddEmailDomainRequest struct {
+	DomainName string `json:"domainName"`
+}
+
+func (a *AddEmailDomainRequest) Validate() error {
+	return validate.Struct(a)
+}
+
+func (a *AddEmailDomainRequest) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(a)
+}
+
+type EmailDomain struct {
+	DomainID   int64  `json:"domainId"`
+	DomainName string `json:"domainName"`
+	Active     bool   `json:"active"`
+	Tracking   struct {
+		Clicks      bool `json:"clicks"`
+		Opens       bool `json:"opens"`
+		Unsubscribe bool `json:"unsubscribe"`
+	} `json:"tracking"`
+	DNSRecords []struct {
+		RecordType    string `json:"recordType"`
+		Name          string `json:"name"`
+		ExpectedValue string `json:"expectedValue"`
+		Verified      bool   `json:"verified"`
+	} `json:"dnsRecords"`
+	Blocked   bool   `json:"blocked"`
+	CreatedAt string `json:"createdAt"`
+}
+
+type AddEmailDomainResponse EmailDomain
+
+type GetEmailDomainResponse EmailDomain
+
+type UpdateEmailDomainTrackingRequest struct {
+	Opens       bool `json:"open"` // TODO: tell email team this should be plural.
+	Clicks      bool `json:"clicks"`
+	Unsubscribe bool `json:"unsubscribe"`
+}
+
+func (u *UpdateEmailDomainTrackingRequest) Validate() error {
+	return validate.Struct(u)
+}
+
+func (u *UpdateEmailDomainTrackingRequest) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(u)
+}
+
+type UpdateEmailDomainTrackingResponse EmailDomain
