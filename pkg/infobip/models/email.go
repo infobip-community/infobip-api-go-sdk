@@ -496,7 +496,7 @@ type AddEmailDomainResponse EmailDomain
 type GetEmailDomainResponse EmailDomain
 
 type UpdateEmailDomainTrackingRequest struct {
-	Opens       bool `json:"open"` // TODO: tell email team this should be plural.
+	Opens       bool `json:"open"`
 	Clicks      bool `json:"clicks"`
 	Unsubscribe bool `json:"unsubscribe"`
 }

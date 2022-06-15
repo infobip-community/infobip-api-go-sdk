@@ -230,7 +230,7 @@ func TestGetDomains(t *testing.T) {
 
 	params := models.GetEmailDomainsParams{
 		Size: 10,
-		Page: 1,
+		Page: 0,
 	}
 	resp, respDetails, err := client.Email.GetDomains(context.Background(), params)
 
@@ -240,8 +240,7 @@ func TestGetDomains(t *testing.T) {
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
 	assert.NotEqual(t, models.GetEmailDomainsResponse{}, resp)
-	// TODO: check why this returns empty results, also in Postman.
-	//assert.Greater(t, len(resp.Results), 0)
+	assert.Greater(t, len(resp.Results), 0)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
