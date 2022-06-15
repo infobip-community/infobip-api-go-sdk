@@ -100,6 +100,14 @@ func (h *HTTPHandler) PostJSONReq(
 	return h.postRequest(ctx, payload, respResource, reqPath, "application/json")
 }
 
+func (h *HTTPHandler) PostNoBodyReq(
+	ctx context.Context,
+	respResource interface{},
+	reqPath string,
+) (respDetails models.ResponseDetails, err error) {
+	return h.postNoBodyRequest(ctx, respResource, reqPath)
+}
+
 func (h *HTTPHandler) PutJSONReq(
 	ctx context.Context,
 	putResource models.Validatable,
@@ -187,6 +195,38 @@ func (h *HTTPHandler) postRequest(
 
 	if resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusOK {
 		err = json.Unmarshal(parsedBody, &respResource)
+	} else {
+		_ = json.Unmarshal(parsedBody, &respDetails.ErrorResponse)
+		// MMS 4xx/5xx responses use the same response as 2xx responses
+		if _, ok := respResource.(*models.SendMMSResponse); ok {
+			_ = json.Unmarshal(parsedBody, &respResource)
+		}
+	}
+	return respDetails, err
+}
+
+func (h *HTTPHandler) postNoBodyRequest(
+	ctx context.Context,
+	respResource interface{},
+	reqPath string,
+) (respDetails models.ResponseDetails, err error) {
+	req, err := h.createReq(ctx, http.MethodPost, reqPath, nil, nil)
+	if err != nil {
+		return respDetails, err
+	}
+
+	resp, parsedBody, err := h.executeReq(req) //nolint: bodyclose // closed in the method itself
+	if err != nil {
+		_ = json.Unmarshal(parsedBody, &respDetails.ErrorResponse)
+		return respDetails, err
+	}
+	respDetails.HTTPResponse = *resp
+
+	if resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusOK ||
+		resp.StatusCode == http.StatusAccepted {
+		if len(parsedBody) > 0 {
+			err = json.Unmarshal(parsedBody, &respResource)
+		}
 	} else {
 		_ = json.Unmarshal(parsedBody, &respDetails.ErrorResponse)
 		// MMS 4xx/5xx responses use the same response as 2xx responses

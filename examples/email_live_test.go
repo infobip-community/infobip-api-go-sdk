@@ -14,6 +14,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const (
+	apiKey  = "your-api-key"
+	baseURL = "your-base-url"
+)
+
 func TestSendEmail(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
@@ -217,4 +222,112 @@ func TestValidateAddresses(t *testing.T) {
 	assert.NotEqual(t, models.ValidateEmailAddressesResponse{}, validateResp)
 	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestGetDomains(t *testing.T) {
+	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
+
+	params := models.GetEmailDomainsParams{
+		Size: 10,
+		Page: 0,
+	}
+	resp, respDetails, err := client.Email.GetDomains(context.Background(), params)
+
+	fmt.Println(resp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEqual(t, models.GetEmailDomainsResponse{}, resp)
+	assert.Greater(t, len(resp.Results), 0)
+	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestAddDomain(t *testing.T) {
+	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
+
+	req := models.AddEmailDomainRequest{
+		DomainName: "test-domain2.com",
+	}
+
+	domain, respDetails, err := client.Email.AddDomain(context.Background(), req)
+
+	fmt.Println(domain)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEqual(t, models.AddEmailDomainResponse{}, domain)
+	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestGetDomain(t *testing.T) {
+	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
+
+	resp, respDetails, err := client.Email.GetDomain(context.Background(), "test-domain.com")
+
+	fmt.Println(resp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEqual(t, models.GetEmailDomainResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestDeleteDomain(t *testing.T) {
+	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
+
+	respDetails, err := client.Email.DeleteDomain(context.Background(), "test-domain2.com")
+
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+	assert.Equal(t, http.StatusNoContent, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestUpdateDomainTracking(t *testing.T) {
+	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
+
+	req := models.UpdateEmailDomainTrackingRequest{
+		Opens:       false,
+		Clicks:      true,
+		Unsubscribe: false,
+	}
+
+	resp, respDetails, err := client.Email.UpdateDomainTracking(context.Background(), "test-domain.com", req)
+
+	fmt.Println(resp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEqual(t, models.UpdateEmailDomainTrackingResponse{}, resp)
+	assert.Falsef(t, resp.Tracking.Opens, "Opens should be false")
+	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestVerifyDomain(t *testing.T) {
+	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
+
+	respDetails, err := client.Email.VerifyDomain(context.Background(), "test-domain.com")
+
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+	assert.Equal(t, http.StatusAccepted, respDetails.HTTPResponse.StatusCode)
 }

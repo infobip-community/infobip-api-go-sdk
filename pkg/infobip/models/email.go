@@ -301,10 +301,6 @@ type GetEmailDeliveryReportsParams struct {
 	Limit     int
 }
 
-func (o *GetEmailDeliveryReportsParams) Validate() error {
-	return validate.Struct(o)
-}
-
 type GetEmailLogsResponse struct {
 	Results []struct {
 		MessageID    string `json:"messageId"`
@@ -340,10 +336,6 @@ type GetEmailLogsParams struct {
 	SentSince     string
 	SentUntil     string
 	Limit         int
-}
-
-func (o *GetEmailLogsParams) Validate() error {
-	return validate.Struct(o)
 }
 
 type SentEmailBulksResponse struct {
@@ -433,7 +425,7 @@ func (e *EmailMsg) Validate() error {
 }
 
 type ValidateEmailAddressesRequest struct {
-	To string `json:"to"`
+	To string `json:"to" validate:"required,min=1,max=2147483647"`
 }
 
 func (v *ValidateEmailAddressesRequest) Validate() error {
@@ -452,3 +444,69 @@ type ValidateEmailAddressesResponse struct {
 	Disposable   bool   `json:"disposable"`
 	RoleBased    bool   `json:"roleBased"`
 }
+
+type GetEmailDomainsParams struct {
+	Size int `validate:"omitempty,min=1,max=20"`
+	Page int `validate:"omitempty,min=0"`
+}
+
+type GetEmailDomainsResponse struct {
+	Paging struct {
+		Page         int `json:"page"`
+		Size         int `json:"size"`
+		TotalPages   int `json:"totalPages"`
+		TotalResults int `json:"totalResults"`
+	} `json:"paging"`
+	Results []EmailDomain `json:"results"`
+}
+
+type AddEmailDomainRequest struct {
+	DomainName string `json:"domainName" validate:"required"`
+}
+
+func (a *AddEmailDomainRequest) Validate() error {
+	return validate.Struct(a)
+}
+
+func (a *AddEmailDomainRequest) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(a)
+}
+
+type EmailDomain struct {
+	DomainID   int64  `json:"domainId"`
+	DomainName string `json:"domainName"`
+	Active     bool   `json:"active"`
+	Tracking   struct {
+		Clicks      bool `json:"clicks"`
+		Opens       bool `json:"opens"`
+		Unsubscribe bool `json:"unsubscribe"`
+	} `json:"tracking"`
+	DNSRecords []struct {
+		RecordType    string `json:"recordType"`
+		Name          string `json:"name"`
+		ExpectedValue string `json:"expectedValue"`
+		Verified      bool   `json:"verified"`
+	} `json:"dnsRecords"`
+	Blocked   bool   `json:"blocked"`
+	CreatedAt string `json:"createdAt"`
+}
+
+type AddEmailDomainResponse EmailDomain
+
+type GetEmailDomainResponse EmailDomain
+
+type UpdateEmailDomainTrackingRequest struct {
+	Opens       bool `json:"open"`
+	Clicks      bool `json:"clicks"`
+	Unsubscribe bool `json:"unsubscribe"`
+}
+
+func (u *UpdateEmailDomainTrackingRequest) Validate() error {
+	return validate.Struct(u)
+}
+
+func (u *UpdateEmailDomainTrackingRequest) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(u)
+}
+
+type UpdateEmailDomainTrackingResponse EmailDomain
