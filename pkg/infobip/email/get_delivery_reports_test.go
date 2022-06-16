@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/infobip-community/infobip-api-go-sdk/internal"
-	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/models"
+	"github.com/infobip-community/infobip-api-go-sdk/v2/internal"
+	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

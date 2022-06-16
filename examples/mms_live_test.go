@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip"
-	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/models"
+	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip"
+	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
