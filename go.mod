@@ -1,4 +1,4 @@
-module github.com/infobip-community/infobip-api-go-sdk
+module github.com/infobip-community/infobip-api-go-sdk/v2
 
 go 1.17
 
