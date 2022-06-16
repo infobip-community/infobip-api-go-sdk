@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/infobip-community/infobip-api-go-sdk/internal"
-	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/models"
+	"github.com/infobip-community/infobip-api-go-sdk/v2/internal"
+	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/models"
 )
 
 // MMS provides methods to interact with the Infobip MMS API.

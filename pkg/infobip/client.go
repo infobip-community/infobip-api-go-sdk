@@ -7,14 +7,13 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/email"
-	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/rcs"
-	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/sms"
-	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/webrtc"
-
-	"github.com/infobip-community/infobip-api-go-sdk/internal"
-	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/mms"
-	"github.com/infobip-community/infobip-api-go-sdk/pkg/infobip/whatsapp"
+	"github.com/infobip-community/infobip-api-go-sdk/v2/internal"
+	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/email"
+	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/mms"
+	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/rcs"
+	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/sms"
+	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/webrtc"
+	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/whatsapp"
 )
 
 // Client is the entrypoint to all Infobip channels.
