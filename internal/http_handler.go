@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/models"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/models"
 )
 
 type HTTPHandler struct {

@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip"
-	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/models"
-	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/utils"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/models"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -34,7 +34,7 @@ we don't always test older versions.
 infobip-api-go-sdk is compatible with modern Go modules. With Go installed, running the following:
 
 ```bash
-go get "github.com/infobip-community/infobip-api-go-sdk/v2"
+go get "github.com/infobip-community/infobip-api-go-sdk/v3"
 ```
 
 will add the client to the current module, along with all of its dependencies.
@@ -42,7 +42,10 @@ will add the client to the current module, along with all of its dependencies.
 ## 🚀 Usage
 
 ```go
-import "github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip"
+import (
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/models"
+)
 ```
 
 Construct a new Infobip client:

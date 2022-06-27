@@ -9,7 +9,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/models"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
