@@ -27,7 +27,7 @@ func TestCreateTemplateValidReq(t *testing.T) {
 		Category: "ACCOUNT_UPDATE",
 		Structure: models.TemplateStructure{
 			Body: &models.TemplateStructureBody{
-				"body {{1}} content",
+				Text: "body {{1}} content",
 			},
 			Type: "TEXT",
 		},
@@ -98,7 +98,7 @@ func TestInvalidCreateTemplate(t *testing.T) {
 		Category: "invalid",
 		Structure: models.TemplateStructure{
 			Body: &models.TemplateStructureBody{
-				"body {{1}} content",
+				Text: "body {{1}} content",
 			},
 			Type: "TEXT",
 		},
@@ -163,7 +163,7 @@ func TestCreateTemplate4xxErrors(t *testing.T) {
 		Category: "ACCOUNT_UPDATE",
 		Structure: models.TemplateStructure{
 			Body: &models.TemplateStructureBody{
-				"body {{1}} content",
+				Text: "body {{1}} content",
 			},
 			Type: "TEXT",
 		},
