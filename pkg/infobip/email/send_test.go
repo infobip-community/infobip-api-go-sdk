@@ -13,8 +13,8 @@ import (
 	"testing"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/infobip-community/infobip-api-go-sdk/v2/internal"
-	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/models"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/internal"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/models"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

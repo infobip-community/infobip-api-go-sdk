@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/infobip-community/infobip-api-go-sdk/v2/internal"
-	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/models"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/internal"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -19,26 +19,32 @@ import (
 func TestGetTemplatesValidReq(t *testing.T) {
 	apiKey := "secret"
 	sender := "111111111111"
-	rawJSONResp := []byte(`{
-		"templates": [
+	rawJSONResp := []byte(`
+		{
+		  "templates": [
 			{
-				"id": "111",
-				"businessAccountId": 222,
-				"name": "exampleName",
-				"language": "en",
-				"status": "APPROVED",
-				"category": "ACCOUNT_UPDATE",
-				"structure": {
-					"header": {
-						"format": "IMAGE"
-					},
-					"body": "example {{1}} body",
-					"footer": "exampleFooter",
-					"type": "MEDIA"
-				}
+			  "id": "111",
+			  "businessAccountId": 222,
+			  "name": "media_template",
+			  "language": "en",
+			  "status": "APPROVED",
+			  "category": "ACCOUNT_UPDATE",
+			  "structure": {
+				"header": {
+				  "format": "IMAGE"
+				},
+				"body": {
+				  "text": "example {{1}} body"
+				},
+				"footer": {
+				  "text": "exampleFooter"
+				},
+				"type": "MEDIA"
+			  }
 			}
-		]
-	}`)
+		  ]
+		}
+	`)
 	var expectedResp models.GetWATemplatesResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)

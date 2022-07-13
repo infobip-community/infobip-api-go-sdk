@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/mms"
-	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/whatsapp"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/mms"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/whatsapp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

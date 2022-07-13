@@ -1,4 +1,4 @@
-package email
+package whatsapp
 
 import (
 	"context"
@@ -14,24 +14,26 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDeleteDomainValidReq(t *testing.T) {
+func TestDeleteWATemplateValidReq(t *testing.T) {
 	apiKey := "some-api-key"
+	sender := "111111111111"
+	templateName := "template-name"
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		require.Equal(t, http.MethodDelete, r.Method)
-		assert.True(t, strings.Contains(r.URL.Path, deleteDomainPath))
+		assert.True(t, strings.HasSuffix(r.URL.Path, fmt.Sprintf(deleteTemplatePath, sender, templateName)))
 		assert.Equal(t, fmt.Sprint("App ", apiKey), r.Header.Get("Authorization"))
 
 		w.WriteHeader(http.StatusNoContent)
 	}))
 	defer serv.Close()
 
-	email := Channel{ReqHandler: internal.HTTPHandler{
+	whatsapp := Channel{ReqHandler: internal.HTTPHandler{
 		HTTPClient: http.Client{},
 		BaseURL:    serv.URL,
 		APIKey:     apiKey,
 	}}
 
-	respDetails, err := email.DeleteDomain(context.Background(), "test-domain.com")
+	respDetails, err := whatsapp.DeleteTemplate(context.Background(), sender, templateName)
 
 	require.NoError(t, err)
 	assert.NotNil(t, respDetails)

@@ -19,7 +19,9 @@ func TestValidTemplateCreate(t *testing.T) {
 				Language: "en",
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
-					Body: "body {{1}} content",
+					Body: &TemplateStructureBody{
+						"body {{1}} content",
+					},
 					Type: "TEXT",
 				},
 			},
@@ -32,9 +34,13 @@ func TestValidTemplateCreate(t *testing.T) {
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
 					Header: &TemplateHeader{Format: "TEXT", Text: "Some text"},
-					Body:   "body {{1}} content",
-					Footer: "Footer text",
-					Type:   "TEXT",
+					Body: &TemplateStructureBody{
+						"body {{1}} content",
+					},
+					Footer: &TemplateStructureFooter{
+						"Footer text",
+					},
+					Type: "TEXT",
 				},
 			},
 		},
@@ -46,8 +52,12 @@ func TestValidTemplateCreate(t *testing.T) {
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
 					Header: &TemplateHeader{Format: "TEXT", Text: "Some text"},
-					Body:   "body {{1}} content",
-					Footer: "Footer text",
+					Body: &TemplateStructureBody{
+						"body {{1}} content",
+					},
+					Footer: &TemplateStructureFooter{
+						"Footer text",
+					},
 					Buttons: []TemplateButton{
 						{Type: "PHONE_NUMBER", Text: "Button text", PhoneNumber: "16175551213"},
 					},
@@ -63,8 +73,12 @@ func TestValidTemplateCreate(t *testing.T) {
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
 					Header: &TemplateHeader{Format: "TEXT", Text: "Some text"},
-					Body:   "body {{1}} content",
-					Footer: "Footer text",
+					Body: &TemplateStructureBody{
+						"body {{1}} content",
+					},
+					Footer: &TemplateStructureFooter{
+						"Footer text",
+					},
 					Buttons: []TemplateButton{
 						{Type: "URL", Text: "Button text", URL: "https://www.google.com"},
 					},
@@ -80,8 +94,12 @@ func TestValidTemplateCreate(t *testing.T) {
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
 					Header: &TemplateHeader{Format: "TEXT", Text: "Some text"},
-					Body:   "body {{1}} content",
-					Footer: "Footer text",
+					Body: &TemplateStructureBody{
+						"body {{1}} content",
+					},
+					Footer: &TemplateStructureFooter{
+						"Footer text",
+					},
 					Buttons: []TemplateButton{
 						{Type: "QUICK_REPLY", Text: "Button text"},
 					},
@@ -97,8 +115,12 @@ func TestValidTemplateCreate(t *testing.T) {
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
 					Header: &TemplateHeader{Format: "TEXT", Text: "Some text"},
-					Body:   "body {{1}} content",
-					Footer: "Footer text",
+					Body: &TemplateStructureBody{
+						"body {{1}} content",
+					},
+					Footer: &TemplateStructureFooter{
+						"Footer text",
+					},
 					Buttons: []TemplateButton{
 						{Type: "QUICK_REPLY", Text: "Button text"},
 						{Type: "QUICK_REPLY", Text: "Button text"},
@@ -116,8 +138,8 @@ func TestValidTemplateCreate(t *testing.T) {
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
 					Header: &TemplateHeader{Format: "TEXT", Text: "Some text"},
-					Body:   "body {{1}} content",
-					Footer: "Footer text",
+					Body:   &TemplateStructureBody{"body {{1}} content"},
+					Footer: &TemplateStructureFooter{"Footer text"},
 					Buttons: []TemplateButton{
 						{Type: "PHONE_NUMBER", Text: "Button text", PhoneNumber: "16175551213"},
 						{Type: "URL", Text: "Button text", URL: "https://www.google.com"},
@@ -151,7 +173,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Language: "en",
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
-					Body: "body {{1}} content",
+					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
 				},
 			},
@@ -163,7 +185,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Language: "en",
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
-					Body: "body {{1}} content",
+					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
 				},
 			},
@@ -174,7 +196,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Name:     "template_name",
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
-					Body: "body {{1}} content",
+					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
 				},
 			},
@@ -186,7 +208,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Language: "invalid",
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
-					Body: "body {{1}} content",
+					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
 				},
 			},
@@ -197,7 +219,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Name:     "template_name",
 				Language: "en",
 				Structure: TemplateStructure{
-					Body: "body {{1}} content",
+					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
 				},
 			},
@@ -209,7 +231,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Language: "en",
 				Category: "invalid category",
 				Structure: TemplateStructure{
-					Body: "body {{1}} content",
+					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
 				},
 			},
@@ -230,7 +252,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
 					Header: &TemplateHeader{Format: "INVALID", Text: "Text"},
-					Body:   "body {{1}} content",
+					Body:   &TemplateStructureBody{"body {{1}} content"},
 					Type:   "TEXT",
 				},
 			},
@@ -243,7 +265,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
 					Header: &TemplateHeader{Format: "TEXT"},
-					Body:   "body {{1}} content",
+					Body:   &TemplateStructureBody{"body {{1}} content"},
 					Type:   "TEXT",
 				},
 			},
@@ -256,7 +278,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
 					Header: &TemplateHeader{Format: "TEXT", Text: strings.Repeat("a", 61)},
-					Body:   "body {{1}} content",
+					Body:   &TemplateStructureBody{"body {{1}} content"},
 					Type:   "TEXT",
 				},
 			},
@@ -279,9 +301,11 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Language: "en",
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
-					Body:   "body {{1}} content",
-					Type:   "TEXT",
-					Footer: strings.Repeat("a", 61),
+					Body: &TemplateStructureBody{"body {{1}} content"},
+					Type: "TEXT",
+					Footer: &TemplateStructureFooter{
+						strings.Repeat("a", 61),
+					},
 				},
 			},
 		},
@@ -292,7 +316,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Language: "en",
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
-					Body:    "body {{1}} content",
+					Body:    &TemplateStructureBody{"body {{1}} content"},
 					Type:    "TEXT",
 					Buttons: []TemplateButton{},
 				},
@@ -305,7 +329,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Language: "en",
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
-					Body: "body {{1}} content",
+					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
 					Buttons: []TemplateButton{
 						{Type: "INVALID", Text: "Some text"},
@@ -320,7 +344,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Language: "en",
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
-					Body: "body {{1}} content",
+					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
 					Buttons: []TemplateButton{
 						{Type: "PHONE_NUMBER", PhoneNumber: "16175551213"},
@@ -335,7 +359,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Language: "en",
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
-					Body: "body {{1}} content",
+					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
 					Buttons: []TemplateButton{
 						{Type: "PHONE_NUMBER", PhoneNumber: "16175551213", Text: strings.Repeat("a", 201)},
@@ -350,7 +374,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Language: "en",
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
-					Body: "body {{1}} content",
+					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
 					Buttons: []TemplateButton{
 						{Type: "PHONE_NUMBER", Text: "Some text"},
@@ -365,7 +389,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Language: "en",
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
-					Body: "body {{1}} content",
+					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
 					Buttons: []TemplateButton{
 						{Type: "URL", Text: "Some text"},
@@ -380,7 +404,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Language: "en",
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
-					Body: "body {{1}} content",
+					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
 					Buttons: []TemplateButton{
 						{Type: "QUICK_REPLY"},
@@ -395,7 +419,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Language: "en",
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
-					Body: "body {{1}} content",
+					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
 					Buttons: []TemplateButton{
 						{Type: "QUICK_REPLY", Text: "Some text"},
@@ -413,7 +437,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Language: "en",
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
-					Body: "body {{1}} content",
+					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
 					Buttons: []TemplateButton{
 						{Type: "PHONE_NUMBER", Text: "Button text", PhoneNumber: "16175551213"},
@@ -429,7 +453,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Language: "en",
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
-					Body: "body {{1}} content",
+					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
 					Buttons: []TemplateButton{
 						{Type: "URL", Text: "Button text", URL: "https://www.google.com"},
@@ -445,7 +469,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Language: "en",
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
-					Body: "body {{1}} content",
+					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
 					Buttons: []TemplateButton{
 						{Type: "QUICK_REPLY", Text: "Some text"},
@@ -461,7 +485,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 				Language: "en",
 				Category: "ACCOUNT_UPDATE",
 				Structure: TemplateStructure{
-					Body: "body {{1}} content",
+					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
 					Buttons: []TemplateButton{
 						{Type: "QUICK_REPLY", Text: "Some text"},

@@ -8,16 +8,16 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip"
-	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/models"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	apiKey  = "your-api-key"
-	baseURL = "your-base-url"
-)
+//const (
+//apiKey  = "your-api-key"
+//baseURL = "your-base-url"
+//)
 
 func TestSendEmail(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)

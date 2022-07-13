@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/infobip-community/infobip-api-go-sdk/v2/internal"
-	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/models"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/internal"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/models"
 )
 
 // WhatsApp provides methods to interact with the Infobip WhatsApp API.
@@ -31,6 +31,8 @@ type WhatsApp interface {
 	GetTemplates(context.Context, string) (models.GetWATemplatesResponse, models.ResponseDetails, error)
 	CreateTemplate(context.Context, string, models.TemplateCreate,
 	) (models.CreateWATemplateResponse, models.ResponseDetails, error)
+	DeleteTemplate(context.Context, string, string,
+	) (models.ResponseDetails, error)
 }
 
 type Channel struct {
@@ -51,7 +53,8 @@ const (
 	sendInteractiveListPath         = "whatsapp/1/message/interactive/list"
 	sendInteractiveProductPath      = "whatsapp/1/message/interactive/product"
 	sendInteractiveMultiproductPath = "whatsapp/1/message/interactive/multi-product"
-	templatesPath                   = "whatsapp/1/senders/%s/templates"
+	templatesPath                   = "whatsapp/2/senders/%s/templates"
+	deleteTemplatePath              = "whatsapp/2/senders/%s/templates/%s"
 )
 
 func (wap *Channel) SendTemplate(
@@ -173,4 +176,13 @@ func (wap *Channel) CreateTemplate(
 ) (resp models.CreateWATemplateResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = wap.ReqHandler.PostJSONReq(ctx, &template, &resp, fmt.Sprintf(templatesPath, sender))
 	return resp, respDetails, err
+}
+
+func (wap *Channel) DeleteTemplate(
+	ctx context.Context,
+	sender string,
+	templateName string,
+) (respDetails models.ResponseDetails, err error) {
+	respDetails, err = wap.ReqHandler.DeleteRequest(ctx, fmt.Sprintf(deleteTemplatePath, sender, templateName), nil)
+	return respDetails, err
 }

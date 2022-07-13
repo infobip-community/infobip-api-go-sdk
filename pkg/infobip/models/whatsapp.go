@@ -62,24 +62,32 @@ type CreateWATemplateResponse struct {
 	Structure         TemplateStructure `json:"structure"`
 }
 
+type TemplateStructureBody struct {
+	Text string `json:"text" validate:"required"`
+}
+
+type TemplateStructureFooter struct {
+	Text string `json:"text" validate:"required,max=60"`
+}
+
 type TemplateStructure struct {
-	Header  *TemplateHeader  `json:"header,omitempty"`
-	Body    string           `json:"body" validate:"required"`
-	Footer  string           `json:"footer,omitempty" validate:"lte=60"`
-	Buttons []TemplateButton `json:"buttons,omitempty" validate:"omitempty,min=1,max=3,dive"`
-	Type    string           `json:"type,omitempty" validate:"oneof=TEXT MEDIA UNSUPPORTED"`
+	Header  *TemplateHeader          `json:"header,omitempty"`
+	Body    *TemplateStructureBody   `json:"body" validate:"required"`
+	Footer  *TemplateStructureFooter `json:"footer,omitempty"`
+	Buttons []TemplateButton         `json:"buttons,omitempty" validate:"omitempty,min=1,max=3,dive"`
+	Type    string                   `json:"type,omitempty" validate:"oneof=TEXT MEDIA UNSUPPORTED"`
 }
 
 type TemplateHeader struct {
 	Format string `json:"format,omitempty" validate:"oneof=TEXT IMAGE VIDEO DOCUMENT LOCATION"`
-	Text   string `json:"text" validate:"lte=60"`
+	Text   string `json:"text" validate:"required_if=Format TEXT,lte=60"`
 }
 
 type TemplateButton struct {
 	Type        string `json:"type" validate:"required,oneof=PHONE_NUMBER URL QUICK_REPLY"`
 	Text        string `json:"text" validate:"required,lte=200"`
-	PhoneNumber string `json:"phoneNumber,omitempty"`
-	URL         string `json:"url,omitempty" validate:"omitempty,url"`
+	PhoneNumber string `json:"phoneNumber,omitempty" validate:"required_if=Type PHONE_NUMBER"`
+	URL         string `json:"url,omitempty" validate:"omitempty,url,required_if=Type URL"`
 }
 
 type TemplateCreate struct {

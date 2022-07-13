@@ -12,8 +12,8 @@ import (
 	"testing"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/infobip-community/infobip-api-go-sdk/v2/internal"
-	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/models"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/internal"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -26,24 +26,34 @@ func TestCreateTemplateValidReq(t *testing.T) {
 		Language: "en",
 		Category: "ACCOUNT_UPDATE",
 		Structure: models.TemplateStructure{
-			Body: "body {{1}} content",
+			Body: &models.TemplateStructureBody{
+				Text: "body {{1}} content",
+			},
 			Type: "TEXT",
 		},
 	}
-	rawJSONResp := []byte(`{
-		"id": "111",
-		"businessAccountId": 222,
-		"name": "exampleName",
-		"language": "en",
-		"status": "APPROVED",
-		"category": "ACCOUNT_UPDATE",
-		"structure": {
-			"header": {"format": "IMAGE"},
-			"body": "example {{1}} body",
-			"footer": "exampleFooter",
+	rawJSONResp := []byte(`
+		{
+		  "id": "111",
+		  "businessAccountId": 222,
+		  "name": "media_template",
+		  "language": "en",
+		  "status": "APPROVED",
+		  "category": "ACCOUNT_UPDATE",
+		  "structure": {
+			"header": {
+			  "format": "IMAGE"
+			},
+			"body": {
+			  "text": "example {{1}} body"
+			},
+			"footer": {
+			  "text": "exampleFooter"
+			},
 			"type": "MEDIA"
+		  }
 		}
-	}`)
+	`)
 	var expectedResp models.CreateWATemplateResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
@@ -87,7 +97,9 @@ func TestInvalidCreateTemplate(t *testing.T) {
 		Language: "en",
 		Category: "invalid",
 		Structure: models.TemplateStructure{
-			Body: "body {{1}} content",
+			Body: &models.TemplateStructureBody{
+				Text: "body {{1}} content",
+			},
 			Type: "TEXT",
 		},
 	}
@@ -150,7 +162,9 @@ func TestCreateTemplate4xxErrors(t *testing.T) {
 		Language: "en",
 		Category: "ACCOUNT_UPDATE",
 		Structure: models.TemplateStructure{
-			Body: "body {{1}} content",
+			Body: &models.TemplateStructureBody{
+				Text: "body {{1}} content",
+			},
 			Type: "TEXT",
 		},
 	}

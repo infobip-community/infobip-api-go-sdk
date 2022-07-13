@@ -3,20 +3,25 @@ package examples
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"testing"
 
-	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip"
-	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/models"
-	"github.com/infobip-community/infobip-api-go-sdk/v2/pkg/infobip/utils"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/models"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+)
+
+const (
+	apiKey  = "your-api-key"
+	baseURL = "your-base-url"
+	sender  = "1234567891011"
 )
 
 // The following examples can also be used to test the client against a real environment.
 // Replace the apiKey and baseURL params along with the From, To and Content fields of the message, then run the test.
 func TestTemplateMessagesExample(t *testing.T) {
-	apiKey := "secret"
-	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
 	message := models.WATemplateMsgs{
@@ -53,8 +58,6 @@ func TestTemplateMessagesExample(t *testing.T) {
 }
 
 func TestSendTextExample(t *testing.T) {
-	apiKey := "secret"
-	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
 	message := models.WATextMsg{
@@ -74,8 +77,6 @@ func TestSendTextExample(t *testing.T) {
 }
 
 func TestSendDocumentExample(t *testing.T) {
-	apiKey := "secret"
-	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
 	message := models.WADocumentMsg{
@@ -95,8 +96,6 @@ func TestSendDocumentExample(t *testing.T) {
 }
 
 func TestSendImageExample(t *testing.T) {
-	apiKey := "secret"
-	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
 	message := models.WAImageMsg{
@@ -118,8 +117,6 @@ func TestSendImageExample(t *testing.T) {
 }
 
 func TestAudioExample(t *testing.T) {
-	apiKey := "secret"
-	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
 	message := models.WAAudioMsg{
@@ -139,8 +136,6 @@ func TestAudioExample(t *testing.T) {
 }
 
 func TestVideoExample(t *testing.T) {
-	apiKey := "secret"
-	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
 	message := models.WAVideoMsg{
@@ -160,8 +155,6 @@ func TestVideoExample(t *testing.T) {
 }
 
 func TestStickerExample(t *testing.T) {
-	apiKey := "secret"
-	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
 	message := models.WAStickerMsg{
@@ -181,8 +174,6 @@ func TestStickerExample(t *testing.T) {
 }
 
 func TestLocationExample(t *testing.T) {
-	apiKey := "secret"
-	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
 	message := models.WALocationMsg{
@@ -207,8 +198,6 @@ func TestLocationExample(t *testing.T) {
 }
 
 func TestContactExample(t *testing.T) {
-	apiKey := "secret"
-	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
 	message := models.WAContactMsg{
@@ -230,8 +219,6 @@ func TestContactExample(t *testing.T) {
 }
 
 func TestInteractiveButtonsExample(t *testing.T) {
-	apiKey := "secret"
-	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
 	message := models.WAInteractiveButtonsMsg{
@@ -263,8 +250,6 @@ func TestInteractiveButtonsExample(t *testing.T) {
 }
 
 func TestInteractiveListExample(t *testing.T) {
-	apiKey := "secret"
-	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
 	message := models.WAInteractiveListMsg{
@@ -298,8 +283,6 @@ func TestInteractiveListExample(t *testing.T) {
 }
 
 func TestInteractiveProductExample(t *testing.T) {
-	apiKey := "secret"
-	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
 	message := models.WAInteractiveProductMsg{
@@ -324,8 +307,6 @@ func TestInteractiveProductExample(t *testing.T) {
 }
 
 func TestInteractiveMultiproductExample(t *testing.T) {
-	apiKey := "secret"
-	baseURL := "https://myinfobipurl.com"
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
 	message := models.WAInteractiveMultiproductMsg{
@@ -354,10 +335,6 @@ func TestInteractiveMultiproductExample(t *testing.T) {
 }
 
 func TestGetTemplatesExample(t *testing.T) {
-	apiKey := "secret"
-	baseURL := "https://myinfobipurl.com"
-	sender := "111111111111"
-
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
 	msgResp, respDetails, err := client.WhatsApp.GetTemplates(context.Background(), sender)
@@ -369,18 +346,14 @@ func TestGetTemplatesExample(t *testing.T) {
 }
 
 func TestCreateTemplateExample(t *testing.T) {
-	apiKey := "secret"
-	baseURL := "https://myinfobipurl.com"
-	sender := "111111111111"
-
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.NoError(t, err)
 	template := models.TemplateCreate{
-		Name:     "template_name_mytest",
+		Name:     "template_name_my_test",
 		Language: "en",
 		Category: "ACCOUNT_UPDATE",
 		Structure: models.TemplateStructure{
-			Body: "body {{1}} content",
+			Body: &models.TemplateStructureBody{Text: "body {{1}} content"},
 			Type: "TEXT",
 		},
 	}
@@ -390,5 +363,15 @@ func TestCreateTemplateExample(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.NotEqual(t, models.CreateWATemplateResponse{}, respDetails)
-	assert.NotEqual(t, models.SendWAMsgResponse{}, msgResp)
+	assert.Equal(t, http.StatusCreated, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestDeleteTemplateExample(t *testing.T) {
+	client, err := infobip.NewClient(baseURL, apiKey)
+	require.NoError(t, err)
+	respDetails, err := client.WhatsApp.DeleteTemplate(context.Background(), sender, "template_name_my_test")
+
+	require.NoError(t, err)
+	assert.NotEqual(t, models.ResponseDetails{}, respDetails)
+	assert.NotEqual(t, http.StatusNoContent, respDetails.HTTPResponse.StatusCode)
 }
