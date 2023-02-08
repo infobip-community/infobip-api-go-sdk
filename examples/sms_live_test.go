@@ -305,3 +305,50 @@ func TestCreateTFAApplication(t *testing.T) {
 	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
 	assert.Equal(t, http.StatusCreated, respDetails.HTTPResponse.StatusCode)
 }
+
+func TestGetTFAApplication(t *testing.T) {
+	client, err := infobip.NewClientFromEnv()
+	require.Nil(t, err)
+
+	msgResp, respDetails, err := client.SMS.GetTFAApplication(context.Background(), "43D78365E3257420D78752A62845A8CB")
+
+	fmt.Println(msgResp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEmptyf(t, msgResp.ApplicationID, "ID should not be empty")
+	assert.NotEqual(t, models.GetTFAApplicationResponse{}, msgResp)
+	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestUpdateTFAApplication(t *testing.T) {
+	client, err := infobip.NewClientFromEnv()
+	require.Nil(t, err)
+
+	req := models.UpdateTFAApplicationRequest{
+		Name:    "Test Go TFA App 3",
+		Enabled: true,
+		Configuration: &models.TFAApplicationConfiguration{
+			PinAttempts:                   6,
+			AllowMultiplePINVerifications: true,
+			PINTimeToLive:                 "42m",
+			VerifyPINLimit:                "2/4s",
+			SendPINPerApplicationLimit:    "5000/12h",
+			SendPINPerPhoneNumberLimit:    "2/1d",
+		},
+	}
+
+	msgResp, respDetails, err := client.SMS.UpdateTFAApplication(context.Background(), req, "43D78365E3257420D78752A62845A8CB")
+
+	fmt.Println(msgResp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEmptyf(t, msgResp.ApplicationID, "ID should not be empty")
+	assert.NotEqual(t, models.UpdateTFAApplicationResponse{}, msgResp)
+	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}

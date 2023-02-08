@@ -421,3 +421,17 @@ func (c *CreateTFAApplicationRequest) Marshal() (*bytes.Buffer, error) {
 }
 
 type CreateTFAApplicationResponse TFAApplication
+
+type GetTFAApplicationResponse TFAApplication
+
+type UpdateTFAApplicationRequest TFAApplication
+
+func (u *UpdateTFAApplicationRequest) Validate() error {
+	return validate.Struct(u)
+}
+
+func (u *UpdateTFAApplicationRequest) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(u)
+}
+
+type UpdateTFAApplicationResponse TFAApplication

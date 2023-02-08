@@ -22,6 +22,8 @@ const (
 	updateScheduledSMSStatusPath = "sms/1/bulks/status"
 	getTFAApplicationsPath       = "2fa/2/applications"
 	createTFAApplicationPath     = "2fa/2/applications"
+	getTFAApplicationPath        = "/2fa/2/applications"
+	updateTFAApplicationPath     = "/2fa/2/applications"
 )
 
 type SMS interface {
@@ -93,6 +95,19 @@ type SMS interface {
 		ctx context.Context,
 		req models.CreateTFAApplicationRequest,
 	) (resp models.CreateTFAApplicationResponse, respDetails models.ResponseDetails, err error)
+
+	// GetTFAApplication returns a single 2FA message template from an application to see its configuration details.
+	GetTFAApplication(
+		ctx context.Context,
+		appID string,
+	) (resp models.GetTFAApplicationResponse, respDetails models.ResponseDetails, err error)
+
+	// UpdateTFAApplication changes configuration options for your existing 2FA application.
+	UpdateTFAApplication(
+		ctx context.Context,
+		req models.UpdateTFAApplicationRequest,
+		appID string,
+	) (resp models.UpdateTFAApplicationResponse, respDetails models.ResponseDetails, err error)
 }
 
 type Channel struct {
@@ -283,6 +298,25 @@ func (sms *Channel) CreateTFAApplication(
 	req models.CreateTFAApplicationRequest,
 ) (resp models.CreateTFAApplicationResponse, respDetails models.ResponseDetails, err error) {
 	respDetails, err = sms.ReqHandler.PostJSONReq(ctx, &req, &resp, createTFAApplicationPath)
+
+	return resp, respDetails, err
+}
+
+func (sms *Channel) GetTFAApplication(
+	ctx context.Context,
+	appId string,
+) (resp models.GetTFAApplicationResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, fmt.Sprint(getTFAApplicationPath, "/", appId), nil)
+
+	return resp, respDetails, err
+}
+
+func (sms *Channel) UpdateTFAApplication(
+	ctx context.Context,
+	req models.UpdateTFAApplicationRequest,
+	appId string,
+) (resp models.UpdateTFAApplicationResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = sms.ReqHandler.PutJSONReq(ctx, &req, &resp, fmt.Sprint(updateTFAApplicationPath, "/", appId), nil)
 
 	return resp, respDetails, err
 }
