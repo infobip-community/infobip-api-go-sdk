@@ -392,3 +392,32 @@ type UpdateScheduledSMSStatusResponse struct {
 	BulkID string `json:"bulkId"`
 	Status string `json:"status"`
 }
+
+type TFAApplicationConfiguration struct {
+	AllowMultiplePINVerifications bool   `json:"allowMultiplePinVerifications"`
+	PinAttempts                   int    `json:"pinAttempts"`
+	PINTimeToLive                 string `json:"pinTimeToLive"`
+	SendPINPerApplicationLimit    string `json:"sendPinPerApplicationLimit"`
+	SendPINPerPhoneNumberLimit    string `json:"sendPinPerPhoneNumberLimit"`
+	VerifyPINLimit                string `json:"verifyPinLimit"`
+}
+
+type TFAApplication struct {
+	ApplicationID string                       `json:"applicationId"`
+	Configuration *TFAApplicationConfiguration `json:"configuration,omitempty"`
+	Enabled       bool                         `json:"enabled"`
+	Name          string                       `json:"name" validate:"required"`
+}
+type GetTFAApplicationsResponse []TFAApplication
+
+type CreateTFAApplicationRequest TFAApplication
+
+func (c *CreateTFAApplicationRequest) Validate() error {
+	return validate.Struct(c)
+}
+
+func (c *CreateTFAApplicationRequest) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(c)
+}
+
+type CreateTFAApplicationResponse TFAApplication

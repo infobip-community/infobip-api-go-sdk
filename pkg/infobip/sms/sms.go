@@ -20,6 +20,8 @@ const (
 	rescheduleSMSPath            = "sms/1/bulks"
 	getScheduledSMSStatusPath    = "sms/1/bulks/status"
 	updateScheduledSMSStatusPath = "sms/1/bulks/status"
+	getTFAApplicationsPath       = "2fa/2/applications"
+	createTFAApplicationPath     = "2fa/2/applications"
 )
 
 type SMS interface {
@@ -80,6 +82,17 @@ type SMS interface {
 		req models.UpdateScheduledSMSStatusRequest,
 		queryParams models.UpdateScheduledSMSStatusParams,
 	) (resp models.UpdateScheduledSMSStatusResponse, respDetails models.ResponseDetails, err error)
+
+	// GetTFAApplications returns your applications list.
+	GetTFAApplications(
+		ctx context.Context,
+	) (resp models.GetTFAApplicationsResponse, respDetails models.ResponseDetails, err error)
+
+	// CreateTFAApplication create and configure a new 2FA application.
+	CreateTFAApplication(
+		ctx context.Context,
+		req models.CreateTFAApplicationRequest,
+	) (resp models.CreateTFAApplicationResponse, respDetails models.ResponseDetails, err error)
 }
 
 type Channel struct {
@@ -253,6 +266,23 @@ func (sms *Channel) UpdateScheduledMessagesStatus(
 	}
 
 	respDetails, err = sms.ReqHandler.PutJSONReq(ctx, &req, &resp, updateScheduledSMSStatusPath, params)
+
+	return resp, respDetails, err
+}
+
+func (sms *Channel) GetTFAApplications(
+	ctx context.Context,
+) (resp models.GetTFAApplicationsResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, getTFAApplicationsPath, nil)
+
+	return resp, respDetails, err
+}
+
+func (sms *Channel) CreateTFAApplication(
+	ctx context.Context,
+	req models.CreateTFAApplicationRequest,
+) (resp models.CreateTFAApplicationResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = sms.ReqHandler.PostJSONReq(ctx, &req, &resp, createTFAApplicationPath)
 
 	return resp, respDetails, err
 }

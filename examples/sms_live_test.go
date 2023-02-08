@@ -267,3 +267,41 @@ func TestUpdateScheduledSMSStatus(t *testing.T) {
 	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
+
+func TestGetTFAApplications(t *testing.T) {
+	client, err := infobip.NewClientFromEnv()
+	require.Nil(t, err)
+
+	msgResp, respDetails, err := client.SMS.GetTFAApplications(context.Background())
+
+	fmt.Println(msgResp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEmptyf(t, msgResp[0].ApplicationID, "ID should not be empty")
+	assert.NotEqual(t, models.GetTFAApplicationsResponse{}, msgResp)
+	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestCreateTFAApplication(t *testing.T) {
+	client, err := infobip.NewClientFromEnv()
+	require.Nil(t, err)
+
+	req := models.CreateTFAApplicationRequest{
+		Name: "Test Go TFA App 2",
+	}
+
+	msgResp, respDetails, err := client.SMS.CreateTFAApplication(context.Background(), req)
+
+	fmt.Println(msgResp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEmptyf(t, msgResp.ApplicationID, "ID should not be empty")
+	assert.NotEqual(t, models.CreateTFAApplicationResponse{}, msgResp)
+	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.Equal(t, http.StatusCreated, respDetails.HTTPResponse.StatusCode)
+}
