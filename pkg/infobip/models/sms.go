@@ -395,7 +395,7 @@ type UpdateScheduledSMSStatusResponse struct {
 
 type TFAApplicationConfiguration struct {
 	AllowMultiplePINVerifications bool   `json:"allowMultiplePinVerifications"`
-	PinAttempts                   int    `json:"pinAttempts"`
+	PINAttempts                   int    `json:"pinAttempts"`
 	PINTimeToLive                 string `json:"pinTimeToLive"`
 	SendPINPerApplicationLimit    string `json:"sendPinPerApplicationLimit"`
 	SendPINPerPhoneNumberLimit    string `json:"sendPinPerPhoneNumberLimit"`
@@ -435,3 +435,155 @@ func (u *UpdateTFAApplicationRequest) Marshal() (*bytes.Buffer, error) {
 }
 
 type UpdateTFAApplicationResponse TFAApplication
+
+type TFAMessageTemplate struct {
+	ApplicationID  string       `json:"applicationId,omitempty"`
+	Language       string       `json:"language,omitempty"`
+	MessageID      string       `json:"messageId,omitempty"`
+	MessageText    string       `json:"messageText,omitempty" validate:"required"`
+	PINLength      int          `json:"pinLength,omitempty"`
+	PINPlaceholder string       `json:"pinPlaceholder,omitempty"`
+	PINType        string       `json:"pinType,omitempty" validate:"required,oneof=NUMERIC ALPHANUMERIC ALPHA HEX"`
+	Regional       *SMSRegional `json:"regional,omitempty"`
+	RepeatDTMF     string       `json:"repeatDTMF,omitempty"`
+	SenderID       string       `json:"senderId,omitempty"`
+	SpeechRate     float64      `json:"speechRate,omitempty"`
+}
+
+type GetTFAMessageTemplatesResponse []TFAMessageTemplate
+
+type CreateTFAMessageTemplateRequest TFAMessageTemplate
+
+func (c *CreateTFAMessageTemplateRequest) Validate() error {
+	return validate.Struct(c)
+}
+
+func (c *CreateTFAMessageTemplateRequest) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(c)
+}
+
+type CreateTFAMessageTemplateResponse TFAMessageTemplate
+
+type GetTFAMessageTemplateResponse TFAMessageTemplate
+
+type UpdateTFAMessageTemplateRequest TFAMessageTemplate
+
+func (u *UpdateTFAMessageTemplateRequest) Validate() error {
+	return validate.Struct(u)
+}
+
+func (u *UpdateTFAMessageTemplateRequest) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(u)
+}
+
+type UpdateTFAMessageTemplateResponse TFAMessageTemplate
+
+type PINPlaceholders struct {
+	FirstName string `json:"firstName,omitempty"` // FIXME: Members can change.
+}
+
+type SendPINRequest struct {
+	ApplicationID string           `json:"applicationId" validate:"required"`
+	MessageID     string           `json:"messageId" validate:"required"`
+	From          string           `json:"from,omitempty"`
+	To            string           `json:"to" validate:"required"`
+	Placeholders  *PINPlaceholders `json:"placeholders,omitempty"`
+}
+
+type SendPINOverSMSRequest SendPINRequest
+
+func (s *SendPINOverSMSRequest) Validate() error {
+	return validate.Struct(s)
+}
+
+func (s *SendPINOverSMSRequest) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(s)
+}
+
+type SendPINOverSMSParams struct {
+	NCNeeded bool
+}
+
+type SendPINResponse struct {
+	PINID      string `json:"pinId"`
+	To         string `json:"to"`
+	NCStatus   string `json:"ncStatus,omitempty"`
+	SMSStatus  string `json:"smsStatus,omitempty"`
+	CallStatus string `json:"callStatus,omitempty"`
+}
+
+type SendPINOverSMSResponse SendPINResponse
+
+type ResendPINRequest struct {
+	Placeholders *PINPlaceholders `json:"placeholders,omitempty"`
+}
+
+type ResendPINOverSMSRequest ResendPINRequest
+
+func (r *ResendPINOverSMSRequest) Validate() error {
+	return validate.Struct(r)
+}
+
+func (r *ResendPINOverSMSRequest) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(r)
+}
+
+type ResendPINOverSMSResponse SendPINResponse
+
+type SendPINOverVoiceRequest SendPINRequest
+
+func (s *SendPINOverVoiceRequest) Validate() error {
+	return validate.Struct(s)
+}
+
+func (s *SendPINOverVoiceRequest) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(s)
+}
+
+type SendPINOverVoiceResponse SendPINResponse
+
+type ResendPINOverVoiceRequest ResendPINRequest
+
+func (r *ResendPINOverVoiceRequest) Validate() error {
+	return validate.Struct(r)
+}
+
+func (r *ResendPINOverVoiceRequest) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(r)
+}
+
+type ResendPINOverVoiceResponse SendPINResponse
+
+type VerifyPhoneNumberRequest struct {
+	PIN string `json:"pin" validate:"required"`
+}
+
+func (v *VerifyPhoneNumberRequest) Validate() error {
+	return validate.Struct(v)
+}
+
+func (v *VerifyPhoneNumberRequest) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(v)
+}
+
+type VerifyPhoneNumberResponse struct {
+	PINId             string `json:"pinId"`
+	MSISDN            string `json:"msisdn"`
+	Verified          bool   `json:"verified"`
+	AttemptsRemaining int    `json:"attemptsRemaining"`
+}
+
+type GetTFAVerificationStatusParams struct {
+	MSISDN   string `json:"msisdn" validate:"required"`
+	Verified bool   `json:"verified"`
+	Sent     bool   `json:"sent"`
+}
+
+type GetTFAVerificationStatusResponse struct {
+	Verifications []struct {
+		Msisdn     string `json:"msisdn"`
+		Verified   bool   `json:"verified"`
+		VerifiedAt int    `json:"verifiedAt"`
+		SentAt     int    `json:"sentAt"`
+	} `json:"verifications"`
+}
