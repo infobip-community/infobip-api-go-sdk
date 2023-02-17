@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"runtime"
 
 	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/models"
 )
@@ -290,6 +291,7 @@ func (h *HTTPHandler) generateCommonHeaders() http.Header {
 	header := http.Header{}
 	header.Add("Authorization", fmt.Sprintf("App %s", h.APIKey))
 	header.Add("Accept", "application/json")
+	header.Add("User-Agent", "@infobip/go-sdk/v3"+" go/"+runtime.Version())
 	return header
 }
 
