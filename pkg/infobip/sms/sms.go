@@ -144,15 +144,13 @@ type SMS interface {
 	UpdateTFAMessageTemplate(
 		ctx context.Context,
 		appID string,
-		templateID string,
+		messageID string,
 		req models.UpdateTFAMessageTemplateRequest,
 	) (resp models.UpdateTFAMessageTemplateResponse, respDetails models.ResponseDetails, err error)
 
 	// SendPINOverSMS sends a PIN code over SMS using a previously created message template.
 	SendPINOverSMS(
 		ctx context.Context,
-		appID string,
-		templateID string,
 		queryParams models.SendPINOverSMSParams,
 		req models.SendPINOverSMSRequest,
 	) (resp models.SendPINOverSMSResponse, respDetails models.ResponseDetails, err error)
@@ -386,59 +384,59 @@ func (sms *Channel) CreateTFAApplication(
 
 func (sms *Channel) GetTFAApplication(
 	ctx context.Context,
-	appId string,
+	appID string,
 ) (resp models.GetTFAApplicationResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, getTFAApplicationPath+"/"+appId, nil)
+	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, getTFAApplicationPath+"/"+appID, nil)
 
 	return resp, respDetails, err
 }
 
 func (sms *Channel) UpdateTFAApplication(
 	ctx context.Context,
+	appID string,
 	req models.UpdateTFAApplicationRequest,
-	appId string,
 ) (resp models.UpdateTFAApplicationResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = sms.ReqHandler.PutJSONReq(ctx, &req, &resp, updateTFAApplicationPath+"/"+appId, nil)
+	respDetails, err = sms.ReqHandler.PutJSONReq(ctx, &req, &resp, updateTFAApplicationPath+"/"+appID, nil)
 
 	return resp, respDetails, err
 }
 
 func (sms *Channel) GetTFAMessageTemplates(
 	ctx context.Context,
-	appId string,
+	appID string,
 ) (resp models.GetTFAMessageTemplatesResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, getTFAMessageTemplatesPath+"/"+appId+"/messages", nil)
+	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, getTFAMessageTemplatesPath+"/"+appID+"/messages", nil)
 
 	return resp, respDetails, err
 }
 
 func (sms *Channel) CreateTFAMessageTemplate(
 	ctx context.Context,
+	appID string,
 	req models.CreateTFAMessageTemplateRequest,
-	appId string,
 ) (resp models.CreateTFAMessageTemplateResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = sms.ReqHandler.PostJSONReq(ctx, &req, &resp, createTFAMessageTemplatePath+"/"+appId+"/messages")
+	respDetails, err = sms.ReqHandler.PostJSONReq(ctx, &req, &resp, createTFAMessageTemplatePath+"/"+appID+"/messages")
 
 	return resp, respDetails, err
 }
 
 func (sms *Channel) GetTFAMessageTemplate(
 	ctx context.Context,
-	appId string,
-	templateId string,
+	appID string,
+	templateID string,
 ) (resp models.GetTFAMessageTemplateResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, getTFAMessageTemplatePath+"/"+appId+"/messages/"+templateId, nil)
+	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, getTFAMessageTemplatePath+"/"+appID+"/messages/"+templateID, nil)
 
 	return resp, respDetails, err
 }
 
 func (sms *Channel) UpdateTFAMessageTemplate(
 	ctx context.Context,
+	appID string,
+	messageID string,
 	req models.UpdateTFAMessageTemplateRequest,
-	appId string,
-	templateId string,
 ) (resp models.UpdateTFAMessageTemplateResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = sms.ReqHandler.PutJSONReq(ctx, &req, &resp, updateTFAMessageTemplatePath+"/"+appId+"/messages/"+templateId, nil)
+	respDetails, err = sms.ReqHandler.PutJSONReq(ctx, &req, &resp, updateTFAMessageTemplatePath+"/"+appID+"/messages/"+messageID, nil)
 
 	return resp, respDetails, err
 }
@@ -488,17 +486,17 @@ func (sms *Channel) ResendPINOverVoice(
 
 func (sms *Channel) VerifyPhoneNumber(
 	ctx context.Context,
-	pinId string,
+	pinID string,
 	req models.VerifyPhoneNumberRequest,
 ) (resp models.VerifyPhoneNumberResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = sms.ReqHandler.PostJSONReq(ctx, &req, &resp, verifyPhoneNumberPath+"/"+pinId+"/verify")
+	respDetails, err = sms.ReqHandler.PostJSONReq(ctx, &req, &resp, verifyPhoneNumberPath+"/"+pinID+"/verify")
 
 	return resp, respDetails, err
 }
 
 func (sms *Channel) GetTFAVerificationStatus(
 	ctx context.Context,
-	appId string,
+	appID string,
 	queryParams models.GetTFAVerificationStatusParams,
 ) (resp models.GetTFAVerificationStatusResponse, respDetails models.ResponseDetails, err error) {
 	params := []internal.QueryParameter{
@@ -506,7 +504,7 @@ func (sms *Channel) GetTFAVerificationStatus(
 		{Name: "verified", Value: fmt.Sprint(queryParams.Verified)},
 		{Name: "sent", Value: fmt.Sprint(queryParams.Sent)},
 	}
-	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, getTFAVerificationStatusPath+"/"+appId+"/verifications", params)
+	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, getTFAVerificationStatusPath+"/"+appID+"/verifications", params)
 
 	return resp, respDetails, err
 }

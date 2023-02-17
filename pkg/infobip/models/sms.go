@@ -436,14 +436,50 @@ func (u *UpdateTFAApplicationRequest) Marshal() (*bytes.Buffer, error) {
 
 type UpdateTFAApplicationResponse TFAApplication
 
+type TFALanguage string
+
+const (
+	English            TFALanguage = "en"
+	Spanish            TFALanguage = "es"
+	Catalan            TFALanguage = "ca"
+	Danish             TFALanguage = "da"
+	Dutch              TFALanguage = "nl"
+	French             TFALanguage = "fr"
+	German             TFALanguage = "de"
+	Italian            TFALanguage = "it"
+	Japanese           TFALanguage = "ja"
+	Korean             TFALanguage = "ko"
+	Norwegian          TFALanguage = "no"
+	Polish             TFALanguage = "pl"
+	Russian            TFALanguage = "ru"
+	Swedish            TFALanguage = "sv"
+	Finnish            TFALanguage = "fi"
+	Croatian           TFALanguage = "hr"
+	Slovenian          TFALanguage = "sl"
+	Romanian           TFALanguage = "ro"
+	PortuguesePortugal TFALanguage = "pt-pt"
+	PortugueseBrazil   TFALanguage = "pt-br"
+	ChineseSimplified  TFALanguage = "zh-cn"
+	ChineseTraditional TFALanguage = "zh-tw"
+)
+
+type PINType string
+
+const (
+	NUMERIC      PINType = "NUMERIC"
+	ALPHA        PINType = "ALPHA"
+	HEX          PINType = "HEX"
+	ALPHANUMERIC PINType = "ALPHANUMERIC"
+)
+
 type TFAMessageTemplate struct {
 	ApplicationID  string       `json:"applicationId,omitempty"`
-	Language       string       `json:"language,omitempty"`
+	Language       TFALanguage  `json:"language,omitempty"`
 	MessageID      string       `json:"messageId,omitempty"`
 	MessageText    string       `json:"messageText,omitempty" validate:"required"`
-	PINLength      int          `json:"pinLength,omitempty"`
+	PINLength      int          `json:"pinLength,omitempty" validate:"required"`
 	PINPlaceholder string       `json:"pinPlaceholder,omitempty"`
-	PINType        string       `json:"pinType,omitempty" validate:"required,oneof=NUMERIC ALPHANUMERIC ALPHA HEX"`
+	PINType        PINType      `json:"pinType,omitempty" validate:"required"`
 	Regional       *SMSRegional `json:"regional,omitempty"`
 	RepeatDTMF     string       `json:"repeatDTMF,omitempty"`
 	SenderID       string       `json:"senderId,omitempty"`
@@ -478,16 +514,12 @@ func (u *UpdateTFAMessageTemplateRequest) Marshal() (*bytes.Buffer, error) {
 
 type UpdateTFAMessageTemplateResponse TFAMessageTemplate
 
-type PINPlaceholders struct {
-	FirstName string `json:"firstName,omitempty"` // FIXME: Members can change.
-}
-
 type SendPINRequest struct {
-	ApplicationID string           `json:"applicationId" validate:"required"`
-	MessageID     string           `json:"messageId" validate:"required"`
-	From          string           `json:"from,omitempty"`
-	To            string           `json:"to" validate:"required"`
-	Placeholders  *PINPlaceholders `json:"placeholders,omitempty"`
+	ApplicationID string            `json:"applicationId" validate:"required"`
+	MessageID     string            `json:"messageId" validate:"required"`
+	From          string            `json:"from,omitempty"`
+	To            string            `json:"to" validate:"required"`
+	Placeholders  map[string]string `json:"placeholders,omitempty"`
 }
 
 type SendPINOverSMSRequest SendPINRequest
@@ -515,7 +547,7 @@ type SendPINResponse struct {
 type SendPINOverSMSResponse SendPINResponse
 
 type ResendPINRequest struct {
-	Placeholders *PINPlaceholders `json:"placeholders,omitempty"`
+	Placeholders map[string]string `json:"placeholders,omitempty"`
 }
 
 type ResendPINOverSMSRequest ResendPINRequest
@@ -567,7 +599,7 @@ func (v *VerifyPhoneNumberRequest) Marshal() (*bytes.Buffer, error) {
 }
 
 type VerifyPhoneNumberResponse struct {
-	PINId             string `json:"pinId"`
+	PINID             string `json:"pinId"`
 	MSISDN            string `json:"msisdn"`
 	Verified          bool   `json:"verified"`
 	AttemptsRemaining int    `json:"attemptsRemaining"`

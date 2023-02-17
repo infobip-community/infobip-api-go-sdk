@@ -12,11 +12,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-//const (
-//	apiKey     = "your-api-key"
-//	baseURL    = "your-base-url"
-//  destNumber = "123456789012"
-//)
+const (
+	destNumber = "555555555555"
+)
 
 func TestSendSMS(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
@@ -32,15 +30,15 @@ func TestSendSMS(t *testing.T) {
 		Messages: []models.SMSMsg{sms},
 	}
 
-	msgResp, respDetails, err := client.SMS.Send(context.Background(), request)
+	resp, respDetails, err := client.SMS.Send(context.Background(), request)
 
-	fmt.Println(msgResp)
+	fmt.Println(resp)
 	fmt.Println(respDetails)
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEmptyf(t, msgResp.Messages[0].MessageID, "MessageID should not be empty")
-	assert.NotEqual(t, models.SendSMSResponse{}, msgResp)
+	assert.NotEmptyf(t, resp.Messages[0].MessageID, "MessageID should not be empty")
+	assert.NotEqual(t, models.SendSMSResponse{}, resp)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
 
@@ -67,16 +65,16 @@ func TestSendSMSBulk(t *testing.T) {
 		Messages: []models.SMSMsg{sms, sms2},
 	}
 
-	msgResp, respDetails, err := client.SMS.Send(context.Background(), request)
+	resp, respDetails, err := client.SMS.Send(context.Background(), request)
 
-	fmt.Println(msgResp)
+	fmt.Println(resp)
 	fmt.Println(respDetails)
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEmptyf(t, msgResp.Messages[0].MessageID, "MessageID should not be empty")
-	assert.NotEqual(t, models.SendSMSResponse{}, msgResp)
-	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.NotEmptyf(t, resp.Messages[0].MessageID, "MessageID should not be empty")
+	assert.NotEqual(t, models.SendSMSResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
 
@@ -94,16 +92,16 @@ func TestSendBinarySMS(t *testing.T) {
 		Messages: []models.BinarySMSMsg{binSMS},
 	}
 
-	msgResp, respDetails, err := client.SMS.SendBinary(context.Background(), request)
+	resp, respDetails, err := client.SMS.SendBinary(context.Background(), request)
 
-	fmt.Println(msgResp)
+	fmt.Println(resp)
 	fmt.Println(respDetails)
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEmptyf(t, msgResp.Messages[0].MessageID, "MessageID should not be empty")
-	assert.NotEqual(t, models.SendSMSResponse{}, msgResp)
-	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.NotEmptyf(t, resp.Messages[0].MessageID, "MessageID should not be empty")
+	assert.NotEqual(t, models.SendSMSResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
 
@@ -118,15 +116,15 @@ func TestSendSMSOverQueryParameters(t *testing.T) {
 		Text:     "Hello from Go SDK",
 	}
 
-	msgResp, respDetails, err := client.SMS.SendOverQueryParams(context.Background(), paramsSMS)
+	resp, respDetails, err := client.SMS.SendOverQueryParams(context.Background(), paramsSMS)
 
-	fmt.Println(msgResp)
+	fmt.Println(resp)
 	fmt.Println(respDetails)
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEmptyf(t, msgResp.Messages[0].MessageID, "MessageID should not be empty")
-	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.NotEmptyf(t, resp.Messages[0].MessageID, "MessageID should not be empty")
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
 
@@ -139,16 +137,16 @@ func TestPreviewSMS(t *testing.T) {
 		Text:         "Mesaj gönderimi yapmadan önce önizleme seçeneğini kullanmanız doğru karar vermenize olur.",
 	}
 
-	msgResp, respDetails, err := client.SMS.Preview(context.Background(), previewReq)
+	resp, respDetails, err := client.SMS.Preview(context.Background(), previewReq)
 
-	fmt.Println(msgResp)
+	fmt.Println(resp)
 	fmt.Println(respDetails)
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEmptyf(t, msgResp.Previews[0].TextPreview, "TextPreview should not be empty")
-	assert.NotEqual(t, models.PreviewSMSResponse{}, msgResp)
-	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.NotEmptyf(t, resp.Previews[0].TextPreview, "TextPreview should not be empty")
+	assert.NotEqual(t, models.PreviewSMSResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
 
@@ -160,16 +158,16 @@ func TestGetSMSDeliveryReports(t *testing.T) {
 		Limit: 10,
 	}
 
-	msgResp, respDetails, err := client.SMS.GetDeliveryReports(context.Background(), queryParams)
+	resp, respDetails, err := client.SMS.GetDeliveryReports(context.Background(), queryParams)
 
-	fmt.Println(msgResp)
+	fmt.Println(resp)
 	fmt.Println(respDetails)
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEmptyf(t, msgResp.Results[0].MessageID, "MessageID should not be empty")
-	assert.NotEqual(t, models.GetSMSDeliveryReportsResponse{}, msgResp)
-	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.NotEmptyf(t, resp.Results[0].MessageID, "MessageID should not be empty")
+	assert.NotEqual(t, models.GetSMSDeliveryReportsResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
 
@@ -181,16 +179,16 @@ func TestGetSMSLogs(t *testing.T) {
 		Limit: 10,
 	}
 
-	msgResp, respDetails, err := client.SMS.GetLogs(context.Background(), queryParams)
+	resp, respDetails, err := client.SMS.GetLogs(context.Background(), queryParams)
 
-	fmt.Println(msgResp)
+	fmt.Println(resp)
 	fmt.Println(respDetails)
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEmptyf(t, msgResp.Results[0].MessageID, "MessageID should not be empty")
-	assert.NotEqual(t, models.GetSMSLogsResponse{}, msgResp)
-	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.NotEmptyf(t, resp.Results[0].MessageID, "MessageID should not be empty")
+	assert.NotEqual(t, models.GetSMSLogsResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
 
@@ -200,15 +198,15 @@ func TestGetScheduledSMS(t *testing.T) {
 
 	queryParams := models.GetScheduledSMSParams{BulkID: "f4b07b1a-a009-49d5-a94d-f8fd1bfdc985"}
 
-	msgResp, respDetails, err := client.SMS.GetScheduledMessages(context.Background(), queryParams)
+	resp, respDetails, err := client.SMS.GetScheduledMessages(context.Background(), queryParams)
 
-	fmt.Println(msgResp)
+	fmt.Println(resp)
 	fmt.Println(respDetails)
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEmptyf(t, msgResp.BulkID, "BulkID should not be empty")
-	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.NotEmptyf(t, resp.BulkID, "BulkID should not be empty")
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
 
@@ -219,15 +217,15 @@ func TestRescheduleSMS(t *testing.T) {
 	params := models.RescheduleSMSParams{BulkID: "f4b07b1a-a009-49d5-a94d-f8fd1bfdc985"}
 	req := models.RescheduleSMSRequest{SendAt: "2022-06-01T16:00:00.000+0000"}
 
-	msgResp, respDetails, err := client.SMS.RescheduleMessages(context.Background(), req, params)
+	resp, respDetails, err := client.SMS.RescheduleMessages(context.Background(), req, params)
 
-	fmt.Println(msgResp)
+	fmt.Println(resp)
 	fmt.Println(respDetails)
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEmptyf(t, msgResp.BulkID, "BulkID should not be empty")
-	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.NotEmptyf(t, resp.BulkID, "BulkID should not be empty")
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
 
@@ -237,15 +235,15 @@ func TestGetScheduledSMSStatus(t *testing.T) {
 
 	params := models.GetScheduledSMSStatusParams{BulkID: "f4b07b1a-a009-49d5-a94d-f8fd1bfdc985"}
 
-	msgResp, respDetails, err := client.SMS.GetScheduledMessagesStatus(context.Background(), params)
+	resp, respDetails, err := client.SMS.GetScheduledMessagesStatus(context.Background(), params)
 
-	fmt.Println(msgResp)
+	fmt.Println(resp)
 	fmt.Println(respDetails)
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEmptyf(t, msgResp.BulkID, "BulkID should not be empty")
-	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.NotEmptyf(t, resp.BulkID, "BulkID should not be empty")
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
 
@@ -256,15 +254,15 @@ func TestUpdateScheduledSMSStatus(t *testing.T) {
 	params := models.UpdateScheduledSMSStatusParams{BulkID: "f4b07b1a-a009-49d5-a94d-f8fd1bfdc985"}
 	req := models.UpdateScheduledSMSStatusRequest{Status: "CANCELED"}
 
-	msgResp, respDetails, err := client.SMS.UpdateScheduledMessagesStatus(context.Background(), req, params)
+	resp, respDetails, err := client.SMS.UpdateScheduledMessagesStatus(context.Background(), req, params)
 
-	fmt.Println(msgResp)
+	fmt.Println(resp)
 	fmt.Println(respDetails)
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEmptyf(t, msgResp.BulkID, "BulkID should not be empty")
-	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.NotEmptyf(t, resp.BulkID, "BulkID should not be empty")
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
 
@@ -272,16 +270,16 @@ func TestGetTFAApplications(t *testing.T) {
 	client, err := infobip.NewClientFromEnv()
 	require.Nil(t, err)
 
-	msgResp, respDetails, err := client.SMS.GetTFAApplications(context.Background())
+	resp, respDetails, err := client.SMS.GetTFAApplications(context.Background())
 
-	fmt.Println(msgResp)
+	fmt.Println(resp)
 	fmt.Println(respDetails)
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEmptyf(t, msgResp[0].ApplicationID, "ID should not be empty")
-	assert.NotEqual(t, models.GetTFAApplicationsResponse{}, msgResp)
-	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.NotEmptyf(t, resp[0].ApplicationID, "ID should not be empty")
+	assert.NotEqual(t, models.GetTFAApplicationsResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
 
@@ -293,16 +291,16 @@ func TestCreateTFAApplication(t *testing.T) {
 		Name: "Test Go TFA App 2",
 	}
 
-	msgResp, respDetails, err := client.SMS.CreateTFAApplication(context.Background(), req)
+	resp, respDetails, err := client.SMS.CreateTFAApplication(context.Background(), req)
 
-	fmt.Println(msgResp)
+	fmt.Println(resp)
 	fmt.Println(respDetails)
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEmptyf(t, msgResp.ApplicationID, "ID should not be empty")
-	assert.NotEqual(t, models.CreateTFAApplicationResponse{}, msgResp)
-	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.NotEmptyf(t, resp.ApplicationID, "ID should not be empty")
+	assert.NotEqual(t, models.CreateTFAApplicationResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
 	assert.Equal(t, http.StatusCreated, respDetails.HTTPResponse.StatusCode)
 }
 
@@ -310,16 +308,16 @@ func TestGetTFAApplication(t *testing.T) {
 	client, err := infobip.NewClientFromEnv()
 	require.Nil(t, err)
 
-	msgResp, respDetails, err := client.SMS.GetTFAApplication(context.Background(), "43D78365E3257420D78752A62845A8CB")
+	resp, respDetails, err := client.SMS.GetTFAApplication(context.Background(), "43D78365E3257420D78752A62845A8CB")
 
-	fmt.Println(msgResp)
+	fmt.Println(resp)
 	fmt.Println(respDetails)
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEmptyf(t, msgResp.ApplicationID, "ID should not be empty")
-	assert.NotEqual(t, models.GetTFAApplicationResponse{}, msgResp)
-	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.NotEmptyf(t, resp.ApplicationID, "ID should not be empty")
+	assert.NotEqual(t, models.GetTFAApplicationResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }
 
@@ -331,24 +329,246 @@ func TestUpdateTFAApplication(t *testing.T) {
 		Name:    "Test Go TFA App 3",
 		Enabled: true,
 		Configuration: &models.TFAApplicationConfiguration{
-			PinAttempts:                   6,
+			PINAttempts:                   6,
 			AllowMultiplePINVerifications: true,
-			PINTimeToLive:                 "42m",
+			PINTimeToLive:                 "20m",
 			VerifyPINLimit:                "2/4s",
 			SendPINPerApplicationLimit:    "5000/12h",
 			SendPINPerPhoneNumberLimit:    "2/1d",
 		},
 	}
 
-	msgResp, respDetails, err := client.SMS.UpdateTFAApplication(context.Background(), req, "43D78365E3257420D78752A62845A8CB")
+	resp, respDetails, err := client.SMS.UpdateTFAApplication(context.Background(), "43D78365E3257420D78752A62845A8CB", req)
 
-	fmt.Println(msgResp)
+	fmt.Println(resp)
 	fmt.Println(respDetails)
 
 	require.Nil(t, err)
 	assert.NotNil(t, respDetails)
-	assert.NotEmptyf(t, msgResp.ApplicationID, "ID should not be empty")
-	assert.NotEqual(t, models.UpdateTFAApplicationResponse{}, msgResp)
-	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.NotEmptyf(t, resp.ApplicationID, "ID should not be empty")
+	assert.NotEqual(t, models.UpdateTFAApplicationResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestGetTFAMessageTemplates(t *testing.T) {
+	client, err := infobip.NewClientFromEnv()
+	require.Nil(t, err)
+
+	resp, respDetails, err := client.SMS.GetTFAMessageTemplates(context.Background(), "43D78365E3257420D78752A62845A8CB")
+
+	fmt.Println(resp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEmptyf(t, resp[0].MessageID, "ID should not be empty")
+	assert.NotEqual(t, models.GetTFAMessageTemplatesResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestCreateTFAMessageTemplate(t *testing.T) {
+	client, err := infobip.NewClientFromEnv()
+	require.Nil(t, err)
+
+	req := models.CreateTFAMessageTemplateRequest{
+		MessageText: "The third verification code is {pin}",
+		PINType:     "NUMERIC",
+		PINLength:   4,
+		Language:    models.English,
+	}
+
+	resp, respDetails, err := client.SMS.CreateTFAMessageTemplate(context.Background(), "18C0684EB9CC244072CB31E284A45707", req)
+
+	fmt.Println(resp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEmptyf(t, resp.MessageID, "ID should not be empty")
+	assert.NotEqual(t, models.CreateTFAMessageTemplateResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestGetTFAMessageTemplate(t *testing.T) {
+	client, err := infobip.NewClientFromEnv()
+	require.Nil(t, err)
+
+	resp, respDetails, err := client.SMS.GetTFAMessageTemplate(context.Background(), "43D78365E3257420D78752A62845A8CB", "9AD26BD115AB45657A0FEACACCC918BE")
+
+	fmt.Println(resp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEmptyf(t, resp.MessageID, "ID should not be empty")
+	assert.NotEqual(t, models.GetTFAMessageTemplateResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestUpdateTFAMessageTemplate(t *testing.T) {
+	client, err := infobip.NewClientFromEnv()
+	require.Nil(t, err)
+
+	req := models.UpdateTFAMessageTemplateRequest{
+		MessageText:    "Hello {{name}} the PIN is {{pin}}",
+		PINType:        "NUMERIC",
+		PINPlaceholder: "{{pin}}",
+		PINLength:      4,
+		Language:       models.English,
+	}
+
+	resp, respDetails, err := client.SMS.UpdateTFAMessageTemplate(context.Background(), "43D78365E3257420D78752A62845A8CB", "9AD26BD115AB45657A0FEACACCC918BE", req)
+
+	fmt.Printf("%+v", resp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEmptyf(t, resp.MessageID, "ID should not be empty")
+	assert.NotEqual(t, models.UpdateTFAMessageTemplateResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestSendPINOverSMS(t *testing.T) {
+	client, err := infobip.NewClientFromEnv()
+	require.Nil(t, err)
+
+	params := models.SendPINOverSMSParams{NCNeeded: false}
+	req := models.SendPINOverSMSRequest{
+		ApplicationID: "43D78365E3257420D78752A62845A8CB",
+		MessageID:     "9AD26BD115AB45657A0FEACACCC918BE",
+		To:            destNumber,
+		Placeholders: map[string]string{
+			"name": "John",
+		},
+	}
+
+	resp, respDetails, err := client.SMS.SendPINOverSMS(context.Background(), params, req)
+
+	fmt.Println(resp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEmptyf(t, resp.PINID, "ID should not be empty")
+	assert.NotEqual(t, models.SendPINOverSMSResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestResendPINOverSMS(t *testing.T) {
+	client, err := infobip.NewClientFromEnv()
+	require.Nil(t, err)
+
+	req := models.ResendPINOverSMSRequest{
+		Placeholders: map[string]string{"name": "Steve"},
+	}
+
+	resp, respDetails, err := client.SMS.ResendPINOverSMS(context.Background(), "A787EC9C153328E9D276D98861C9CEA1", req)
+
+	fmt.Println(resp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEmptyf(t, resp.PINID, "ID should not be empty")
+	assert.NotEqual(t, models.ResendPINOverSMSResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestSendPINOverVoice(t *testing.T) {
+	client, err := infobip.NewClientFromEnv()
+	require.Nil(t, err)
+
+	req := models.SendPINOverVoiceRequest{
+		ApplicationID: "43D78365E3257420D78752A62845A8CB",
+		MessageID:     "9AD26BD115AB45657A0FEACACCC918BE",
+		To:            destNumber,
+		Placeholders: map[string]string{
+			"name": "John",
+		},
+	}
+
+	resp, respDetails, err := client.SMS.SendPINOverVoice(context.Background(), req)
+
+	fmt.Println(resp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEmptyf(t, resp.PINID, "ID should not be empty")
+	assert.NotEqual(t, models.SendPINOverVoiceResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestResendPINOverVoice(t *testing.T) {
+	client, err := infobip.NewClientFromEnv()
+	require.Nil(t, err)
+
+	req := models.ResendPINOverVoiceRequest{
+		Placeholders: map[string]string{"name": "Steve"},
+	}
+
+	resp, respDetails, err := client.SMS.ResendPINOverVoice(context.Background(), "A787EC9C153328E9D276D98861C9CEA1", req)
+
+	fmt.Println(resp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEmptyf(t, resp.PINID, "ID should not be empty")
+	assert.NotEqual(t, models.ResendPINOverVoiceResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestVerifyPhoneNumber(t *testing.T) {
+	client, err := infobip.NewClientFromEnv()
+	require.Nil(t, err)
+
+	pinID := "A787EC9C153328E9D276D98861C9CEA1"
+	req := models.VerifyPhoneNumberRequest{
+		PIN: "3240",
+	}
+
+	resp, respDetails, err := client.SMS.VerifyPhoneNumber(context.Background(), pinID, req)
+
+	fmt.Println(resp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEmptyf(t, resp.PINID, "ID should not be empty")
+	assert.NotEqual(t, models.VerifyPhoneNumberResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
+func TestGetTFAVerificationStatus(t *testing.T) {
+	client, err := infobip.NewClientFromEnv()
+	require.Nil(t, err)
+
+	appID := "43D78365E3257420D78752A62845A8CB"
+	params := models.GetTFAVerificationStatusParams{
+		MSISDN:   destNumber,
+		Verified: false,
+	}
+	resp, respDetails, err := client.SMS.GetTFAVerificationStatus(context.Background(), appID, params)
+
+	fmt.Println(resp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEmptyf(t, resp.Verifications, "Verifications should not be empty")
+	assert.NotEqual(t, models.GetTFAVerificationStatusResponse{}, resp)
+	assert.NotEqual(t, models.ResponseDetails{}, resp)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
 }

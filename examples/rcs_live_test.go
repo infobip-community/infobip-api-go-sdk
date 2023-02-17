@@ -13,9 +13,10 @@ import (
 )
 
 const (
-	destNumber = "1234567891011"
-	//	baseURL    = "your-base-url"
-	//	apiKey     = "your-api-key"
+// destNumber = "1234567891011"
+//
+//	baseURL    = "your-base-url"
+//	apiKey     = "your-api-key"
 )
 
 func TestSendRCS(t *testing.T) {
