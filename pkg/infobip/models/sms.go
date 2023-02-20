@@ -176,12 +176,12 @@ type SMSBinary struct {
 }
 
 type IndiaDLT struct {
-	ContentTemplateID string `json:"contentTemplateId"`
-	PrincipalEntityID string `json:"principalEntityId" validate:"required"`
+	ContentTemplateID string `json:"contentTemplateId" validate:"max=30"`
+	PrincipalEntityID string `json:"principalEntityId" validate:"required,min=1,max=30"`
 }
 
 type SMSRegional struct {
-	IndiaDLT `json:"indiaDlt"`
+	IndiaDLT `json:"indiaDlt" validate:"omitempty,dive"`
 }
 
 type BinarySMSMsg struct {
@@ -480,7 +480,7 @@ type TFAMessageTemplate struct {
 	PINLength      int          `json:"pinLength,omitempty" validate:"required"`
 	PINPlaceholder string       `json:"pinPlaceholder,omitempty"`
 	PINType        PINType      `json:"pinType,omitempty" validate:"required"`
-	Regional       *SMSRegional `json:"regional,omitempty"`
+	Regional       *SMSRegional `json:"regional,omitempty" validate:"omitempty,dive"`
 	RepeatDTMF     string       `json:"repeatDTMF,omitempty"`
 	SenderID       string       `json:"senderId,omitempty"`
 	SpeechRate     float64      `json:"speechRate,omitempty"`

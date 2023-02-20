@@ -255,3 +255,79 @@ func GenerateRCSCardContent() *RCSCardContent {
 		},
 	}
 }
+
+func GenerateCreateTFAApplicationRequest() CreateTFAApplicationRequest {
+	return CreateTFAApplicationRequest{
+		ApplicationID: "ABC1234ABC",
+		Configuration: &TFAApplicationConfiguration{
+			AllowMultiplePINVerifications: true,
+			PINAttempts:                   5,
+			PINTimeToLive:                 "10m",
+			SendPINPerApplicationLimit:    "5000/12h",
+			SendPINPerPhoneNumberLimit:    "2/1d",
+			VerifyPINLimit:                "2/4s",
+		},
+		Enabled: true,
+		Name:    "some-name",
+	}
+}
+
+func GenerateUpdateTFAApplicationRequest() UpdateTFAApplicationRequest {
+	return UpdateTFAApplicationRequest{
+		ApplicationID: "ABC1234ABC",
+		Configuration: &TFAApplicationConfiguration{
+			AllowMultiplePINVerifications: true,
+			PINAttempts:                   5,
+			PINTimeToLive:                 "10m",
+			SendPINPerApplicationLimit:    "5000/12h",
+			SendPINPerPhoneNumberLimit:    "2/1d",
+			VerifyPINLimit:                "2/4s",
+		},
+		Enabled: true,
+		Name:    "some-name",
+	}
+}
+
+func GenerateCreateTFAMessageTemplateRequest() CreateTFAMessageTemplateRequest {
+	return CreateTFAMessageTemplateRequest{
+		ApplicationID:  "ABC1234",
+		Language:       English,
+		MessageID:      "ABC1234",
+		MessageText:    "Hello {{name}}. Your PIN is {{pin}}",
+		PINLength:      4,
+		PINPlaceholder: "{{pin}}",
+		PINType:        NUMERIC,
+		Regional: &SMSRegional{
+			IndiaDLT{
+				ContentTemplateID: "some-id",
+				PrincipalEntityID: "some-id",
+			},
+		},
+		RepeatDTMF: "1#",
+		SenderID:   "Infobip 2FA",
+		SpeechRate: 1,
+	}
+}
+
+func GenerateSendPINOverSMSRequest() SendPINOverSMSRequest {
+	return SendPINOverSMSRequest{
+		ApplicationID: "ABC1234",
+		MessageID:     "ABC1234",
+		From:          "Sender",
+		To:            "12345678910",
+		Placeholders: map[string]string{
+			"name": "some-name",
+		},
+	}
+}
+func GenerateSendPINOverVoiceRequest() SendPINOverVoiceRequest {
+	return SendPINOverVoiceRequest{
+		ApplicationID: "ABC1234",
+		MessageID:     "ABC1234",
+		From:          "Sender",
+		To:            "12345678910",
+		Placeholders: map[string]string{
+			"name": "some-name",
+		},
+	}
+}
