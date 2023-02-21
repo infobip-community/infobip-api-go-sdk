@@ -309,6 +309,27 @@ func GenerateCreateTFAMessageTemplateRequest() CreateTFAMessageTemplateRequest {
 	}
 }
 
+func GenerateUpdateTFAMessageTemplateRequest() UpdateTFAMessageTemplateRequest {
+	return UpdateTFAMessageTemplateRequest{
+		ApplicationID:  "ABC1234",
+		Language:       English,
+		MessageID:      "ABC1234",
+		MessageText:    "Hello {{name}}. Your PIN is {{pin}}",
+		PINLength:      4,
+		PINPlaceholder: "{{pin}}",
+		PINType:        NUMERIC,
+		Regional: &SMSRegional{
+			IndiaDLT{
+				ContentTemplateID: "some-id",
+				PrincipalEntityID: "some-id",
+			},
+		},
+		RepeatDTMF: "1#",
+		SenderID:   "Infobip 2FA",
+		SpeechRate: 1,
+	}
+}
+
 func GenerateSendPINOverSMSRequest() SendPINOverSMSRequest {
 	return SendPINOverSMSRequest{
 		ApplicationID: "ABC1234",
@@ -329,5 +350,27 @@ func GenerateSendPINOverVoiceRequest() SendPINOverVoiceRequest {
 		Placeholders: map[string]string{
 			"name": "some-name",
 		},
+	}
+}
+
+func GenerateResendPINOverSMSRequest() ResendPINOverSMSRequest {
+	return ResendPINOverSMSRequest{
+		Placeholders: map[string]string{
+			"name": "some-name",
+		},
+	}
+}
+
+func GenerateResendPINOverVoiceRequest() ResendPINOverVoiceRequest {
+	return ResendPINOverVoiceRequest{
+		Placeholders: map[string]string{
+			"name": "some-name",
+		},
+	}
+}
+
+func GenerateVerifyPhoneNumberRequest() VerifyPhoneNumberRequest {
+	return VerifyPhoneNumberRequest{
+		PIN: "1234",
 	}
 }
