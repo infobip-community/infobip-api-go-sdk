@@ -12,12 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	destNumber = "1234567891011"
-	//	baseURL    = "your-base-url"
-	//	apiKey     = "your-api-key"
-)
-
 func TestSendRCS(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)

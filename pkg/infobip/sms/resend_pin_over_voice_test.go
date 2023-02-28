@@ -16,50 +16,28 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSendMessageValidReq(t *testing.T) {
+func TestResendPINOverVoiceValidReq(t *testing.T) {
 	apiKey := "some-key"
-	request := models.GenerateSendSMSRequest()
+	request := models.GenerateResendPINOverVoiceRequest()
 	rawJSONResp := []byte(`
 		{
-			"bulkId": "33644485987105283959",
-			"messages": [
-				{
-					 "to": "41793026727",
-					 "status": {
-						  "groupId": 1,
-						  "groupName": "PENDING",
-						  "id": 26,
-						  "name": "PENDING_ACCEPTED",
-						  "description": "Message sent to next instance"
-					 },
-					 "messageId": "33644485987105283960"
-				},
-				{
-					 "to": "41793026727",
-					 "status": {
-						  "groupId": 1,
-						  "groupName": "PENDING",
-						  "id": 26,
-						  "name": "PENDING_ACCEPTED",
-						  "description": "Message sent to next instance"
-					 },
-					 "messageId": "33644485987105283961"
-				}
-			]
+		  "pinId": "9C817C6F8AF3D48F9FE553282AFA2B67",
+		  "to": "41793026727",
+		  "callStatus": "PENDING_ACCEPTED"
 		}
 	`)
 
-	var expectedResp models.SendSMSResponse
+	var expectedResp models.ResendPINOverVoiceResponse
 	err := json.Unmarshal(rawJSONResp, &expectedResp)
 	require.NoError(t, err)
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.True(t, strings.HasSuffix(r.URL.Path, sendSMSPath))
+		assert.True(t, strings.Contains(r.URL.Path, resendPINOverVoicePath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
 		parsedBody, servErr := io.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
-		var receivedReq models.SendSMSRequest
+		var receivedReq models.ResendPINOverVoiceRequest
 		servErr = json.Unmarshal(parsedBody, &receivedReq)
 		assert.Nil(t, servErr)
 		assert.Equal(t, receivedReq, request)
@@ -74,10 +52,11 @@ func TestSendMessageValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	msgResp, respDetails, err := sms.Send(context.Background(), request)
+	msgResp, respDetails, err := sms.ResendPINOverVoice(context.Background(),
+		"9C817C6F8AF3D48F9FE553282AFA2B67", request)
 
 	require.NoError(t, err)
-	assert.NotEqual(t, models.SendSMSResponse{}, msgResp)
+	assert.NotEqual(t, models.ResendPINOverVoiceResponse{}, msgResp)
 	assert.Equal(t, expectedResp, msgResp)
 	assert.NotNil(t, respDetails)
 	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)

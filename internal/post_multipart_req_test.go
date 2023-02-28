@@ -38,7 +38,7 @@ func TestPostMultipartReqOK(t *testing.T) {
 			{
 			  "to": "joan.doe0@example.com",
 			  "messageCount": 1,
-			  "messageId": "somexternalMessageId0",
+			  "messageId": "someExternalMessageId0",
 			  "status": {
 				"groupId": 1,
 				"groupName": "PENDING",
