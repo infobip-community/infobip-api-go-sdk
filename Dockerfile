@@ -1,4 +1,4 @@
-FROM golang:1.19.5-alpine
+FROM golang:1.19.8-alpine
 RUN apk add --no-cache gcc musl-dev bash curl
 RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.44.0
 
