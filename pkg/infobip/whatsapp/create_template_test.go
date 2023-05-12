@@ -24,7 +24,7 @@ func TestCreateTemplateValidReq(t *testing.T) {
 	template := models.TemplateCreate{
 		Name:     "template_name",
 		Language: "en",
-		Category: "ACCOUNT_UPDATE",
+		Category: "MARKETING",
 		Structure: models.TemplateStructure{
 			Body: &models.TemplateStructureBody{
 				Text: "body {{1}} content",
@@ -39,7 +39,7 @@ func TestCreateTemplateValidReq(t *testing.T) {
 		  "name": "media_template",
 		  "language": "en",
 		  "status": "APPROVED",
-		  "category": "ACCOUNT_UPDATE",
+		  "category": "MARKETING",
 		  "structure": {
 			"header": {
 			  "format": "IMAGE"
@@ -160,7 +160,7 @@ func TestCreateTemplate4xxErrors(t *testing.T) {
 	template := models.TemplateCreate{
 		Name:     "template_name",
 		Language: "en",
-		Category: "ACCOUNT_UPDATE",
+		Category: "MARKETING",
 		Structure: models.TemplateStructure{
 			Body: &models.TemplateStructureBody{
 				Text: "body {{1}} content",
