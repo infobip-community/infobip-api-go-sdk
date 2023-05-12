@@ -4,8 +4,10 @@
 package infobip
 
 import (
+	"errors"
 	"net/http"
 	"net/url"
+	"os"
 
 	"github.com/infobip-community/infobip-api-go-sdk/v3/internal"
 	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/email"
@@ -27,6 +29,19 @@ type Client struct {
 	SMS        sms.SMS
 	WebRTC     webrtc.WebRTC
 	RCS        rcs.RCS
+}
+
+// NewClientFromEnv returns a client object using the credentials from the environment.
+// If a client is not provided using options, a default one is created.
+func NewClientFromEnv(options ...func(*Client)) (Client, error) {
+	if os.Getenv("IB_BASE_URL") == "" {
+		return Client{}, errors.New("IB_BASE_URL environment variable is not set")
+	}
+	if os.Getenv("IB_API_KEY") == "" {
+		return Client{}, errors.New("IB_API_KEY environment variable is not set")
+	}
+
+	return NewClient(os.Getenv("IB_BASE_URL"), os.Getenv("IB_API_KEY"), options...)
 }
 
 // NewClient returns a client object using the provided baseURL and apiKey.

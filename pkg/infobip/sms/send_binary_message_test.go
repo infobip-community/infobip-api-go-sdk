@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -68,7 +68,7 @@ func TestSendBinaryMessageValidReq(t *testing.T) {
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.True(t, strings.HasSuffix(r.URL.Path, sendBinarySMSPath))
 		assert.Equal(t, fmt.Sprintf("App %s", apiKey), r.Header.Get("Authorization"))
-		parsedBody, servErr := ioutil.ReadAll(r.Body)
+		parsedBody, servErr := io.ReadAll(r.Body)
 		assert.Nil(t, servErr)
 
 		var receivedReq models.SendBinarySMSRequest

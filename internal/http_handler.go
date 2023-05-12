@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"runtime"
 
 	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/models"
 )
@@ -97,7 +98,25 @@ func (h *HTTPHandler) PostJSONReq(
 	if err != nil {
 		return respDetails, err
 	}
-	return h.postRequest(ctx, payload, respResource, reqPath, "application/json")
+	return h.postRequest(ctx, payload, respResource, reqPath, "application/json", nil)
+}
+
+func (h *HTTPHandler) PostJSONReqParams(
+	ctx context.Context,
+	postResource models.Validatable,
+	respResource interface{},
+	reqPath string,
+	queryParams []QueryParameter,
+) (respDetails models.ResponseDetails, err error) {
+	err = postResource.Validate()
+	if err != nil {
+		return respDetails, err
+	}
+	payload, err := postResource.Marshal()
+	if err != nil {
+		return respDetails, err
+	}
+	return h.postRequest(ctx, payload, respResource, reqPath, "application/json", queryParams)
 }
 
 func (h *HTTPHandler) PostNoBodyReq(
@@ -146,6 +165,7 @@ func (h *HTTPHandler) PostMultipartReq(
 		respResource,
 		reqPath,
 		fmt.Sprintf("multipart/form-data; boundary=%s", postResource.GetMultipartBoundary()),
+		nil,
 	)
 }
 
@@ -179,8 +199,9 @@ func (h *HTTPHandler) postRequest(
 	respResource interface{},
 	reqPath string,
 	contentType string,
+	queryParams []QueryParameter,
 ) (respDetails models.ResponseDetails, err error) {
-	req, err := h.createReq(ctx, http.MethodPost, reqPath, payload, nil)
+	req, err := h.createReq(ctx, http.MethodPost, reqPath, payload, queryParams)
 	if err != nil {
 		return respDetails, err
 	}
@@ -270,6 +291,7 @@ func (h *HTTPHandler) generateCommonHeaders() http.Header {
 	header := http.Header{}
 	header.Add("Authorization", fmt.Sprintf("App %s", h.APIKey))
 	header.Add("Accept", "application/json")
+	header.Add("User-Agent", "@infobip/go-sdk/v3"+" go/"+runtime.Version())
 	return header
 }
 

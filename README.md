@@ -2,7 +2,7 @@
 
 ![Workflow](https://github.com/infobip-community/infobip-api-go-sdk/actions/workflows/checks.yml/badge.svg)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/infobip-community/infobip-api-go-sdk)
-[![Licence](https://img.shields.io/github/license/infobip-community/infobip-api-go-sdk)](LICENSE)
+[![License](https://img.shields.io/github/license/infobip-community/infobip-api-go-sdk)](LICENSE)
 ![Lines](https://img.shields.io/tokei/lines/github/infobip-community/infobip-api-go-sdk)
 
 Go client SDK for Infobip's API Channels
@@ -11,7 +11,7 @@ Go client SDK for Infobip's API Channels
 
 ## 📡 Supported Channels
 
-- [SMS](https://www.infobip.com/docs/api#channels/sms)
+- [SMS + 2FA](https://www.infobip.com/docs/api#channels/sms)
 - [WhatsApp](https://www.infobip.com/docs/api#channels/whatsapp)
 - [Email](https://www.infobip.com/docs/api#channels/email)
 - [MMS](https://www.infobip.com/docs/api#channels/mms)
