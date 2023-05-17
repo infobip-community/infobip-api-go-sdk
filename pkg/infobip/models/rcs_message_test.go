@@ -24,7 +24,7 @@ func TestValidRCSMessage(t *testing.T) {
 			},
 		},
 		{
-			name: "full FILE	input",
+			name:     "full FILE	input",
 			instance: GenerateRCSFileMsg(),
 		},
 	}

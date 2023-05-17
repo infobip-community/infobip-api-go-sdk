@@ -42,7 +42,7 @@ type MMSHead struct {
 }
 
 type DeliveryTimeWindow struct {
-	Days []string `json:"days" validate:"required,gte=1,dive,oneof=MONDAY TUESDAY WEDNESDAY THURSDAY FRIDAY SATURDAY SUNDAY"` // nolint: lll
+	Days []string `json:"days" validate:"required,gte=1,dive,oneof=MONDAY TUESDAY WEDNESDAY THURSDAY FRIDAY SATURDAY SUNDAY"` //nolint: lll
 	From *MMSTime `json:"from,omitempty"`
 	To   *MMSTime `json:"to,omitempty"`
 }
