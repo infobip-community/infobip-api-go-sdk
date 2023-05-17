@@ -3,8 +3,10 @@
   "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/master/cspell.schema.json",
   "language": "en",
   "words": [
-    "infobip",
+    "MCCMNC",
+    "SMIL",
     "ibsso",
+    "infobip",
     "infobipdev"
   ],
   "flagWords": [],
