@@ -17,7 +17,7 @@ func TestValidTemplateCreate(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Body: &TemplateStructureBody{
 						"body {{1}} content",
@@ -31,7 +31,7 @@ func TestValidTemplateCreate(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Header: &TemplateHeader{Format: "TEXT", Text: "Some text"},
 					Body: &TemplateStructureBody{
@@ -49,7 +49,7 @@ func TestValidTemplateCreate(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Header: &TemplateHeader{Format: "TEXT", Text: "Some text"},
 					Body: &TemplateStructureBody{
@@ -70,7 +70,7 @@ func TestValidTemplateCreate(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Header: &TemplateHeader{Format: "TEXT", Text: "Some text"},
 					Body: &TemplateStructureBody{
@@ -91,7 +91,7 @@ func TestValidTemplateCreate(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Header: &TemplateHeader{Format: "TEXT", Text: "Some text"},
 					Body: &TemplateStructureBody{
@@ -112,7 +112,7 @@ func TestValidTemplateCreate(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Header: &TemplateHeader{Format: "TEXT", Text: "Some text"},
 					Body: &TemplateStructureBody{
@@ -135,7 +135,7 @@ func TestValidTemplateCreate(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Header: &TemplateHeader{Format: "TEXT", Text: "Some text"},
 					Body:   &TemplateStructureBody{"body {{1}} content"},
@@ -171,7 +171,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			name: "missing Name",
 			instance: TemplateCreate{
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
@@ -183,7 +183,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "INVALID",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
@@ -194,7 +194,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			name: "missing Language",
 			instance: TemplateCreate{
 				Name:     "template_name",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
@@ -206,7 +206,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "invalid",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
@@ -241,7 +241,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 			},
 		},
 		{
@@ -249,7 +249,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Header: &TemplateHeader{Format: "INVALID", Text: "Text"},
 					Body:   &TemplateStructureBody{"body {{1}} content"},
@@ -262,7 +262,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Header: &TemplateHeader{Format: "TEXT"},
 					Body:   &TemplateStructureBody{"body {{1}} content"},
@@ -275,7 +275,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Header: &TemplateHeader{Format: "TEXT", Text: strings.Repeat("a", 61)},
 					Body:   &TemplateStructureBody{"body {{1}} content"},
@@ -288,7 +288,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Type: "TEXT",
 				},
@@ -299,7 +299,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
@@ -314,7 +314,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Body:    &TemplateStructureBody{"body {{1}} content"},
 					Type:    "TEXT",
@@ -327,7 +327,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
@@ -342,7 +342,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
@@ -357,7 +357,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
@@ -372,7 +372,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
@@ -387,7 +387,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
@@ -402,7 +402,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
@@ -417,7 +417,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
@@ -435,7 +435,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
@@ -451,7 +451,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
@@ -467,7 +467,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",
@@ -483,7 +483,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			instance: TemplateCreate{
 				Name:     "template_name",
 				Language: "en",
-				Category: "ACCOUNT_UPDATE",
+				Category: "MARKETING",
 				Structure: TemplateStructure{
 					Body: &TemplateStructureBody{"body {{1}} content"},
 					Type: "TEXT",

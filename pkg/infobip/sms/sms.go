@@ -20,6 +20,20 @@ const (
 	rescheduleSMSPath            = "sms/1/bulks"
 	getScheduledSMSStatusPath    = "sms/1/bulks/status"
 	updateScheduledSMSStatusPath = "sms/1/bulks/status"
+	getTFAApplicationsPath       = "2fa/2/applications"
+	createTFAApplicationPath     = "2fa/2/applications"
+	getTFAApplicationPath        = "2fa/2/applications"
+	updateTFAApplicationPath     = "2fa/2/applications"
+	getTFAMessageTemplatesPath   = "2fa/2/applications"
+	createTFAMessageTemplatePath = "2fa/2/applications"
+	getTFAMessageTemplatePath    = "2fa/2/applications"
+	updateTFAMessageTemplatePath = "2fa/2/applications"
+	sendPINOverSMSPath           = "2fa/2/pin"
+	resendPINOverSMSPath         = "2fa/2/pin"
+	sendPINOverVoicePath         = "2fa/2/pin/voice"
+	resendPINOverVoicePath       = "2fa/2/pin"
+	verifyPhoneNumberPath        = "2fa/2/pin"
+	getTFAVerificationStatusPath = "2fa/2/applications"
 )
 
 type SMS interface {
@@ -80,6 +94,100 @@ type SMS interface {
 		req models.UpdateScheduledSMSStatusRequest,
 		queryParams models.UpdateScheduledSMSStatusParams,
 	) (resp models.UpdateScheduledSMSStatusResponse, respDetails models.ResponseDetails, err error)
+
+	// GetTFAApplications returns your applications list.
+	GetTFAApplications(
+		ctx context.Context,
+	) (resp models.GetTFAApplicationsResponse, respDetails models.ResponseDetails, err error)
+
+	// CreateTFAApplication create and configure a new 2FA application.
+	CreateTFAApplication(
+		ctx context.Context,
+		req models.CreateTFAApplicationRequest,
+	) (resp models.CreateTFAApplicationResponse, respDetails models.ResponseDetails, err error)
+
+	// GetTFAApplication returns a single 2FA message template from an application to see its configuration details.
+	GetTFAApplication(
+		ctx context.Context,
+		appID string,
+	) (resp models.GetTFAApplicationResponse, respDetails models.ResponseDetails, err error)
+
+	// UpdateTFAApplication changes configuration options for your existing 2FA application.
+	UpdateTFAApplication(
+		ctx context.Context,
+		appID string,
+		req models.UpdateTFAApplicationRequest,
+	) (resp models.UpdateTFAApplicationResponse, respDetails models.ResponseDetails, err error)
+
+	// GetTFAMessageTemplates returns a list of all message templates in a 2FA application.
+	GetTFAMessageTemplates(
+		ctx context.Context,
+		appID string,
+	) (resp models.GetTFAMessageTemplatesResponse, respDetails models.ResponseDetails, err error)
+
+	// CreateTFAMessageTemplate creates one or more message templates where your PIN will be dynamically
+	// included when you send the PIN message.
+	CreateTFAMessageTemplate(
+		ctx context.Context,
+		appID string,
+		req models.CreateTFAMessageTemplateRequest,
+	) (resp models.CreateTFAMessageTemplateResponse, respDetails models.ResponseDetails, err error)
+
+	// GetTFAMessageTemplate returns a single 2FA message template from an application to see its configuration details.
+	GetTFAMessageTemplate(
+		ctx context.Context,
+		appID string,
+		templateID string,
+	) (resp models.GetTFAMessageTemplateResponse, respDetails models.ResponseDetails, err error)
+
+	// UpdateTFAMessageTemplate changes configuration options for your existing 2FA application message template.
+	UpdateTFAMessageTemplate(
+		ctx context.Context,
+		appID string,
+		messageID string,
+		req models.UpdateTFAMessageTemplateRequest,
+	) (resp models.UpdateTFAMessageTemplateResponse, respDetails models.ResponseDetails, err error)
+
+	// SendPINOverSMS sends a PIN code over SMS using a previously created message template.
+	SendPINOverSMS(
+		ctx context.Context,
+		queryParams models.SendPINOverSMSParams,
+		req models.SendPINOverSMSRequest,
+	) (resp models.SendPINOverSMSResponse, respDetails models.ResponseDetails, err error)
+
+	// ResendPINOverSMS resends the same (previously sent) PIN code over SMS.
+	ResendPINOverSMS(
+		ctx context.Context,
+		pinID string,
+		req models.ResendPINOverSMSRequest,
+	) (resp models.ResendPINOverSMSResponse, respDetails models.ResponseDetails, err error)
+
+	// SendPINOverVoice sends a PIN code over voice using a previously created message template.
+	SendPINOverVoice(
+		ctx context.Context,
+		req models.SendPINOverVoiceRequest,
+	) (resp models.SendPINOverVoiceResponse, respDetails models.ResponseDetails, err error)
+
+	// ResendPINOverVoice resends the same (previously sent) PIN code over voice.
+	ResendPINOverVoice(
+		ctx context.Context,
+		pinID string,
+		req models.ResendPINOverVoiceRequest,
+	) (resp models.ResendPINOverVoiceResponse, respDetails models.ResponseDetails, err error)
+
+	// VerifyPhoneNumber verifies a phone number to confirm successful 2FA authentication.
+	VerifyPhoneNumber(
+		ctx context.Context,
+		pinID string,
+		req models.VerifyPhoneNumberRequest,
+	) (resp models.VerifyPhoneNumberResponse, respDetails models.ResponseDetails, err error)
+
+	// GetTFAVerificationStatus checks if a phone number is already verified for a specific 2FA application.
+	GetTFAVerificationStatus(
+		ctx context.Context,
+		appID string,
+		queryParams models.GetTFAVerificationStatusParams,
+	) (resp models.GetTFAVerificationStatusResponse, respDetails models.ResponseDetails, err error)
 }
 
 type Channel struct {
@@ -253,6 +361,150 @@ func (sms *Channel) UpdateScheduledMessagesStatus(
 	}
 
 	respDetails, err = sms.ReqHandler.PutJSONReq(ctx, &req, &resp, updateScheduledSMSStatusPath, params)
+
+	return resp, respDetails, err
+}
+
+func (sms *Channel) GetTFAApplications(
+	ctx context.Context,
+) (resp models.GetTFAApplicationsResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, getTFAApplicationsPath, nil)
+
+	return resp, respDetails, err
+}
+
+func (sms *Channel) CreateTFAApplication(
+	ctx context.Context,
+	req models.CreateTFAApplicationRequest,
+) (resp models.CreateTFAApplicationResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = sms.ReqHandler.PostJSONReq(ctx, &req, &resp, createTFAApplicationPath)
+
+	return resp, respDetails, err
+}
+
+func (sms *Channel) GetTFAApplication(
+	ctx context.Context,
+	appID string,
+) (resp models.GetTFAApplicationResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, getTFAApplicationPath+"/"+appID, nil)
+
+	return resp, respDetails, err
+}
+
+func (sms *Channel) UpdateTFAApplication(
+	ctx context.Context,
+	appID string,
+	req models.UpdateTFAApplicationRequest,
+) (resp models.UpdateTFAApplicationResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = sms.ReqHandler.PutJSONReq(ctx, &req, &resp, updateTFAApplicationPath+"/"+appID, nil)
+
+	return resp, respDetails, err
+}
+
+func (sms *Channel) GetTFAMessageTemplates(
+	ctx context.Context,
+	appID string,
+) (resp models.GetTFAMessageTemplatesResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, getTFAMessageTemplatesPath+"/"+appID+"/messages", nil)
+
+	return resp, respDetails, err
+}
+
+func (sms *Channel) CreateTFAMessageTemplate(
+	ctx context.Context,
+	appID string,
+	req models.CreateTFAMessageTemplateRequest,
+) (resp models.CreateTFAMessageTemplateResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = sms.ReqHandler.PostJSONReq(ctx, &req, &resp, createTFAMessageTemplatePath+"/"+appID+"/messages")
+
+	return resp, respDetails, err
+}
+
+func (sms *Channel) GetTFAMessageTemplate(
+	ctx context.Context,
+	appID string,
+	templateID string,
+) (resp models.GetTFAMessageTemplateResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, getTFAMessageTemplatePath+"/"+appID+"/messages/"+templateID, nil)
+
+	return resp, respDetails, err
+}
+
+func (sms *Channel) UpdateTFAMessageTemplate(
+	ctx context.Context,
+	appID string,
+	messageID string,
+	req models.UpdateTFAMessageTemplateRequest,
+) (resp models.UpdateTFAMessageTemplateResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = sms.ReqHandler.PutJSONReq(ctx, &req, &resp, updateTFAMessageTemplatePath+"/"+appID+"/messages/"+messageID, nil)
+
+	return resp, respDetails, err
+}
+
+func (sms *Channel) SendPINOverSMS(
+	ctx context.Context,
+	queryParams models.SendPINOverSMSParams,
+	req models.SendPINOverSMSRequest,
+) (resp models.SendPINOverSMSResponse, respDetails models.ResponseDetails, err error) {
+	params := []internal.QueryParameter{
+		{Name: "ncNeeded", Value: fmt.Sprint(queryParams.NCNeeded)},
+	}
+
+	respDetails, err = sms.ReqHandler.PostJSONReqParams(ctx, &req, &resp, sendPINOverSMSPath, params)
+
+	return resp, respDetails, err
+}
+
+func (sms *Channel) ResendPINOverSMS(
+	ctx context.Context,
+	pinID string,
+	req models.ResendPINOverSMSRequest,
+) (resp models.ResendPINOverSMSResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = sms.ReqHandler.PostJSONReq(ctx, &req, &resp, resendPINOverSMSPath+"/"+pinID+"/resend")
+
+	return resp, respDetails, err
+}
+
+func (sms *Channel) SendPINOverVoice(
+	ctx context.Context,
+	req models.SendPINOverVoiceRequest,
+) (resp models.SendPINOverVoiceResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = sms.ReqHandler.PostJSONReq(ctx, &req, &resp, sendPINOverVoicePath)
+
+	return resp, respDetails, err
+}
+
+func (sms *Channel) ResendPINOverVoice(
+	ctx context.Context,
+	pinID string,
+	req models.ResendPINOverVoiceRequest,
+) (resp models.ResendPINOverVoiceResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = sms.ReqHandler.PostJSONReq(ctx, &req, &resp, resendPINOverVoicePath+"/"+pinID+"/resend/voice")
+
+	return resp, respDetails, err
+}
+
+func (sms *Channel) VerifyPhoneNumber(
+	ctx context.Context,
+	pinID string,
+	req models.VerifyPhoneNumberRequest,
+) (resp models.VerifyPhoneNumberResponse, respDetails models.ResponseDetails, err error) {
+	respDetails, err = sms.ReqHandler.PostJSONReq(ctx, &req, &resp, verifyPhoneNumberPath+"/"+pinID+"/verify")
+
+	return resp, respDetails, err
+}
+
+func (sms *Channel) GetTFAVerificationStatus(
+	ctx context.Context,
+	appID string,
+	queryParams models.GetTFAVerificationStatusParams,
+) (resp models.GetTFAVerificationStatusResponse, respDetails models.ResponseDetails, err error) {
+	params := []internal.QueryParameter{
+		{Name: "msisdn", Value: queryParams.MSISDN},
+		{Name: "verified", Value: fmt.Sprint(queryParams.Verified)},
+		{Name: "sent", Value: fmt.Sprint(queryParams.Sent)},
+	}
+	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, getTFAVerificationStatusPath+"/"+appID+"/verifications", params)
 
 	return resp, respDetails, err
 }

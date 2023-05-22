@@ -308,7 +308,7 @@ linters:
     #- goerr113 # too strict - checks the errors handling expressions
     #- gofmt # replaced with goimports
     #- gofumpt # replaced with goimports, gofumports is not available yet
-    #- goheader # is not used - checks that each file has the licence at the beginning
+    #- goheader # is not used - checks that each file has the license at the beginning
     #- golint # deprecated - revive is used instead
     #- grouper # is not used - analyze expression groups, require 'import' declaration groups
     #- ifshort # is not used - checks that your code uses short syntax for if-statements whenever possible

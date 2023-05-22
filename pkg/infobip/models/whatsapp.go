@@ -134,9 +134,7 @@ func validateTemplateLanguage(sl validator.StructLevel, template TemplateCreate)
 
 func validateTemplateCategory(sl validator.StructLevel, template TemplateCreate) {
 	switch template.Category {
-	case "ACCOUNT_UPDATE", "PAYMENT_UPDATE", "PERSONAL_FINANCE_UPDATE", "SHIPPING_UPDATE",
-		"RESERVATION_UPDATE", "ISSUE_RESOLUTION", "APPOINTMENT_UPDATE", "TRANSPORTATION_UPDATE",
-		"TICKET_UPDATE", "ALERT_UPDATE", "AUTO_REPLY":
+	case "MARKETING", "AUTHENTICATION", "UTILITY":
 	default:
 		sl.ReportError(template.Category, "category", "Category", "invalidcategory", "")
 	}

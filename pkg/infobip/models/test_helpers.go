@@ -25,18 +25,18 @@ func GenerateEmailMsg() EmailMsg {
 		InlineImage:             nil,
 		HTML:                    "<body>Some html</body>",
 		ReplyTo:                 "reply@infobip.com",
-		DefaultPlaceholders:     "someplaceholders",
+		DefaultPlaceholders:     "somePlaceholders",
 		PreserveRecipients:      true,
 		TrackingURL:             "https://tracking.com",
 		TrackClicks:             true,
 		TrackOpens:              true,
 		Track:                   true,
-		CallbackData:            "somedata",
+		CallbackData:            "someData",
 		IntermediateReport:      true,
 		NotifyURL:               "https://someurl.com",
 		NotifyContentType:       "application/json",
 		SendAt:                  "2022-01-01T00:00:00Z",
-		LandingPagePlaceholders: "someplaceholders",
+		LandingPagePlaceholders: "somePlaceholders",
 		LandingPageID:           "123456",
 	}
 }
@@ -253,5 +253,124 @@ func GenerateRCSCardContent() *RCSCardContent {
 				Type:         "REPLY",
 			},
 		},
+	}
+}
+
+func GenerateCreateTFAApplicationRequest() CreateTFAApplicationRequest {
+	return CreateTFAApplicationRequest{
+		ApplicationID: "ABC1234ABC",
+		Configuration: &TFAApplicationConfiguration{
+			AllowMultiplePINVerifications: true,
+			PINAttempts:                   5,
+			PINTimeToLive:                 "10m",
+			SendPINPerApplicationLimit:    "5000/12h",
+			SendPINPerPhoneNumberLimit:    "2/1d",
+			VerifyPINLimit:                "2/4s",
+		},
+		Enabled: true,
+		Name:    "some-name",
+	}
+}
+
+func GenerateUpdateTFAApplicationRequest() UpdateTFAApplicationRequest {
+	return UpdateTFAApplicationRequest{
+		ApplicationID: "ABC1234ABC",
+		Configuration: &TFAApplicationConfiguration{
+			AllowMultiplePINVerifications: true,
+			PINAttempts:                   5,
+			PINTimeToLive:                 "10m",
+			SendPINPerApplicationLimit:    "5000/12h",
+			SendPINPerPhoneNumberLimit:    "2/1d",
+			VerifyPINLimit:                "2/4s",
+		},
+		Enabled: true,
+		Name:    "some-name",
+	}
+}
+
+func GenerateCreateTFAMessageTemplateRequest() CreateTFAMessageTemplateRequest {
+	return CreateTFAMessageTemplateRequest{
+		ApplicationID:  "ABC1234",
+		Language:       English,
+		MessageID:      "ABC1234",
+		MessageText:    "Hello {{name}}. Your PIN is {{pin}}",
+		PINLength:      4,
+		PINPlaceholder: "{{pin}}",
+		PINType:        NUMERIC,
+		Regional: &SMSRegional{
+			IndiaDLT{
+				ContentTemplateID: "some-id",
+				PrincipalEntityID: "some-id",
+			},
+		},
+		RepeatDTMF: "1#",
+		SenderID:   "Infobip 2FA",
+		SpeechRate: 1,
+	}
+}
+
+func GenerateUpdateTFAMessageTemplateRequest() UpdateTFAMessageTemplateRequest {
+	return UpdateTFAMessageTemplateRequest{
+		ApplicationID:  "ABC1234",
+		Language:       English,
+		MessageID:      "ABC1234",
+		MessageText:    "Hello {{name}}. Your PIN is {{pin}}",
+		PINLength:      4,
+		PINPlaceholder: "{{pin}}",
+		PINType:        NUMERIC,
+		Regional: &SMSRegional{
+			IndiaDLT{
+				ContentTemplateID: "some-id",
+				PrincipalEntityID: "some-id",
+			},
+		},
+		RepeatDTMF: "1#",
+		SenderID:   "Infobip 2FA",
+		SpeechRate: 1,
+	}
+}
+
+func GenerateSendPINOverSMSRequest() SendPINOverSMSRequest {
+	return SendPINOverSMSRequest{
+		ApplicationID: "ABC1234",
+		MessageID:     "ABC1234",
+		From:          "Sender",
+		To:            "12345678910",
+		Placeholders: map[string]string{
+			"name": "some-name",
+		},
+	}
+}
+func GenerateSendPINOverVoiceRequest() SendPINOverVoiceRequest {
+	return SendPINOverVoiceRequest{
+		ApplicationID: "ABC1234",
+		MessageID:     "ABC1234",
+		From:          "Sender",
+		To:            "12345678910",
+		Placeholders: map[string]string{
+			"name": "some-name",
+		},
+	}
+}
+
+func GenerateResendPINOverSMSRequest() ResendPINOverSMSRequest {
+	return ResendPINOverSMSRequest{
+		Placeholders: map[string]string{
+			"name": "some-name",
+		},
+	}
+}
+
+func GenerateResendPINOverVoiceRequest() ResendPINOverVoiceRequest {
+	return ResendPINOverVoiceRequest{
+		Placeholders: map[string]string{
+			"name": "some-name",
+		},
+	}
+}
+
+func GenerateVerifyPhoneNumberRequest() VerifyPhoneNumberRequest {
+	return VerifyPhoneNumberRequest{
+		PIN: "1234",
 	}
 }

@@ -1,3 +1,4 @@
+// Make sure this version matches in the user-agent token in the http_handler.go file.
 module github.com/infobip-community/infobip-api-go-sdk/v3
 
 go 1.17
