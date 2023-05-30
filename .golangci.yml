@@ -26,12 +26,8 @@ linters-settings:
   staticcheck:
     go: "1.17"
     checks: [ "*" ] # https://staticcheck.io/docs/options#checks # default ["*"]
-  structcheck:
-    exported-fields: false # default false
   unused:
     check-exported: false # default false #
-  varcheck:
-    exported-fields: false # default false #
 
   bidichk:
     # The following configurations check for all mentioned invisible unicode runes.
@@ -244,16 +240,13 @@ linters:
   disable-all: true
   enable:
     ## enabled by default
-    - deadcode
     - errcheck
     - gosimple
     - govet
     - ineffassign
     - staticcheck
-    - structcheck
     - typecheck
     - unused
-    - varcheck
     ## disabled by default
     - asciicheck
     - bidichk
