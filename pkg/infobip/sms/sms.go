@@ -425,7 +425,10 @@ func (sms *Channel) GetTFAMessageTemplate(
 	appID string,
 	templateID string,
 ) (resp models.GetTFAMessageTemplateResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, getTFAMessageTemplatePath+"/"+appID+"/messages/"+templateID, nil)
+	respDetails, err = sms.ReqHandler.GetRequest(ctx,
+		&resp,
+		getTFAMessageTemplatePath+"/"+appID+"/messages/"+templateID,
+		nil)
 
 	return resp, respDetails, err
 }
@@ -436,7 +439,13 @@ func (sms *Channel) UpdateTFAMessageTemplate(
 	messageID string,
 	req models.UpdateTFAMessageTemplateRequest,
 ) (resp models.UpdateTFAMessageTemplateResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = sms.ReqHandler.PutJSONReq(ctx, &req, &resp, updateTFAMessageTemplatePath+"/"+appID+"/messages/"+messageID, nil)
+	respDetails, err = sms.ReqHandler.PutJSONReq(
+		ctx,
+		&req,
+		&resp,
+		updateTFAMessageTemplatePath+
+			"/"+appID+"/messages/"+messageID,
+		nil)
 
 	return resp, respDetails, err
 }
@@ -504,7 +513,14 @@ func (sms *Channel) GetTFAVerificationStatus(
 		{Name: "verified", Value: fmt.Sprint(queryParams.Verified)},
 		{Name: "sent", Value: fmt.Sprint(queryParams.Sent)},
 	}
-	respDetails, err = sms.ReqHandler.GetRequest(ctx, &resp, getTFAVerificationStatusPath+"/"+appID+"/verifications", params)
+	respDetails, err = sms.ReqHandler.GetRequest(
+		ctx,
+		&resp,
+		getTFAVerificationStatusPath+
+			"/"+
+			appID+
+			"/verifications",
+		params)
 
 	return resp, respDetails, err
 }
