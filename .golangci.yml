@@ -351,4 +351,5 @@ issues:
         - noctx
         - wrapcheck
         - gomnd
+        - lll
 
