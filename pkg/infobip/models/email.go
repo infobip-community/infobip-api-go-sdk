@@ -20,6 +20,7 @@ type EmailMsg struct {
 	TemplateID              int
 	Attachment              *os.File
 	Attachments             []*os.File
+	InlineImage             *os.File
 	InlineImages            []*os.File
 	HTML                    string
 	ReplyTo                 string
@@ -143,6 +144,10 @@ func (e *EmailMsg) Marshal() (*bytes.Buffer, error) {
 			}
 
 		}
+	}
+
+	if e.InlineImage != nil {
+		e.InlineImages = append(e.InlineImages, e.InlineImage)
 	}
 
 	if e.InlineImages != nil {

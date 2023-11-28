@@ -19,15 +19,18 @@ func TestSendEmailSingleAttachment(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
 
-	attachment, _ := os.Open("../pkg/infobip/email/testdata/image.png")
+	attachment, _ := os.Open("../pkg/infobip/email/testdata/attachment.txt")
+	require.NoError(t, err)
+	image, _ := os.Open("../pkg/infobip/email/testdata/image.png")
 	require.NoError(t, err)
 
 	mail := models.EmailMsg{
-		From:       "joanna.suau@infobip.com",
-		To:         "ecorona@infobip.com",
-		Subject:    "Some subject",
-		Text:       "Some text",
-		Attachment: attachment,
+		From:        "someone@domain.com",
+		To:          "someone@domain.com",
+		Subject:     "Some subject",
+		Text:        "Some text",
+		Attachment:  attachment,
+		InlineImage: image,
 	}
 
 	msgResp, respDetails, err := client.Email.Send(context.Background(), mail)
