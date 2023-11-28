@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"testing"
 
 	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip"
@@ -14,14 +15,52 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestSendEmailSingleAttachment(t *testing.T) {
+	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
+
+	attachment, _ := os.Open("../pkg/infobip/email/testdata/attachment.txt")
+	require.NoError(t, err)
+	image, _ := os.Open("../pkg/infobip/email/testdata/image.png")
+	require.NoError(t, err)
+
+	mail := models.EmailMsg{
+		From:        "someone@domain.com",
+		To:          "someone@domain.com",
+		Subject:     "Some subject",
+		Text:        "Some text",
+		Attachment:  attachment,
+		InlineImage: image,
+	}
+
+	msgResp, respDetails, err := client.Email.Send(context.Background(), mail)
+
+	fmt.Println(msgResp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEmptyf(t, msgResp.Messages[0].MessageID, "MessageID should not be empty")
+	assert.NotEqual(t, models.SendEmailResponse{}, msgResp)
+	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
 func TestSendEmail(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
+
+	attachment, _ := os.Open("../pkg/infobip/email/testdata/image.png")
+	require.NoError(t, err)
+	attachment2, _ := os.Open("../pkg/infobip/email/testdata/image2.png")
+	require.NoError(t, err)
+
 	mail := models.EmailMsg{
-		From:    "somemail@somedomain.com",
-		To:      "somemail@somedomain.com",
-		Subject: "Some subject",
-		Text:    "Some text",
+		From:        "somemail@somedomain.com",
+		To:          "somemail@somedomain.com",
+		Subject:     "Some subject",
+		Text:        "Some text",
+		Attachments: []*os.File{attachment, attachment2},
 	}
 
 	msgResp, respDetails, err := client.Email.Send(context.Background(), mail)

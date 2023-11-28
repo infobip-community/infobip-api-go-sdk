@@ -32,11 +32,18 @@ func TestSendEmailValidReq(t *testing.T) {
 	_, err = attachment.Seek(0, 0)
 	require.NoError(t, err)
 
-	image, err := os.Open("testdata/image.png")
+	attachment2, err := os.Open("testdata/attachment.txt")
 	require.NoError(t, err)
 
-	msg.Attachment = attachment
-	msg.InlineImage = image
+	image, err := os.Open("testdata/image.png")
+	require.NoError(t, err)
+	image2, err := os.Open("testdata/image2.png")
+	require.NoError(t, err)
+
+	msg.Attachment = attachment2
+	msg.Attachments = []*os.File{attachment}
+	msg.InlineImage = image2
+	msg.InlineImages = []*os.File{image}
 
 	defer image.Close()
 	defer attachment.Close()

@@ -29,8 +29,8 @@ func TestPostMultipartReqOK(t *testing.T) {
 	image, err := os.Open("testdata/image.png")
 	require.NoError(t, err)
 
-	msg.Attachment = attachment
-	msg.InlineImage = image
+	msg.Attachments = []*os.File{attachment}
+	msg.InlineImages = []*os.File{image}
 
 	rawJSONResp := []byte(`
 		{
