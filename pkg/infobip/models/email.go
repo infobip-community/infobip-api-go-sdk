@@ -18,8 +18,8 @@ type EmailMsg struct {
 	BulkID                  string
 	MessageID               string
 	TemplateID              int
-	Attachment              *os.File
-	InlineImage             *os.File
+	Attachments             []*os.File
+	InlineImages            []*os.File
 	HTML                    string
 	ReplyTo                 string
 	DefaultPlaceholders     string
@@ -125,27 +125,32 @@ func (e *EmailMsg) Marshal() (*bytes.Buffer, error) {
 		}
 	}
 
-	if e.Attachment != nil {
-		defer e.Attachment.Close()
-		partWriter, err = multipartWriter.CreateFormFile("attachment", e.Attachment.Name())
-		if err != nil {
-			return nil, err
-		}
-		_, err = io.Copy(partWriter, e.Attachment)
-		if err != nil {
-			return nil, err
+	if e.Attachments != nil {
+		for _, attachment := range e.Attachments {
+			defer attachment.Close()
+			partWriter, err = multipartWriter.CreateFormFile("attachment", attachment.Name())
+			if err != nil {
+				return nil, err
+			}
+			_, err = io.Copy(partWriter, attachment)
+			if err != nil {
+				return nil, err
+			}
+
 		}
 	}
 
-	if e.InlineImage != nil {
-		defer e.InlineImage.Close()
-		partWriter, err = multipartWriter.CreateFormFile("inlineImage", e.InlineImage.Name())
-		if err != nil {
-			return nil, err
-		}
-		_, err = io.Copy(partWriter, e.InlineImage)
-		if err != nil {
-			return nil, err
+	if e.InlineImages != nil {
+		for _, image := range e.InlineImages {
+			defer image.Close()
+			partWriter, err = multipartWriter.CreateFormFile("inlineImage", image.Name())
+			if err != nil {
+				return nil, err
+			}
+			_, err = io.Copy(partWriter, image)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 

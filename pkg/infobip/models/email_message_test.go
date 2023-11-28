@@ -38,8 +38,8 @@ func TestValidEmailMessage(t *testing.T) {
 	image, err := os.Open("testdata/image.png")
 	require.NoError(t, err)
 
-	tests[1].instance.Attachment = attachment
-	tests[1].instance.InlineImage = image
+	tests[1].instance.Attachments = []*os.File{attachment}
+	tests[1].instance.InlineImages = []*os.File{image}
 
 	defer image.Close()
 	defer attachment.Close()

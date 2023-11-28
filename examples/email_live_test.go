@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"testing"
 
 	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip"
@@ -17,11 +18,18 @@ import (
 func TestSendEmail(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)
+
+	attachment, _ := os.Open("../pkg/infobip/email/testdata/image.png")
+	require.NoError(t, err)
+	attachment2, _ := os.Open("../pkg/infobip/email/testdata/image2.png")
+	require.NoError(t, err)
+
 	mail := models.EmailMsg{
-		From:    "somemail@somedomain.com",
-		To:      "somemail@somedomain.com",
-		Subject: "Some subject",
-		Text:    "Some text",
+		From:        "somemail@somedomain.com",
+		To:          "somemail@somedomain.com",
+		Subject:     "Some subject",
+		Text:        "Some text",
+		Attachments: []*os.File{attachment, attachment2},
 	}
 
 	msgResp, respDetails, err := client.Email.Send(context.Background(), mail)
