@@ -42,8 +42,8 @@ func TestSendEmailValidReq(t *testing.T) {
 
 	msg.Attachment = attachment2
 	msg.Attachments = []*os.File{attachment}
-	msg.InlineImage = image
-	msg.InlineImages = []*os.File{image2}
+	msg.InlineImage = image2
+	msg.InlineImages = []*os.File{image}
 
 	defer image.Close()
 	defer attachment.Close()
