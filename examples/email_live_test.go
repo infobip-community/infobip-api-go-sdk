@@ -15,6 +15,34 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestSendEmailSingleAttachment(t *testing.T) {
+	client, err := infobip.NewClient(baseURL, apiKey)
+	require.Nil(t, err)
+
+	attachment, _ := os.Open("../pkg/infobip/email/testdata/image.png")
+	require.NoError(t, err)
+
+	mail := models.EmailMsg{
+		From:       "joanna.suau@infobip.com",
+		To:         "ecorona@infobip.com",
+		Subject:    "Some subject",
+		Text:       "Some text",
+		Attachment: attachment,
+	}
+
+	msgResp, respDetails, err := client.Email.Send(context.Background(), mail)
+
+	fmt.Println(msgResp)
+	fmt.Println(respDetails)
+
+	require.Nil(t, err)
+	assert.NotNil(t, respDetails)
+	assert.NotEmptyf(t, msgResp.Messages[0].MessageID, "MessageID should not be empty")
+	assert.NotEqual(t, models.SendEmailResponse{}, msgResp)
+	assert.NotEqual(t, models.ResponseDetails{}, msgResp)
+	assert.Equal(t, http.StatusOK, respDetails.HTTPResponse.StatusCode)
+}
+
 func TestSendEmail(t *testing.T) {
 	client, err := infobip.NewClient(baseURL, apiKey)
 	require.Nil(t, err)

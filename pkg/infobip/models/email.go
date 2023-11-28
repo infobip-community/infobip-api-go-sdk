@@ -18,6 +18,7 @@ type EmailMsg struct {
 	BulkID                  string
 	MessageID               string
 	TemplateID              int
+	Attachment              *os.File
 	Attachments             []*os.File
 	InlineImages            []*os.File
 	HTML                    string
@@ -123,6 +124,10 @@ func (e *EmailMsg) Marshal() (*bytes.Buffer, error) {
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	if e.Attachment != nil {
+		e.Attachments = append(e.Attachments, e.Attachment)
 	}
 
 	if e.Attachments != nil {
