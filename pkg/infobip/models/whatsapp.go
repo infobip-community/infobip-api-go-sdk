@@ -115,7 +115,7 @@ func templateCreateValidation(sl validator.StructLevel) {
 }
 
 func validateTemplateName(sl validator.StructLevel, template TemplateCreate) {
-	if !isSnakeCase(template.Name) {
+	if !isSnakeCaseOrNum(template.Name) {
 		sl.ReportError(template.Name, "name", "Name", "namenotsnakecase", "")
 	}
 }
@@ -205,14 +205,14 @@ func templateMsgValidation(sl validator.StructLevel) {
 }
 
 func validateTemplateMsgName(sl validator.StructLevel, msg TemplateMsg) {
-	if !isSnakeCase(msg.Content.TemplateName) {
-		sl.ReportError(msg.Content.TemplateName, "templateName", "TemplateName", "templatenamenotsnakecase", "")
+	if !isSnakeCaseOrNum(msg.Content.TemplateName) {
+		sl.ReportError(msg.Content.TemplateName, "templateName", "TemplateName", "templatenamenotsnakecaseornum", "")
 	}
 }
 
-func isSnakeCase(s string) bool {
+func isSnakeCaseOrNum(s string) bool {
 	for _, r := range s {
-		if !unicode.IsLower(r) && r != '_' {
+		if !unicode.IsNumber(r) && !unicode.IsLower(r) && r != '_' {
 			return false
 		}
 	}

@@ -15,7 +15,7 @@ func TestValidTemplateCreate(t *testing.T) {
 		{
 			name: "minimum input",
 			instance: TemplateCreate{
-				Name:     "template_name",
+				Name:     "template_name_01",
 				Language: "en",
 				Category: "MARKETING",
 				Structure: TemplateStructure{
@@ -179,7 +179,7 @@ func TestTemplateCreateConstraints(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid Name",
+			name: "invalidName",
 			instance: TemplateCreate{
 				Name:     "INVALID",
 				Language: "en",
