@@ -142,7 +142,6 @@ func (e *EmailMsg) Marshal() (*bytes.Buffer, error) {
 			if err != nil {
 				return nil, err
 			}
-
 		}
 	}
 
