@@ -1,11 +1,11 @@
 name: Run tests
 on: [push]
 jobs:
-  Run-All-Prechecks:
+  Run-Tests:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
-      - name: Execute checks
+      - name: Execute tests
         run: |
           make docker-test
