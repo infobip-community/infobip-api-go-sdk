@@ -20,6 +20,11 @@ Go client SDK for Infobip's API Channels
 
 More channels to be added in the near future.
 
+## 📡 Supported Platform
+
+- [Account](https://www.infobip.com/docs/api/platform/account)
+- [Numbers](https://www.infobip.com/docs/api/platform/numbers)
+
 ## 🔐 Authentication
 
 Currently, infobip-api-go-sdk only supports API Key authentication, and the key needs to be passed during client creation.

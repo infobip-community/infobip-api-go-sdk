@@ -12,6 +12,7 @@ import (
 	"github.com/infobip-community/infobip-api-go-sdk/v3/internal"
 	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/email"
 	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/mms"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/numbers"
 	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/rcs"
 	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/sms"
 	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/webrtc"
@@ -29,6 +30,7 @@ type Client struct {
 	SMS        sms.SMS
 	WebRTC     webrtc.WebRTC
 	RCS        rcs.RCS
+	Numbers    numbers.Numbers
 }
 
 // NewClientFromEnv returns a client object using the credentials from the environment.
@@ -77,6 +79,9 @@ func NewClient(baseURL string, apiKey string, options ...func(*Client)) (Client,
 	}
 
 	c.RCS = &rcs.Channel{
+		ReqHandler: internal.HTTPHandler{APIKey: apiKey, BaseURL: baseURL, HTTPClient: c.httpClient},
+	}
+	c.Numbers = &numbers.Platform{
 		ReqHandler: internal.HTTPHandler{APIKey: apiKey, BaseURL: baseURL, HTTPClient: c.httpClient},
 	}
 
