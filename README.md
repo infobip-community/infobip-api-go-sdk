@@ -17,6 +17,7 @@ Go client SDK for Infobip's API Channels
 - [MMS](https://www.infobip.com/docs/api#channels/mms)
 - [RCS](https://www.infobip.com/docs/api#channels/rcs)
 - [WebRTC](https://www.infobip.com/docs/api#channels/webrtc)
+- [Numbers](https://www.infobip.com/docs/api/platform/numbers)
 
 More channels to be added in the near future.
 
