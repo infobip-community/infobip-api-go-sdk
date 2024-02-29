@@ -10,6 +10,7 @@ import (
 	"os"
 
 	"github.com/infobip-community/infobip-api-go-sdk/v3/internal"
+	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/account"
 	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/email"
 	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/mms"
 	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/numbers"
@@ -19,7 +20,7 @@ import (
 	"github.com/infobip-community/infobip-api-go-sdk/v3/pkg/infobip/whatsapp"
 )
 
-// Client is the entrypoint to all Infobip channels.
+// Client is the entrypoint to all Infobip channels and platform.
 type Client struct {
 	apiKey     string
 	baseURL    string
@@ -31,6 +32,7 @@ type Client struct {
 	WebRTC     webrtc.WebRTC
 	RCS        rcs.RCS
 	Numbers    numbers.Numbers
+	Account    account.Account
 }
 
 // NewClientFromEnv returns a client object using the credentials from the environment.
@@ -81,10 +83,14 @@ func NewClient(baseURL string, apiKey string, options ...func(*Client)) (Client,
 	c.RCS = &rcs.Channel{
 		ReqHandler: internal.HTTPHandler{APIKey: apiKey, BaseURL: baseURL, HTTPClient: c.httpClient},
 	}
+
 	c.Numbers = &numbers.Platform{
 		ReqHandler: internal.HTTPHandler{APIKey: apiKey, BaseURL: baseURL, HTTPClient: c.httpClient},
 	}
 
+	c.Account = &account.Platform{
+		ReqHandler: internal.HTTPHandler{APIKey: apiKey, BaseURL: baseURL, HTTPClient: c.httpClient},
+	}
 	return c, nil
 }
 
