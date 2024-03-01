@@ -9,12 +9,17 @@ import (
 )
 
 const (
-	getAvailableNumbersPath   = "numbers/1/numbers/available"
-	listPurchasedNumbersPath  = "numbers/1/numbers"
-	purchaseNumberPath        = "numbers/1/numbers"
-	getpurchasedNumberPath    = "numbers/1/numbers/%s"
-	updatepurchasedNumberPath = "numbers/1/numbers/%s"
-	deletepurchasedNumberPath = "numbers/1/numbers/%s"
+	getAvailableNumbersPath        = "numbers/1/numbers/available"
+	listPurchasedNumbersPath       = "numbers/1/numbers"
+	purchaseNumberPath             = "numbers/1/numbers"
+	getpurchasedNumberPath         = "numbers/1/numbers/%s"
+	updatepurchasedNumberPath      = "numbers/1/numbers/%s"
+	deletepurchasedNumberPath      = "numbers/1/numbers/%s"
+	getAllNumberConfigurationsPath = "numbers/2/numbers/%s/sms"
+	updateNumberConfigurationsPath = "numbers/2/numbers/%s/sms"
+	createNumberConfigurationsPath = "numbers/2/numbers/%s/sms"
+	getNumberConfigurationsPath    = "numbers/2/numbers/%s/sms/%s"
+	deleteNumberConfigurationsPath = "numbers/2/numbers/%s/sms/%s"
 )
 
 // Numbers provides methods to interact with the Infobip Numbers API.
@@ -41,6 +46,36 @@ type Numbers interface {
 	) (resp models.Number, respDetails models.ResponseDetails, err error)
 
 	CancelNumber(ctx context.Context, numberKey string,
+	) (respDetails models.ResponseDetails, err error)
+
+	GetAllNumberConfigurations(
+		ctx context.Context,
+		numberKey string,
+		queryParams models.GetAllNumberConfigurationParam,
+	) (resp models.GetAllNumberConfigurationResponse, respDetails models.ResponseDetails, err error)
+
+	UpdateNumberConfiguration(
+		ctx context.Context,
+		numberKey string,
+		request models.UpdateNumberConfigurationRequest,
+	) (resp models.NumberConfiguration, respDetails models.ResponseDetails, err error)
+
+	CreateNumberConfiguration(
+		ctx context.Context,
+		numberKey string,
+		request models.NumberConfiguration,
+	) (resp models.NumberConfiguration, respDetails models.ResponseDetails, err error)
+
+	GetNumberConfiguration(
+		ctx context.Context,
+		numberKey string,
+		configurationKey string,
+	) (resp models.NumberConfiguration, respDetails models.ResponseDetails, err error)
+
+	DeleteNumberConfiguration(
+		ctx context.Context,
+		numberKey string,
+		configurationKey string,
 	) (respDetails models.ResponseDetails, err error)
 }
 
@@ -129,4 +164,61 @@ func (numbers *Platform) CancelNumber(
 	numberKey string,
 ) (respDetails models.ResponseDetails, err error) {
 	return numbers.ReqHandler.DeleteRequest(ctx, fmt.Sprintf(deletepurchasedNumberPath, numberKey), nil)
+}
+
+func (numbers *Platform) GetAllNumberConfigurations(
+	ctx context.Context,
+	numberKey string,
+	queryParams models.GetAllNumberConfigurationParam,
+) (resp models.GetAllNumberConfigurationResponse, respDetails models.ResponseDetails, err error) {
+	params := []internal.QueryParameter{}
+	if queryParams.Limit > 0 {
+		params = append(params, internal.QueryParameter{Name: "limit", Value: fmt.Sprint(queryParams.Limit)})
+	}
+	if queryParams.Page > 0 {
+		params = append(params, internal.QueryParameter{Name: "page", Value: fmt.Sprint(queryParams.Page)})
+	}
+	respDetails, err = numbers.ReqHandler.GetRequest(
+		ctx, &resp, fmt.Sprintf(getAllNumberConfigurationsPath, numberKey), params)
+	return resp, respDetails, err
+}
+
+func (numbers *Platform) UpdateNumberConfiguration(
+	ctx context.Context,
+	numberKey string,
+	request models.UpdateNumberConfigurationRequest,
+) (resp models.NumberConfiguration, respDetails models.ResponseDetails, err error) {
+	respDetails, err = numbers.ReqHandler.PutJSONReq(
+		ctx, &request, &resp, fmt.Sprintf(updateNumberConfigurationsPath, numberKey), nil)
+	return resp, respDetails, err
+}
+
+func (numbers *Platform) CreateNumberConfiguration(
+	ctx context.Context,
+	numberKey string,
+	request models.NumberConfiguration,
+) (resp models.NumberConfiguration, respDetails models.ResponseDetails, err error) {
+	respDetails, err = numbers.ReqHandler.PostJSONReq(
+		ctx, &request, &resp, fmt.Sprintf(createNumberConfigurationsPath, numberKey))
+	return resp, respDetails, err
+}
+
+func (numbers *Platform) GetNumberConfiguration(
+	ctx context.Context,
+	numberKey string,
+	configurationKey string,
+) (resp models.NumberConfiguration, respDetails models.ResponseDetails, err error) {
+	respDetails, err = numbers.ReqHandler.GetRequest(
+		ctx, &resp, fmt.Sprintf(getNumberConfigurationsPath, numberKey, configurationKey), nil)
+
+	return resp, respDetails, err
+}
+
+func (numbers *Platform) DeleteNumberConfiguration(
+	ctx context.Context,
+	numberKey string,
+	configurationKey string,
+) (respDetails models.ResponseDetails, err error) {
+	return numbers.ReqHandler.DeleteRequest(
+		ctx, fmt.Sprintf(deleteNumberConfigurationsPath, numberKey, configurationKey), nil)
 }

@@ -123,7 +123,8 @@ func (platform *Platform) GetAllAccounts(ctx context.Context, queryParams models
 // This method allows you to update an account.
 func (platform *Platform) UpdateAccount(ctx context.Context, accountKey string, request models.UpdateAccountRequest) (
 	resp models.UpdateAccountResponse, respDetails models.ResponseDetails, err error) {
-	respDetails, err = platform.ReqHandler.PutJSONReq(ctx, &request, &resp, fmt.Sprintf(updateAccountPath, accountKey), nil)
+	respDetails, err = platform.ReqHandler.PutJSONReq(
+		ctx, &request, &resp, fmt.Sprintf(updateAccountPath, accountKey), nil)
 	return resp, respDetails, err
 }
 

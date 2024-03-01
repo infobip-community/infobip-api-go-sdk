@@ -23,6 +23,12 @@ func TestInvalidGetAvailableNumbersParams(t *testing.T) {
 				Page: 50000,
 			},
 		},
+		{
+			name: "capabilities value unknown",
+			instance: GetAvailableNumbersParams{
+				Capabilities: []string{"fake"},
+			},
+		},
 	}
 
 	for _, test := range tests {

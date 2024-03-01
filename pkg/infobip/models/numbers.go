@@ -3,7 +3,7 @@ package models
 import "bytes"
 
 type GetAvailableNumbersParams struct {
-	Capabilities []string
+	Capabilities []string `validate:"omitempty,dive,oneof=SMS VOICE MMS WHATSAPP WHATSAPP_VOICE"`
 	Country      string
 	State        string
 	NPA          int32
@@ -122,4 +122,79 @@ type Action struct {
 type EditPermissions struct {
 	CanEditNumber        bool `json:"canEditNumber,omitempty"`
 	CanEditConfiguration bool `json:"canEditConfiguration,omitempty"`
+}
+
+type GetAllNumberConfigurationParam struct {
+	Limit int
+	Page  int
+}
+
+type GetAllNumberConfigurationResponse struct {
+	Configurations []NumberConfiguration `json:"configurations,omitempty"`
+	TotalCount     int32                 `json:"totalCount,omitempty"`
+}
+
+type NumberConfiguration struct {
+	Keywork         string               `json:"keywork,omitempty"`
+	Action          *ActionConfiguration `json:"action" validate:"required,dive"`
+	UseConversation struct {
+		Enable bool `json:"enable,omitempty"`
+	} `json:"useConversation"`
+
+	// Only for GET requests.
+	OtherActions  []string `json:"otherActions,omitempty"`
+	ApplicationID string   `json:"applicationId,omitempty"`
+	EntityID      string   `json:"entityId,omitempty"`
+	// Only Present in response
+	Key string `json:"key,omitempty"`
+}
+
+func (n *NumberConfiguration) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(n)
+}
+func (n *NumberConfiguration) Validate() error {
+	return validate.Struct(n)
+}
+
+type UpdateNumberConfigurationRequest struct {
+	Keywork         string               `json:"keywork,omitempty"`
+	Action          *ActionConfiguration `json:"action" validate:"required,dive"`
+	UseConversation struct {
+		Enable bool `json:"enable,omitempty"`
+	} `json:"useConversation"`
+	ApplicationID string `json:"applicationId,omitempty"`
+	EntityID      string `json:"entityId,omitempty"`
+	Key           string `json:"key" validate:"required"`
+}
+
+func (n *UpdateNumberConfigurationRequest) Marshal() (*bytes.Buffer, error) {
+	return marshalJSON(n)
+}
+func (n *UpdateNumberConfigurationRequest) Validate() error {
+	return validate.Struct(n)
+}
+
+type ActionConfiguration struct {
+	Description string `json:"description,omitempty"`
+	Type        string `json:"type,omitempty" validate:"omitempty,oneof=PULL HTTP_FORWARD SMPP_FORWARD MAIL_FORWARD NO_ACTION"` //nolint:lll
+	URL         string `json:"url,omitempty" validate:"required_if=Type HTTP_FORWARD,omitempty,url"`
+	HTTPMethod  string `json:"httpMethod,omitempty" validate:"omitempty,oneof=GET POST"`
+	ContentType string `json:"contentType,omitempty" validate:"omitempty,oneof=JSON XML"`
+	Mail        string `json:"mail,omitempty" validate:"required_if=Type MAIL_FORWARD,omitempty,email"`
+}
+
+type OtherActionsDetails struct {
+	// Only for GET request
+	Editable           bool                      `json:"editable,omitempty"`
+	Type               string                    `json:"type,omitempty"`
+	Message            string                    `json:"message,omitempty"`
+	Sender             string                    `json:"sender,omitempty"`
+	DeliveryTimeWindow *NumberDeliveryTimeWindow `json:"deliveryTimeWindow,omitempty" validate:"omitempty,dive"`
+}
+
+type NumberDeliveryTimeWindow struct {
+	Days             []string `json:"days,omitempty" validate:"required,gte=1,dive,oneof=MONDAY TUESDAY WEDNESDAY THURSDAY FRIDAY SATURDAY SUNDAY"` //nolint:lll
+	From             string   `json:"from" validate:"required"`
+	To               string   `json:"to" validate:"required"`
+	DeliveryTimeZone string   `json:"deliveryTimeZone,omitempty"`
 }

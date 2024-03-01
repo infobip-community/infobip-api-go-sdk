@@ -7,7 +7,6 @@ import (
 )
 
 func TestValidApiKey(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		instance APIKey

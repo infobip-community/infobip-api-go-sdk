@@ -39,6 +39,8 @@ func TestUpdateAPIKeyValidReq(t *testing.T) {
 	require.NoError(t, err)
 
 	apiKey := "some-api-key"
+
+	//nolint:gosec // it's just a unit test
 	apiKeyID := "some-api-key-id"
 
 	serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -55,13 +57,13 @@ func TestUpdateAPIKeyValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	updateApiKey := models.UpdateAPIKeyRequest{
+	updateAPIKey := models.UpdateAPIKeyRequest{
 		AccountID:  "8F0792F86035A9F4290821F1EE6BC06A",
 		Name:       "First ApiKey on my account",
 		AllowedIPs: []string{"127.0.0.1", "168.158.10.122"},
 	}
 
-	msgResp, respDetails, err := account.UpdateAPIKey(context.Background(), apiKeyID, updateApiKey)
+	msgResp, respDetails, err := account.UpdateAPIKey(context.Background(), apiKeyID, updateAPIKey)
 
 	require.NoError(t, err)
 	assert.NotEqual(t, models.APIKey{}, msgResp)

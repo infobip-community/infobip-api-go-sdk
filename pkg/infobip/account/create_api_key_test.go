@@ -55,13 +55,13 @@ func TestCreateAPIKeyValidReq(t *testing.T) {
 		APIKey:     apiKey,
 	}}
 
-	createApiKey := models.APIKey{
+	createAPIKey := models.APIKey{
 		AccountID:  "8F0792F86035A9F4290821F1EE6BC06A",
 		Name:       "First ApiKey on my account",
 		AllowedIPs: []string{"127.0.0.1", "168.158.10.122"},
 	}
 
-	msgResp, respDetails, err := account.CreateAPIKey(context.Background(), createApiKey)
+	msgResp, respDetails, err := account.CreateAPIKey(context.Background(), createAPIKey)
 
 	require.NoError(t, err)
 	assert.NotEqual(t, models.APIKey{}, msgResp)
