@@ -289,7 +289,7 @@ type TemplateMsgContent struct {
 type TemplateData struct {
 	Body    TemplateBody        `json:"body" validate:"required"`
 	Header  *TemplateMsgHeader  `json:"header,omitempty"`
-	Buttons []TemplateMsgButton `json:"buttons,omitempty" validate:"omitempty,max=3,dive"`
+	Buttons []TemplateMsgButton `json:"buttons,omitempty" validate:"omitempty,max=10,dive"`
 }
 
 type TemplateBody struct {
