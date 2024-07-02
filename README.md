@@ -20,6 +20,13 @@ Go client SDK for Infobip's API Channels
 
 More channels to be added in the near future.
 
+## 📡 Supported Platform
+
+- [Account](https://www.infobip.com/docs/api/platform/account)
+- [Numbers](https://www.infobip.com/docs/api/platform/numbers)
+
+More platform to be added in the near future.
+
 ## 🔐 Authentication
 
 Currently, infobip-api-go-sdk only supports API Key authentication, and the key needs to be passed during client creation.
@@ -90,6 +97,9 @@ the object representing the payload will be validated before it is sent.
 
 The channels of the client divide the API into multiple parts, corresponding to the Infobip Channels documented at
 https://www.infobip.com/docs/api#channels.
+
+The platform of the client divide the API into multiple parts, corresponding to the Infobip Platform documented at
+https://www.infobip.com/docs/api/platform.
 
 NOTE: Using the [context](https://godoc.org/context) package, the user can pass cancellation signals and deadlines
 to the underlying requests that the client makes. If you don't want to use this feature, then using `context.Background()`
